@@ -4,11 +4,11 @@ import java.util.regex.Pattern;
 
 public enum NativeTokenTypes {
     // Separator
-    SEMICOLON (";\\b"), LEFT_PARENTHESIS("(\\b"), RIGHT_PARENTHESES("(\\b"), COMMA(",\\b"),
-    COLON(":\\b"), EOF(""),
+    SEMICOLON (";"), LEFT_PARENTHESIS("("), RIGHT_PARENTHESES(")"), COMMA(","),
+    COLON(":"), EOF(""),
 
     // Operator
-    EQUALS("=\\b"), PLUS("+\\b"), MINUS("-\\b"), ASTERISK("*\\b"), SLASH("/\\b"),
+    EQUALS("="), PLUS("\\+"), MINUS("-"), ASTERISK("\\*"), SLASH("\\/"),
 
     // Values
     IDENTIFIER("[a-z_]+[a-zA-Z0-9_]*"),STRING("(\"[^\"]*\"|'[^']*')"), NUMBER("\\\b\\d+(\\.\\d+)?\\\b"),

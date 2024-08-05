@@ -3,6 +3,8 @@ package org.example.lexer;
 import org.example.NativeTokenTypes;
 import org.example.TokenType;
 
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -10,18 +12,56 @@ public class PrintScriptTokenConfig {
 
 
     static Map<Pattern, TokenType> keywordTokenTypeMap() {
-        return Map.of(NativeTokenTypes.LET.getRegex(), NativeTokenTypes.LET.toTokenType(),
-                NativeTokenTypes.STRING_TYPE.getRegex(), NativeTokenTypes.STRING_TYPE.toTokenType(),
-                NativeTokenTypes.NUMBER_TYPE.getRegex(), NativeTokenTypes.NUMBER_TYPE.toTokenType());
+
+        NativeTokenTypes[] typeArray = new NativeTokenTypes[]{
+                NativeTokenTypes.LET,
+                NativeTokenTypes.STRING_TYPE,
+                NativeTokenTypes.NUMBER_TYPE};
+
+        return getMapFromArray(typeArray);
     }
 
     static Map<Pattern, TokenType> operatorTokenTypeMap() {
-        return Map.of(NativeTokenTypes.EQUALS.getRegex(), NativeTokenTypes.EQUALS.toTokenType(),
-                NativeTokenTypes.PLUS.getRegex(), NativeTokenTypes.PLUS.toTokenType(),
-                NativeTokenTypes.MINUS.getRegex(), NativeTokenTypes.MINUS.toTokenType(),
-                NativeTokenTypes.ASTERISK.getRegex(), NativeTokenTypes.ASTERISK.toTokenType(),
-                NativeTokenTypes.SLASH.getRegex(), NativeTokenTypes.SLASH.toTokenType());
+
+        NativeTokenTypes[] typeArray = new NativeTokenTypes[]{
+                NativeTokenTypes.EQUALS,
+                NativeTokenTypes.PLUS,
+                NativeTokenTypes.MINUS,
+                NativeTokenTypes.ASTERISK,
+                NativeTokenTypes.SLASH};
+
+        return getMapFromArray(typeArray);
     }
 
+
+    static Map<Pattern, TokenType> separatorTokenTypeMap() {
+
+        NativeTokenTypes[] typeArray = new NativeTokenTypes[]{
+                NativeTokenTypes.COMMA,
+                NativeTokenTypes.COLON,
+                NativeTokenTypes.SEMICOLON,
+                NativeTokenTypes.LEFT_PARENTHESIS,
+                NativeTokenTypes.RIGHT_PARENTHESES,
+        };
+
+        return getMapFromArray(typeArray);
+    }
+
+    static Map<Pattern, TokenType> literalTokenTypeMap() {
+        NativeTokenTypes[] typeArray = new NativeTokenTypes[]{
+                NativeTokenTypes.NUMBER,
+                NativeTokenTypes.STRING,
+                NativeTokenTypes.IDENTIFIER,
+        };
+
+        return getMapFromArray(typeArray);
+    }
+
+    private static LinkedHashMap<Pattern, TokenType> getMapFromArray(NativeTokenTypes[] typeArray) {
+        LinkedHashMap<Pattern, TokenType> map = new LinkedHashMap<>();
+
+        Arrays.stream(typeArray).forEach(x -> map.put(x.getRegex(), x.toTokenType()));
+        return map;
+    }
 
 }
