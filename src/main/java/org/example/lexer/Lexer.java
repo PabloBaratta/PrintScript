@@ -59,8 +59,12 @@ public class Lexer {
     }
 
     private void skipCharactersFromList(char currentCharacter, List<Character> characters) {
-        while (characters.contains(currentCharacter)){
-            setCurrentPosition(currentCharacter + 1);
+
+        while (characters.contains(currentCharacter) && hasNext()) {
+            setCurrentPosition(currentPosition + 1);
+            if (hasNext()) {
+                currentCharacter = code.charAt(currentPosition);
+            }
         }
     }
 

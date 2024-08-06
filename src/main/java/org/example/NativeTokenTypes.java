@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 
 public enum NativeTokenTypes {
     // Separator
-    SEMICOLON (";"), LEFT_PARENTHESIS("("), RIGHT_PARENTHESES(")"), COMMA(","),
+    SEMICOLON (";"), LEFT_PARENTHESIS("\\("), RIGHT_PARENTHESES("\\)"), COMMA(","),
     COLON(":"), EOF(""),
 
     // Operator
@@ -17,7 +17,7 @@ public enum NativeTokenTypes {
     // Variable declaration
     LET("let\\b"),
     // Type keyword
-    STRING_TYPE("string\\b"), NUMBER_TYPE("number\\b");
+    STRING_TYPE("string\\b"), NUMBER_TYPE("number\\b"), PRINTLN("println\\b");
 
     private final String regex;
 
