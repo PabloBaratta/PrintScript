@@ -1,0 +1,20 @@
+package org.example;
+
+public class Literal<T extends Comparable<T>> implements Expression{
+
+    private final T value;
+
+    public Literal(T value) {
+        this.value = value;
+    }
+
+    @Override
+    public void accept(ASTVisitor visitor) {
+        visitor.visit(this);
+    }
+
+    @Override
+    public String toString() {
+        return value.toString();
+    }
+}

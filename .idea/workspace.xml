@@ -4,12 +4,44 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="daf00bfe-2a84-47c4-9530-f74cb2f4995c" name="Changes" comment="initial commit&#10;&#10;--setting of the project">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/NativeTokenTypes.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/TokenType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/lexer/Lexer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/parser/Parser.java" afterDir="false" />
+    <list default="true" id="daf00bfe-2a84-47c4-9530-f74cb2f4995c" name="Changes" comment="starting AST nodes">
+      <change afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew.bat" beforeDir="false" afterPath="$PROJECT_DIR$/gradlew.bat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/NativeTokenTypes.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/token/NativeTokenTypes.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Token.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/token/Token.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/TokenType.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/token/TokenType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Try.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/utils/Try.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/lexer/Lexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/Lexer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/lexer/NoMoreTokensAvailableException.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/NoMoreTokensAvailableException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/lexer/PrintScriptTokenConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/PrintScriptTokenConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/lexer/TokenConstructor.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/TokenConstructor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/lexer/TokenConstructorImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/TokenConstructorImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/lexer/UnsupportedCharacterException.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/UnsupportedCharacterException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/parser/AST/ASTNode.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/parser/AST/ASTNode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/parser/AST/ASTVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/parser/AST/ASTVisitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/parser/AST/Assignation.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/parser/AST/Assignation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/parser/AST/BinaryExpression.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/parser/AST/BinaryExpression.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/parser/AST/Expression.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/parser/AST/Expression.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/parser/AST/Identifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/parser/AST/Identifier.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/parser/AST/Literal.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/parser/AST/Literal.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/parser/AST/Method.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/parser/AST/Method.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/parser/AST/NumericLiteral.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/parser/AST/NumericLiteral.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/parser/AST/Program.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/parser/AST/Program.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/parser/AST/TextLiteral.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/parser/AST/TextLiteral.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/parser/AST/Type.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/parser/AST/Type.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/parser/AST/UnaryExpression.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/parser/AST/UnaryExpression.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/parser/AST/VariableDeclaration.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/parser/AST/VariableDeclaration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/parser/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/parser/Parser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/example/lexer/LexerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/test/java/org/example/LexerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/example/lexer/TokenConstructorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/test/java/org/example/TokenConstructorTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,21 +53,84 @@
       <ProjectState />
     </projectState>
   </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/lexer">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/parser">
+          <activation />
+        </task>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="printscript" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="printscript" type="f1a62948:ProjectNode" />
+                <item name="lexer" type="2d1252cf:ModuleNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="printscript" type="f1a62948:ProjectNode" />
+                <item name="lexer" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="printscript" type="f1a62948:ProjectNode" />
+                <item name="lexer" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="build" type="c8890929:TasksNode$1" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="printscript" type="f1a62948:ProjectNode" />
+                <item name="parser" type="2d1252cf:ModuleNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="printscript" type="f1a62948:ProjectNode" />
+                <item name="parser" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="printscript" type="f1a62948:ProjectNode" />
+                <item name="parser" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="build" type="c8890929:TasksNode$1" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
         <option value="Enum" />
         <option value="Record" />
+        <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 6
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
   <component name="ProjectId" id="2k4TUjuHDXOSdnEICmSMmw39TgY" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -44,10 +139,19 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Downloaded.Files.Path.Enabled": "false",
+    "Gradle.PrintScript [:buildSrc:build].executor": "Run",
+    "Gradle.PrintScript:lexer [build].executor": "Run",
+    "Gradle.PrintScript:parser [build].executor": "Run",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/jmsapag/projects/ing-sis/PrintScript/lexer/src/main/java/org/example/lexer/utils",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -59,10 +163,95 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/utils" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/lexer/src/test/java/org/example" />
+      <recent name="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/token" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Gradle.PrintScript:parser [build]">
+    <configuration name="PrintScript [:buildSrc:build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":buildSrc:build" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="PrintScript:lexer [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/lexer" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="build" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="PrintScript:parser [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/parser" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="build" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.PrintScript:parser [build]" />
+        <item itemvalue="Gradle.PrintScript:lexer [build]" />
+        <item itemvalue="Gradle.PrintScript [:buildSrc:build]" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="jdk-21.0.2-temurin-21.0.2-4caba194b151-7da56cdf" />
+        <option value="bundled-jdk-9f38398b9061-18abd8497189-intellij.indexing.shared.core-IU-241.14494.240" />
+        <option value="bundled-js-predefined-1d06a55b98c1-74d2a5396914-JavaScript-IU-241.14494.240" />
       </set>
     </attachedChunks>
   </component>
@@ -75,6 +264,11 @@
       <option name="presentableId" value="Default" />
       <updated>1722541871734</updated>
       <workItem from="1722541872713" duration="3155000" />
+      <workItem from="1722966180462" duration="3097000" />
+      <workItem from="1722970106629" duration="732000" />
+      <workItem from="1722973342240" duration="6000" />
+      <workItem from="1723142606987" duration="97000" />
+      <workItem from="1723146876869" duration="2241000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit&#10;&#10;--setting of the project">
       <option name="closed" value="true" />
@@ -84,7 +278,15 @@
       <option name="project" value="LOCAL" />
       <updated>1722544691529</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="starting AST nodes">
+      <option name="closed" value="true" />
+      <created>1722969070500</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1722969070500</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -92,6 +294,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit&#10;&#10;--setting of the project" />
-    <option name="LAST_COMMIT_MESSAGE" value="initial commit&#10;&#10;--setting of the project" />
+    <MESSAGE value="starting AST nodes" />
+    <option name="LAST_COMMIT_MESSAGE" value="starting AST nodes" />
   </component>
 </project>
