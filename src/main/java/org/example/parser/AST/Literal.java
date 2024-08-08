@@ -1,6 +1,6 @@
 package org.example.parser.AST;
 
-public class Literal<T extends Comparable<T>> implements ASTNode{
+public class Literal<T extends Comparable<T>> implements Expression{
 
     private final T value;
 

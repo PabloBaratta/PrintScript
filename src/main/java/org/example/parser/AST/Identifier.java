@@ -1,9 +1,10 @@
 package org.example.parser.AST;
 
-public class Variable implements ASTNode {
+public class Identifier implements Expression {
+
     private final String name;
 
-    public Variable(String name) {
+    public Identifier(String name) {
         this.name = name;
     }
 

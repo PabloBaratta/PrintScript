@@ -1,6 +1,7 @@
 package org.example.parser.AST;
 
-public class BinaryExpression implements ASTNode {
+public class BinaryExpression implements Expression {
+
     private ASTNode left;
     private String operator;
     private ASTNode right;

@@ -1,16 +1,18 @@
 package org.example.parser.AST;
 
-public class Assignation implements ASTNode {
-    private final Variable variable;
-    private final ASTNode expression;
 
-    public Assignation(Variable variable, ASTNode expression) {
-        this.variable = variable;
+public class Assignation implements ASTNode {
+
+    private final Identifier identifier;
+    private final Expression expression;
+
+    public Assignation(Identifier identifier, Expression expression) {
+        this.identifier = identifier;
         this.expression = expression;
     }
 
-    public Variable getVariable() {
-        return variable;
+    public Identifier getVariable() {
+        return identifier;
     }
 
     public ASTNode getExpression() {
@@ -20,12 +22,12 @@ public class Assignation implements ASTNode {
     @Override
     public void accept(ASTVisitor visitor) {
         visitor.visit(this);
-        variable.accept(visitor);
+        identifier.accept(visitor);
         expression.accept(visitor);
     }
 
     @Override
     public String toString() {
-        return variable.toString() + " = " + expression.toString() + ";\n";
+        return identifier.toString() + " = " + expression.toString() + ";\n";
     }
 }

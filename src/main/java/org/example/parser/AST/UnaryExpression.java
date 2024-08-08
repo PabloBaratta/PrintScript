@@ -1,6 +1,6 @@
 package org.example.parser.AST;
 
-public class UnaryExpression implements ASTNode{
+public class UnaryExpression implements Expression{
     private ASTNode argument;
     private String operator;
 

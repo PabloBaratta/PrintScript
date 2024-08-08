@@ -3,16 +3,16 @@ package org.example.parser.AST;
 import java.util.List;
 
 public class Method implements ASTNode{
-    private Variable variable;
+    private Identifier identifier;
     private List<ASTNode> arguments;
 
-    public Method(Variable variable, List<ASTNode> arguments) {
-        this.variable = variable;
+    public Method(Identifier identifier, List<ASTNode> arguments) {
+        this.identifier = identifier;
         this.arguments = arguments;
     }
 
-    public Variable getVariable() {
-        return variable;
+    public Identifier getVariable() {
+        return identifier;
     }
 
     public List<ASTNode> getArguments() {
@@ -22,7 +22,7 @@ public class Method implements ASTNode{
     @Override
     public void accept(ASTVisitor visitor) {
         visitor.visit(this);
-        variable.accept(visitor);
+        identifier.accept(visitor);
         for (ASTNode node : arguments){
             node.accept(visitor);
         }
@@ -31,6 +31,6 @@ public class Method implements ASTNode{
     // terminar de ver como printear
     @Override
     public String toString() {
-        return variable.toString() + "(" + arguments.toString() + ")";
+        return identifier.toString() + "(" + arguments.toString() + ")";
     }
 }
