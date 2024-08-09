@@ -1,6 +1,5 @@
-package org.example.parser;
+package org.example;
 import org.example.Token;
-
 
 
 public class SemanticErrorException extends Exception{

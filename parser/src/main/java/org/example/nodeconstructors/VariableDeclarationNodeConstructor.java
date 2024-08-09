@@ -1,13 +1,20 @@
-package org.example.parser.nodeconstructors;
+package org.example.nodeconstructors;
 
+import org.example.ASTNode;
+import org.example.SemanticErrorException;
 import org.example.NativeTokenTypes;
+import org.example.VariableDeclaration;
+import org.example.Type;
+import org.example.Identifier;
+import org.example.Expression;
 import org.example.Token;
 import org.example.TokenType;
-import org.example.Try;
-import org.example.parser.SemanticErrorException;
-import org.example.parser.AST.*;
+import org.example.lexer.utils.Try;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Queue;
 
 public class VariableDeclarationNodeConstructor implements NodeConstructor {
 

@@ -1,6 +1,7 @@
-package org.example.parser.nodeconstructors;
+package org.example.nodeconstructors;
 
-import org.example.parser.Parser;
+
+import org.example.Parser;
 
 public interface BlockNodeConstructor extends NodeConstructor {
     void acceptParser(Parser parser);

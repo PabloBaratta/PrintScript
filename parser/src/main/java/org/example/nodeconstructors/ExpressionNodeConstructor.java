@@ -1,8 +1,8 @@
-package org.example.parser.nodeconstructors;
+package org.example.nodeconstructors;
 
+import org.example.ASTNode;
 import org.example.Token;
-import org.example.Try;
-import org.example.parser.AST.ASTNode;
+import org.example.lexer.utils.Try;
 
 
 import java.util.Optional;
