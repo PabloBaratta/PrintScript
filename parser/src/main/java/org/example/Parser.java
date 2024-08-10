@@ -39,7 +39,7 @@ public class Parser {
             }
            */
 
-            Try<ASTNode, Exception> astNodeExceptionTry = getAstNodeExceptionTry(token, nodes);
+            Try<ASTNode, Exception> astNodeExceptionTry = getAstNodeExceptionTry(token);
 
             if (astNodeExceptionTry.isFail()){
                 return astNodeExceptionTry;
@@ -52,7 +52,7 @@ public class Parser {
         
     }
 
-    private Try<ASTNode, Exception> getAstNodeExceptionTry(Token token, LinkedList<ASTNode> nodes) {
+    private Try<ASTNode, Exception> getAstNodeExceptionTry(Token token) {
         for (NodeConstructor nodeConstructor : nodeConstructors) {
 
             Try<Optional<ASTNode>, Exception> possibleNodeOrError = nodeConstructor.build(token, tokens);

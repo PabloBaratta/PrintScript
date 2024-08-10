@@ -18,9 +18,12 @@ public interface NodeConstructor {
     }
 
     static boolean isThisTokenType(Token token, List<TokenType> types){
-        return types.contains(getType(token));
+        return token != null && types.contains(getType(token));
     }
 
+    static boolean isTokenType(Token token, TokenType expectedType) {
+        return NodeConstructor.getType(token).equals(expectedType);
+    }
 
 
 }

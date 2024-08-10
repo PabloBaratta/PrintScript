@@ -19,16 +19,16 @@ import java.util.Queue;
 public class VariableDeclarationNodeConstructor implements NodeConstructor {
 
     private final ExpressionNodeConstructor expressionNodeConstructor;
-    private final List<TokenType> declarationTypes;
+    private final List<TokenType> variableDeclarationTokenTypes;
     private final List<TokenType> literalTypes;
 
 
     VariableDeclarationNodeConstructor(ExpressionNodeConstructor expressionNodeConstructor,
-                                       List<TokenType> declarationTypes,
+                                       List<TokenType> variableDeclarationTokenTypes,
                                        List<TokenType> literalType
     ) {
         this.expressionNodeConstructor = expressionNodeConstructor;
-        this.declarationTypes = declarationTypes;
+        this.variableDeclarationTokenTypes = variableDeclarationTokenTypes;
         this.literalTypes = literalType;
     }
 
@@ -36,22 +36,22 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
     @Override
     public Try<Optional<ASTNode>, Exception> build(Token token, Queue<Token> tokenBuffer) {
 
-        if (!NodeConstructor.isThisTokenType(token, declarationTypes)) {
+        if (!NodeConstructor.isThisTokenType(token, variableDeclarationTokenTypes)) {
             return new Try<>(Optional.empty());
         }
 
         Token identifierToken = tokenBuffer.poll();
-        if (!isValidToken(identifierToken, NativeTokenTypes.IDENTIFIER)) {
+        if (!NodeConstructor.isTokenType(identifierToken, NativeTokenTypes.IDENTIFIER.toTokenType())) {
             return new Try<>(new SemanticErrorException(identifierToken, "was expecting identifier"));
         }
 
         Token typeAssignationOperator = tokenBuffer.poll();
-        if (!isValidToken(typeAssignationOperator, NativeTokenTypes.COLON)) {
+        if (!NodeConstructor.isTokenType(typeAssignationOperator, NativeTokenTypes.COLON.toTokenType())) {
             return new Try<>(new SemanticErrorException(typeAssignationOperator, "was expecting type assignation operation"));
         }
 
         Token type = tokenBuffer.poll();
-        if (!isValidToken(type, literalTypes)) {
+        if (!NodeConstructor.isThisTokenType(type, literalTypes)) {
             return new Try<>(new SemanticErrorException(type, "was expecting a valid type"));
         }
 
@@ -60,34 +60,23 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
             return new Try<>(new Exception("was expecting closing after " + type.associatedString() + " in character " + type.offset()));
         }
 
-        if (isTokenType(proxUnknownToken, NativeTokenTypes.SEMICOLON)) {
+        if (NodeConstructor.isTokenType(proxUnknownToken, NativeTokenTypes.SEMICOLON.toTokenType())) {
             return new Try<>(Optional.of(getVariableDeclaration(identifierToken, type, Optional.empty())));
         }
 
-        if (isTokenType(proxUnknownToken, NativeTokenTypes.EQUALS)) {
+        if (NodeConstructor.isTokenType(proxUnknownToken, NativeTokenTypes.EQUALS.toTokenType())) {
             return handleEqualsToken(identifierToken, type, proxUnknownToken, tokenBuffer);
         }
 
         return new Try<>(new SemanticErrorException(type, "was expecting variable declaration or assignation"));
     }
 
-    private boolean isValidToken(Token token, NativeTokenTypes expectedType) {
-        return token != null && NodeConstructor.getType(token).equals(expectedType.toTokenType());
-    }
-
-    private boolean isValidToken(Token token, List<TokenType> expectedTypes) {
-        return token != null && NodeConstructor.isThisTokenType(token, expectedTypes);
-    }
-
-    private boolean isTokenType(Token token, NativeTokenTypes expectedType) {
-        return NodeConstructor.getType(token).equals(expectedType.toTokenType());
-    }
 
     private Try<Optional<ASTNode>, Exception> handleEqualsToken(Token identifierToken, Token type, Token equalsToken, Queue<Token> tokenBuffer) {
         Queue<Token> tokens = new LinkedList<>();
         Token proxUnknownToken = equalsToken;
 
-        while (!isTokenType(proxUnknownToken, NativeTokenTypes.SEMICOLON)) {
+        while (!NodeConstructor.isTokenType(proxUnknownToken, NativeTokenTypes.SEMICOLON.toTokenType())) {
             tokens.add(proxUnknownToken);
             proxUnknownToken = tokenBuffer.poll();
             if (proxUnknownToken == null) {
