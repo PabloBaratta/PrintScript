@@ -2,11 +2,11 @@ package org.example;
 
 public class BinaryExpression implements Expression {
 
-    private ASTNode left;
+    private Expression left;
     private String operator;
-    private ASTNode right;
+    private Expression right;
 
-    public BinaryExpression(ASTNode left, String operator, ASTNode right){
+    public BinaryExpression(Expression left, String operator, Expression right){
         this.left = left;
         this.operator = operator;
         this.right = right;
