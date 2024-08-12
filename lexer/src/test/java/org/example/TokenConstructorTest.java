@@ -1,7 +1,11 @@
-package org.example.lexer;
+package org.example;
 
-import org.example.NativeTokenTypes;
-import org.example.Token;
+
+import org.example.lexer.PrintScriptTokenConfig;
+import org.example.lexer.TokenConstructor;
+import org.example.lexer.TokenConstructorImpl;
+import org.example.lexer.token.NativeTokenTypes;
+import org.example.lexer.token.Token;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -11,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class TokenConstructorTest {
 
 
+    private PrintScriptTokenConfig PrintScriptTokenConfig;
     TokenConstructor keywordConstructor = new TokenConstructorImpl(PrintScriptTokenConfig.keywordTokenTypeMap());
     TokenConstructor operatorConstructor = new TokenConstructorImpl(PrintScriptTokenConfig.operatorTokenTypeMap());
 

@@ -1,7 +1,9 @@
-package org.example.nodeconstructors;
+package org.example;
 
-import org.example.Token;
-import org.example.TokenType;
+
+
+import org.example.lexer.token.Token;
+import org.example.lexer.token.TokenType;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +15,7 @@ public class TokenBuffer {
     private final Token token;
     private final List<Token> tokens;
 
-    TokenBuffer(List<Token> tokens) {
+    public TokenBuffer(List<Token> tokens) {
         this.tokens = tokens;
         this.token = tokens.isEmpty() ? null : tokens.getFirst();
     }
@@ -36,7 +38,7 @@ public class TokenBuffer {
     }
 
     static boolean isThisTokenType(Token token, TokenType expectedType) {
-        return getType(token).equals(expectedType);
+        return token != null && getType(token).equals(expectedType);
     }
 
     public Optional<Token> getToken() {

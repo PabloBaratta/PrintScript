@@ -3,17 +3,14 @@ package org.example;
 
 
 import org.example.lexer.utils.Try;
-import org.example.Token;
 
 import org.example.nodeconstructors.BlockNodeConstructor;
 import org.example.nodeconstructors.NodeConstructionResponse;
 import org.example.nodeconstructors.NodeConstructor;
-import org.example.nodeconstructors.TokenBuffer;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Queue;
 
 public class Parser {
     private final List<NodeConstructor> nodeConstructors;

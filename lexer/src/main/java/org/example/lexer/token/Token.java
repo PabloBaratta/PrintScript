@@ -1,4 +1,5 @@
-package org.example;
+package org.example.lexer.token;
+
 
 public record Token(TokenType type,
                     String associatedString,

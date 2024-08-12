@@ -1,11 +1,11 @@
 package org.example;
 
-import org.example.NativeTokenTypes;
-import org.example.Token;
 import org.example.lexer.Lexer;
 import org.example.lexer.NoMoreTokensAvailableException;
 import org.example.lexer.TokenConstructor;
 import org.example.lexer.TokenConstructorImpl;
+import org.example.lexer.token.NativeTokenTypes;
+import org.example.lexer.token.Token;
 import org.example.lexer.utils.Try;
 import org.junit.jupiter.api.Test;
 

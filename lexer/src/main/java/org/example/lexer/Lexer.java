@@ -1,6 +1,6 @@
 package org.example.lexer;
 
-import org.example.Token;
+import org.example.lexer.token.Token;
 import org.example.lexer.utils.Try;
 
 import java.util.Collection;

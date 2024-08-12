@@ -1,6 +1,7 @@
 package org.example;
-import org.example.Token;
 
+
+import org.example.lexer.token.Token;
 
 public class SemanticErrorException extends Exception{
 

@@ -1,6 +1,7 @@
 package org.example.nodeconstructors;
 
 import org.example.ASTNode;
+import org.example.TokenBuffer;
 import org.example.lexer.utils.Try;
 
 import java.util.Optional;

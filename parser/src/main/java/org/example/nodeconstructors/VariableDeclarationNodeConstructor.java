@@ -1,14 +1,10 @@
 package org.example.nodeconstructors;
 
-import org.example.ASTNode;
-import org.example.SemanticErrorException;
-import org.example.NativeTokenTypes;
-import org.example.VariableDeclaration;
-import org.example.Type;
-import org.example.Identifier;
-import org.example.Expression;
-import org.example.Token;
-import org.example.TokenType;
+import org.example.*;
+
+import org.example.lexer.token.NativeTokenTypes;
+import org.example.lexer.token.Token;
+import org.example.lexer.token.TokenType;
 import org.example.lexer.utils.Try;
 
 import java.util.*;
