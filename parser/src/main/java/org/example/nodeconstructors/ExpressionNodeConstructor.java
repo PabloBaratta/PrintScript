@@ -1,16 +1,11 @@
 package org.example.nodeconstructors;
 
-import org.example.ASTNode;
-import org.example.Token;
-import org.example.lexer.utils.Try;
-
-
-import java.util.Optional;
-import java.util.Queue;
+import org.example.TokenBuffer;
 
 public class ExpressionNodeConstructor implements NodeConstructor {
+
     @Override
-    public Try<Optional<ASTNode>, Exception> build(Token token, Queue<Token> tokenBuffer) {
+    public NodeConstructionResponse build(TokenBuffer tokenBuffer) {
         return null;
     }
 }

@@ -1,5 +1,6 @@
 package org.example;
 
+import javax.swing.text.Position;
 import java.util.Optional;
 
 public class VariableDeclaration implements ASTNode {

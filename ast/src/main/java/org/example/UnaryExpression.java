@@ -1,5 +1,7 @@
 package org.example;
 
+import javax.swing.text.Position;
+
 public class UnaryExpression implements Expression{
     private Expression argument;
     private String operator;
@@ -25,5 +27,10 @@ public class UnaryExpression implements Expression{
     @Override
     public String toString() {
         return operator + argument.toString();
+    }
+
+    @Override
+    public Object getValue() {
+        return null;
     }
 }

@@ -1,7 +1,9 @@
 package org.example.lexer;
 
-import org.example.NativeTokenTypes;
-import org.example.TokenType;
+
+
+import org.example.lexer.token.NativeTokenTypes;
+import org.example.lexer.token.TokenType;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -11,7 +13,7 @@ import java.util.regex.Pattern;
 public class PrintScriptTokenConfig {
 
 
-    static Map<Pattern, TokenType> keywordTokenTypeMap() {
+    public static Map<Pattern, TokenType> keywordTokenTypeMap() {
 
         NativeTokenTypes[] typeArray = new NativeTokenTypes[]{
                 NativeTokenTypes.LET,
@@ -21,7 +23,7 @@ public class PrintScriptTokenConfig {
         return getMapFromArray(typeArray);
     }
 
-    static Map<Pattern, TokenType> operatorTokenTypeMap() {
+    public static Map<Pattern, TokenType> operatorTokenTypeMap() {
 
         NativeTokenTypes[] typeArray = new NativeTokenTypes[]{
                 NativeTokenTypes.EQUALS,
@@ -34,7 +36,7 @@ public class PrintScriptTokenConfig {
     }
 
 
-    static Map<Pattern, TokenType> separatorTokenTypeMap() {
+    public static Map<Pattern, TokenType> separatorTokenTypeMap() {
 
         NativeTokenTypes[] typeArray = new NativeTokenTypes[]{
                 NativeTokenTypes.COMMA,
@@ -47,7 +49,7 @@ public class PrintScriptTokenConfig {
         return getMapFromArray(typeArray);
     }
 
-    static Map<Pattern, TokenType> literalTokenTypeMap() {
+    public static Map<Pattern, TokenType> literalTokenTypeMap() {
         NativeTokenTypes[] typeArray = new NativeTokenTypes[]{
                 NativeTokenTypes.NUMBER,
                 NativeTokenTypes.STRING,

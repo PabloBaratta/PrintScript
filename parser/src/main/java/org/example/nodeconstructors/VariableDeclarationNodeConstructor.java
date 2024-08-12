@@ -1,20 +1,15 @@
 package org.example.nodeconstructors;
 
-import org.example.ASTNode;
-import org.example.SemanticErrorException;
-import org.example.NativeTokenTypes;
-import org.example.VariableDeclaration;
-import org.example.Type;
-import org.example.Identifier;
-import org.example.Expression;
-import org.example.Token;
-import org.example.TokenType;
+import org.example.*;
+
+import org.example.lexer.token.NativeTokenTypes;
+import org.example.lexer.token.Token;
+import org.example.lexer.token.TokenType;
 import org.example.lexer.utils.Try;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Queue;
+import java.util.*;
+
+import static org.example.nodeconstructors.NodeConstructionResponse.response;
 
 public class VariableDeclarationNodeConstructor implements NodeConstructor {
 
@@ -34,63 +29,100 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
 
     //TODO refactor
     @Override
-    public Try<Optional<ASTNode>, Exception> build(Token token, Queue<Token> tokenBuffer) {
+    public NodeConstructionResponse build(TokenBuffer tokenBuffer) {
 
-        if (!NodeConstructor.isThisTokenType(token, variableDeclarationTokenTypes)) {
-            return new Try<>(Optional.empty());
+        if (!tokenBuffer.isNextTokenOfAnyOfThisTypes(variableDeclarationTokenTypes)){
+            return new NodeConstructionResponse(new Try<>(Optional.empty()), tokenBuffer);
         }
 
-        Token identifierToken = tokenBuffer.poll();
-        if (!NodeConstructor.isTokenType(identifierToken, NativeTokenTypes.IDENTIFIER.toTokenType())) {
-            return new Try<>(new SemanticErrorException(identifierToken, "was expecting identifier"));
+        Optional<Token> varDeclToken = tokenBuffer.getToken();
+        TokenBuffer tokenBufferWithoutVarDecl = tokenBuffer.consumeToken();
+
+        if (!tokenBufferWithoutVarDecl.hasAnyTokensLeft() &&
+                !tokenBufferWithoutVarDecl.isNextTokenOfType(NativeTokenTypes.IDENTIFIER.toTokenType())) {
+            return response(new SemanticErrorException(varDeclToken.get(), "was expecting variable declaration with an identifier"),
+                    tokenBufferWithoutVarDecl);
         }
 
-        Token typeAssignationOperator = tokenBuffer.poll();
-        if (!NodeConstructor.isTokenType(typeAssignationOperator, NativeTokenTypes.COLON.toTokenType())) {
-            return new Try<>(new SemanticErrorException(typeAssignationOperator, "was expecting type assignation operation"));
+        Token identifier = tokenBufferWithoutVarDecl.getToken().get();
+        TokenBuffer tokenBufferWithoutIdentifier = tokenBufferWithoutVarDecl.consumeToken();
+
+        if (!tokenBufferWithoutIdentifier.hasAnyTokensLeft() &&
+                !tokenBufferWithoutIdentifier.isNextTokenOfType(NativeTokenTypes.COLON.toTokenType())) {
+            return response(new SemanticErrorException(identifier, "was expecting type assignation operator"),
+                    tokenBufferWithoutIdentifier);
         }
 
-        Token type = tokenBuffer.poll();
-        if (!NodeConstructor.isThisTokenType(type, literalTypes)) {
-            return new Try<>(new SemanticErrorException(type, "was expecting a valid type"));
+        Token typeAssignationOp = tokenBufferWithoutIdentifier.getToken().get();
+        TokenBuffer tokenBufferWithoutTypeAssig = tokenBuffer.consumeToken();
+
+        if (!tokenBufferWithoutTypeAssig.hasAnyTokensLeft() &&
+                !tokenBufferWithoutTypeAssig.isNextTokenOfAnyOfThisTypes(literalTypes)) {
+            return response(new SemanticErrorException(typeAssignationOp, "was expecting a valid type"),
+                    tokenBufferWithoutTypeAssig);
         }
 
-        Token proxUnknownToken = tokenBuffer.poll();
-        if (proxUnknownToken == null) {
-            return new Try<>(new Exception("was expecting closing after " + type.associatedString() + " in character " + type.offset()));
+        Token type = tokenBufferWithoutTypeAssig.getToken().get();
+        TokenBuffer tokenBufferWithoutType = tokenBufferWithoutTypeAssig.consumeToken();
+
+        if (!tokenBufferWithoutType.hasAnyTokensLeft()){
+            return response(new SemanticErrorException(type, "was expecting assignation or closing"),
+                    tokenBufferWithoutTypeAssig);
         }
 
-        if (NodeConstructor.isTokenType(proxUnknownToken, NativeTokenTypes.SEMICOLON.toTokenType())) {
-            return new Try<>(Optional.of(getVariableDeclaration(identifierToken, type, Optional.empty())));
-        }
+        if (tokenBufferWithoutType.isNextTokenOfType(NativeTokenTypes.SEMICOLON.toTokenType())){
 
-        if (NodeConstructor.isTokenType(proxUnknownToken, NativeTokenTypes.EQUALS.toTokenType())) {
-            return handleEqualsToken(identifierToken, type, proxUnknownToken, tokenBuffer);
+            return response(getVariableDeclaration(identifier, type, Optional.empty()),
+                    tokenBufferWithoutType.consumeToken());
         }
+        else if (tokenBufferWithoutType.isNextTokenOfType(NativeTokenTypes.EQUALS.toTokenType())){
+            Token equalsToken = tokenBufferWithoutType.getToken().get();
+            return handleEqualsToken(identifier, equalsToken, type, tokenBufferWithoutType.consumeToken());
 
-        return new Try<>(new SemanticErrorException(type, "was expecting variable declaration or assignation"));
+        }
+        else {
+            return response(new SemanticErrorException(type, "was expecting assignation or closing"),
+                    tokenBufferWithoutType);
+        }
     }
 
+    private NodeConstructionResponse handleEqualsToken(Token identifierToken, Token equalsToken, Token type, TokenBuffer tokenBuffer) {
+        List<Token> tokens = new LinkedList<>();
 
-    private Try<Optional<ASTNode>, Exception> handleEqualsToken(Token identifierToken, Token type, Token equalsToken, Queue<Token> tokenBuffer) {
-        Queue<Token> tokens = new LinkedList<>();
-        Token proxUnknownToken = equalsToken;
+        Token currentToken = equalsToken;
+        while (!tokenBuffer.isNextTokenOfType(NativeTokenTypes.SEMICOLON.toTokenType())){
 
-        while (!NodeConstructor.isTokenType(proxUnknownToken, NativeTokenTypes.SEMICOLON.toTokenType())) {
-            tokens.add(proxUnknownToken);
-            proxUnknownToken = tokenBuffer.poll();
-            if (proxUnknownToken == null) {
-                return new Try<>(new SemanticErrorException(equalsToken, "was expecting closing after"));
+            tokenBuffer = tokenBuffer.consumeToken();
+
+            if (!tokenBuffer.hasAnyTokensLeft()) {
+                return response(new SemanticErrorException(currentToken, "was expecting closing after"),
+                        tokenBuffer);
             }
+
+            currentToken = tokenBuffer.getToken().get();
+            tokens.add(currentToken);
         }
 
-        Try<Optional<ASTNode>, Exception> buildResult = expressionNodeConstructor.build(tokens.poll(), tokens);
-        if (buildResult.isFail()) {
+        boolean noTokensBetweenEqualsAndSemiColon = tokens.isEmpty();
+
+        if (noTokensBetweenEqualsAndSemiColon){
+            return response(new SemanticErrorException(equalsToken, "was expecting assignation"),
+                    tokenBuffer);
+        }
+
+        TokenBuffer expressionTokenBuffer = new TokenBuffer(tokens);
+
+        NodeConstructionResponse buildResult = expressionNodeConstructor.build(expressionTokenBuffer);
+
+        if (buildResult.possibleNode().isFail()) {
             return buildResult;
         }
 
-        return new Try<>(Optional.of(getVariableDeclaration(identifierToken, type, Optional.of((Expression) buildResult.getSuccess().get().get()))));
+        ASTNode astNode = buildResult.possibleNode().getSuccess().get().get();
+
+        return response(getVariableDeclaration(identifierToken, type, Optional.of((Expression) astNode)), tokenBuffer);
     }
+
 
     private static VariableDeclaration getVariableDeclaration(Token identifierToken, Token typeToken, Optional<Expression> optionalExpression) {
         Identifier identifier = new Identifier(identifierToken.associatedString());

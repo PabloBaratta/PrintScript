@@ -4,9 +4,9 @@ import java.util.List;
 
 public class Method implements ASTNode{
     private Identifier identifier;
-    private List<ASTNode> arguments;
+    private List<Expression> arguments;
 
-    public Method(Identifier identifier, List<ASTNode> arguments) {
+    public Method(Identifier identifier, List<Expression> arguments) {
         this.identifier = identifier;
         this.arguments = arguments;
     }
@@ -15,7 +15,7 @@ public class Method implements ASTNode{
         return identifier;
     }
 
-    public List<ASTNode> getArguments() {
+    public List<Expression> getArguments() {
         return arguments;
     }
 

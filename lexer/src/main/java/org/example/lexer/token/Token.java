@@ -2,19 +2,23 @@ package org.example.lexer.token;
 
 import org.example.TokenType;
 
+import javax.swing.text.Position;
+
 public record Token(TokenType type,
-                    String associatedString,
-                    int offset,
-                    int length) {
+                    String associatedString, Position position) {
 
     @Override
     public String toString() {
         return "Token " +
                 "type=" + type +
                 ", associatedString='" + associatedString + '\'' +
-                ", offset=" + offset +
-                ", length=" + length +
+                ", offset=" + position.getOffset() +
+                ", length=" + position.getLength() +
+                ", line=" + position.getLine() +
                 '}';
     }
 
+    public int length() {
+        return position.getLength();
+    }
 }
