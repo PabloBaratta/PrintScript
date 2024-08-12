@@ -1,9 +1,9 @@
 package org.example;
 
-import org.example.NativeTokenTypes;
 import org.example.lexer.TokenConstructor;
 import org.example.lexer.TokenConstructorImpl;
 import org.example.lexer.PrintScriptTokenConfig;
+import org.example.lexer.token.NativeTokenTypes;
 import org.example.lexer.token.Position;
 import org.example.lexer.token.Token;
 import org.junit.jupiter.api.Test;

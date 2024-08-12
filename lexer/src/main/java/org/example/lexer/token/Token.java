@@ -1,6 +1,6 @@
 package org.example.lexer.token;
 
-public record Token(org.example.TokenType type,
+public record Token(TokenType type,
                     String associatedString, Position position) {
 
     @Override

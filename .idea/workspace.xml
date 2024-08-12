@@ -4,33 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="daf00bfe-2a84-47c4-9530-f74cb2f4995c" name="Changes" comment="fixing gradle">
-      <change afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/token/Position.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+    <list default="true" id="daf00bfe-2a84-47c4-9530-f74cb2f4995c" name="Changes" comment="finishing lexer">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ast/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/ast/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ast/src/main/java/org/example/Assignation.java" beforeDir="false" afterPath="$PROJECT_DIR$/ast/src/main/java/org/example/Assignation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ast/src/main/java/org/example/BinaryExpression.java" beforeDir="false" afterPath="$PROJECT_DIR$/ast/src/main/java/org/example/BinaryExpression.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ast/src/main/java/org/example/Identifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/ast/src/main/java/org/example/Identifier.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ast/src/main/java/org/example/Literal.java" beforeDir="false" afterPath="$PROJECT_DIR$/ast/src/main/java/org/example/Literal.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ast/src/main/java/org/example/Method.java" beforeDir="false" afterPath="$PROJECT_DIR$/ast/src/main/java/org/example/Method.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ast/src/main/java/org/example/NumericLiteral.java" beforeDir="false" afterPath="$PROJECT_DIR$/ast/src/main/java/org/example/NumericLiteral.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ast/src/main/java/org/example/TextLiteral.java" beforeDir="false" afterPath="$PROJECT_DIR$/ast/src/main/java/org/example/TextLiteral.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ast/src/main/java/org/example/Type.java" beforeDir="false" afterPath="$PROJECT_DIR$/ast/src/main/java/org/example/Type.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ast/src/main/java/org/example/UnaryExpression.java" beforeDir="false" afterPath="$PROJECT_DIR$/ast/src/main/java/org/example/UnaryExpression.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ast/src/main/java/org/example/VariableDeclaration.java" beforeDir="false" afterPath="$PROJECT_DIR$/ast/src/main/java/org/example/VariableDeclaration.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/Lexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/Lexer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/PrintScriptTokenConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/PrintScriptTokenConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/TokenConstructor.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/TokenConstructor.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/TokenConstructorImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/TokenConstructorImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/token/NativeTokenTypes.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/token/NativeTokenTypes.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/token/Token.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/token/Token.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/token/TokenType.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/token/TokenType.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lexer/src/test/java/org/example/LexerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/test/java/org/example/LexerTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lexer/src/test/java/org/example/TokenConstructorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/test/java/org/example/TokenConstructorTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/parser/src/main/java/org/example/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/Parser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/parser/src/main/java/org/example/SemanticErrorException.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/SemanticErrorException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/parser/src/main/java/org/example/nodeconstructors/ExpressionNodeConstructor.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/nodeconstructors/ExpressionNodeConstructor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/parser/src/main/java/org/example/nodeconstructors/NodeConstructor.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/nodeconstructors/NodeConstructor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/parser/src/main/java/org/example/nodeconstructors/VariableDeclarationNodeConstructor.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/nodeconstructors/VariableDeclarationNodeConstructor.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -227,7 +209,7 @@
       <recent name="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/token" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.LexerTest">
+  <component name="RunManager" selected="Gradle.PrintScript:ast [build]">
     <configuration name="LexerTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -348,11 +330,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.PrintScript:ast [build]" />
         <item itemvalue="Gradle.LexerTest" />
         <item itemvalue="Gradle.TokenConstructorTest" />
         <item itemvalue="Gradle.LexerTest.testPrintln" />
         <item itemvalue="Gradle.LexerTest.testVariableDeclaration" />
-        <item itemvalue="Gradle.PrintScript:ast [build]" />
       </list>
     </recent_temporary>
   </component>
@@ -387,6 +369,7 @@
       <workItem from="1723464286254" duration="11000" />
       <workItem from="1723464470378" duration="59000" />
       <workItem from="1723479480661" duration="6000" />
+      <workItem from="1723479769489" duration="1384000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit&#10;&#10;--setting of the project">
       <option name="closed" value="true" />
@@ -420,18 +403,38 @@
       <option name="project" value="LOCAL" />
       <updated>1723209507496</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="finishing lexer">
+      <option name="closed" value="true" />
+      <created>1723480372592</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1723480372592</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit&#10;&#10;--setting of the project" />
     <MESSAGE value="starting AST nodes" />
     <MESSAGE value="adding gradle and dividing in modules" />
     <MESSAGE value="fixing gradle" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixing gradle" />
+    <MESSAGE value="finishing lexer" />
+    <option name="LAST_COMMIT_MESSAGE" value="finishing lexer" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

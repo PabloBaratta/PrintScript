@@ -1,7 +1,9 @@
 package org.example.lexer;
 
-import org.example.NativeTokenTypes;
-import org.example.TokenType;
+
+
+import org.example.lexer.token.NativeTokenTypes;
+import org.example.lexer.token.TokenType;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
