@@ -21,4 +21,9 @@ public class Identifier implements Expression {
     public String toString() {
         return name;
     }
+
+    @Override
+    public Object getValue() {
+        return null;
+    }
 }

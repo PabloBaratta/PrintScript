@@ -31,4 +31,9 @@ public class BinaryExpression implements Expression {
     public String toString() {
         return left.toString() + operator + right.toString();
     }
+
+    @Override
+    public Object getValue() {
+        return null;
+    }
 }
