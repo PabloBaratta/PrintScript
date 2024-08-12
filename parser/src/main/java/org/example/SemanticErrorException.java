@@ -1,6 +1,7 @@
 package org.example;
-import org.example.Token;
 
+
+import org.example.lexer.token.Token;
 
 public class SemanticErrorException extends Exception{
 
@@ -9,7 +10,7 @@ public class SemanticErrorException extends Exception{
     }
 
     private static String getMessage(Token token) {
-        return "Error on:\n\t" + token.associatedString() + "\n in character " + token.offset();
+        return "Error on:\n\t" + token.associatedString() + "\n in character " + token.position().getOffset();
     }
 
     public SemanticErrorException(Token token, String message){

@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public class PrintScriptTokenConfig {
 
 
-    static Map<Pattern, TokenType> keywordTokenTypeMap() {
+    public static Map<Pattern, TokenType> keywordTokenTypeMap() {
 
         NativeTokenTypes[] typeArray = new NativeTokenTypes[]{
                 NativeTokenTypes.LET,
@@ -21,7 +21,7 @@ public class PrintScriptTokenConfig {
         return getMapFromArray(typeArray);
     }
 
-    static Map<Pattern, TokenType> operatorTokenTypeMap() {
+    public static Map<Pattern, TokenType> operatorTokenTypeMap() {
 
         NativeTokenTypes[] typeArray = new NativeTokenTypes[]{
                 NativeTokenTypes.EQUALS,
@@ -34,7 +34,7 @@ public class PrintScriptTokenConfig {
     }
 
 
-    static Map<Pattern, TokenType> separatorTokenTypeMap() {
+    public static Map<Pattern, TokenType> separatorTokenTypeMap() {
 
         NativeTokenTypes[] typeArray = new NativeTokenTypes[]{
                 NativeTokenTypes.COMMA,

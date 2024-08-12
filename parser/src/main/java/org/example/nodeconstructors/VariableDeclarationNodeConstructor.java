@@ -7,8 +7,8 @@ import org.example.VariableDeclaration;
 import org.example.Type;
 import org.example.Identifier;
 import org.example.Expression;
-import org.example.Token;
 import org.example.TokenType;
+import org.example.lexer.token.Token;
 import org.example.lexer.utils.Try;
 
 import java.util.LinkedList;
@@ -57,7 +57,7 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
 
         Token proxUnknownToken = tokenBuffer.poll();
         if (proxUnknownToken == null) {
-            return new Try<>(new Exception("was expecting closing after " + type.associatedString() + " in character " + type.offset()));
+            return new Try<>(new Exception("was expecting closing after " + type.associatedString() + " in character " + type.position().getOffset()));
         }
 
         if (isTokenType(proxUnknownToken, NativeTokenTypes.SEMICOLON)) {

@@ -4,8 +4,33 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="daf00bfe-2a84-47c4-9530-f74cb2f4995c" name="Changes" comment="adding gradle and dividing in modules">
+    <list default="true" id="daf00bfe-2a84-47c4-9530-f74cb2f4995c" name="Changes" comment="fixing gradle">
+      <change afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/token/Position.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ast/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/ast/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ast/src/main/java/org/example/Assignation.java" beforeDir="false" afterPath="$PROJECT_DIR$/ast/src/main/java/org/example/Assignation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ast/src/main/java/org/example/BinaryExpression.java" beforeDir="false" afterPath="$PROJECT_DIR$/ast/src/main/java/org/example/BinaryExpression.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ast/src/main/java/org/example/Identifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/ast/src/main/java/org/example/Identifier.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ast/src/main/java/org/example/Literal.java" beforeDir="false" afterPath="$PROJECT_DIR$/ast/src/main/java/org/example/Literal.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ast/src/main/java/org/example/Method.java" beforeDir="false" afterPath="$PROJECT_DIR$/ast/src/main/java/org/example/Method.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ast/src/main/java/org/example/NumericLiteral.java" beforeDir="false" afterPath="$PROJECT_DIR$/ast/src/main/java/org/example/NumericLiteral.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ast/src/main/java/org/example/TextLiteral.java" beforeDir="false" afterPath="$PROJECT_DIR$/ast/src/main/java/org/example/TextLiteral.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ast/src/main/java/org/example/Type.java" beforeDir="false" afterPath="$PROJECT_DIR$/ast/src/main/java/org/example/Type.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ast/src/main/java/org/example/UnaryExpression.java" beforeDir="false" afterPath="$PROJECT_DIR$/ast/src/main/java/org/example/UnaryExpression.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ast/src/main/java/org/example/VariableDeclaration.java" beforeDir="false" afterPath="$PROJECT_DIR$/ast/src/main/java/org/example/VariableDeclaration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/Lexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/Lexer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/PrintScriptTokenConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/PrintScriptTokenConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/TokenConstructor.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/TokenConstructor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/TokenConstructorImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/TokenConstructorImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/token/Token.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/token/Token.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lexer/src/test/java/org/example/LexerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/test/java/org/example/LexerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lexer/src/test/java/org/example/TokenConstructorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/test/java/org/example/TokenConstructorTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parser/src/main/java/org/example/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/Parser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parser/src/main/java/org/example/SemanticErrorException.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/SemanticErrorException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parser/src/main/java/org/example/nodeconstructors/ExpressionNodeConstructor.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/nodeconstructors/ExpressionNodeConstructor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parser/src/main/java/org/example/nodeconstructors/NodeConstructor.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/nodeconstructors/NodeConstructor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parser/src/main/java/org/example/nodeconstructors/VariableDeclarationNodeConstructor.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/nodeconstructors/VariableDeclarationNodeConstructor.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -164,11 +189,15 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;Downloaded.Files.Path.Enabled&quot;: &quot;false&quot;,
+    &quot;Gradle.LexerTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.LexerTest.testPrintln.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.LexerTest.testVariableDeclaration.executor&quot;: &quot;Run&quot;,
     &quot;Gradle.PrintScript [:buildSrc:build].executor&quot;: &quot;Run&quot;,
     &quot;Gradle.PrintScript:ast [build].executor&quot;: &quot;Run&quot;,
     &quot;Gradle.PrintScript:interpreter [build].executor&quot;: &quot;Run&quot;,
     &quot;Gradle.PrintScript:lexer [build].executor&quot;: &quot;Run&quot;,
     &quot;Gradle.PrintScript:parser [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.TokenConstructorTest.executor&quot;: &quot;Run&quot;,
     &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
     &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
     &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
@@ -198,27 +227,77 @@
       <recent name="$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/token" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.PrintScript:ast [build]">
-    <configuration name="PrintScript [:buildSrc:build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+  <component name="RunManager" selected="Gradle.LexerTest">
+    <configuration name="LexerTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
+        <option name="scriptParameters" value="" />
         <option name="taskDescriptions">
           <list />
         </option>
         <option name="taskNames">
           <list>
-            <option value=":buildSrc:build" />
+            <option value=":lexer:test" />
+            <option value="--tests" />
+            <option value="&quot;org.example.LexerTest&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
       </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
       <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
       <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>false</RunAsTest>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="LexerTest.testPrintln" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":lexer:test" />
+            <option value="--tests" />
+            <option value="&quot;org.example.LexerTest.testPrintln&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="LexerTest.testVariableDeclaration" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":lexer:test" />
+            <option value="--tests" />
+            <option value="&quot;org.example.LexerTest.testVariableDeclaration&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
     <configuration name="PrintScript:ast [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
@@ -243,79 +322,37 @@
       <RunAsTest>false</RunAsTest>
       <method v="2" />
     </configuration>
-    <configuration name="PrintScript:interpreter [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="TokenConstructorTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/interpreter" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
+        <option name="scriptParameters" value="" />
         <option name="taskDescriptions">
           <list />
         </option>
         <option name="taskNames">
           <list>
-            <option value="build" />
+            <option value=":lexer:test" />
+            <option value="--tests" />
+            <option value="&quot;org.example.TokenConstructorTest&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
       </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
       <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
       <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>false</RunAsTest>
-      <method v="2" />
-    </configuration>
-    <configuration name="PrintScript:lexer [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/lexer" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value="build" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>false</RunAsTest>
-      <method v="2" />
-    </configuration>
-    <configuration name="PrintScript:parser [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/parser" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value="build" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>false</RunAsTest>
+      <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.LexerTest" />
+        <item itemvalue="Gradle.TokenConstructorTest" />
+        <item itemvalue="Gradle.LexerTest.testPrintln" />
+        <item itemvalue="Gradle.LexerTest.testVariableDeclaration" />
         <item itemvalue="Gradle.PrintScript:ast [build]" />
-        <item itemvalue="Gradle.PrintScript:parser [build]" />
-        <item itemvalue="Gradle.PrintScript:lexer [build]" />
-        <item itemvalue="Gradle.PrintScript:interpreter [build]" />
-        <item itemvalue="Gradle.PrintScript [:buildSrc:build]" />
       </list>
     </recent_temporary>
   </component>
@@ -343,6 +380,13 @@
       <workItem from="1723146876869" duration="2695000" />
       <workItem from="1723151160283" duration="21000" />
       <workItem from="1723202867212" duration="622000" />
+      <workItem from="1723209215994" duration="305000" />
+      <workItem from="1723214410412" duration="3000" />
+      <workItem from="1723318591484" duration="2503000" />
+      <workItem from="1723324534769" duration="2519000" />
+      <workItem from="1723464286254" duration="11000" />
+      <workItem from="1723464470378" duration="59000" />
+      <workItem from="1723479480661" duration="6000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit&#10;&#10;--setting of the project">
       <option name="closed" value="true" />
@@ -368,7 +412,15 @@
       <option name="project" value="LOCAL" />
       <updated>1723149724588</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="fixing gradle">
+      <option name="closed" value="true" />
+      <created>1723209507496</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1723209507496</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -378,6 +430,22 @@
     <MESSAGE value="initial commit&#10;&#10;--setting of the project" />
     <MESSAGE value="starting AST nodes" />
     <MESSAGE value="adding gradle and dividing in modules" />
-    <option name="LAST_COMMIT_MESSAGE" value="adding gradle and dividing in modules" />
+    <MESSAGE value="fixing gradle" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixing gradle" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/lexer/src/main/java/org/example/lexer/Lexer.java</url>
+          <line>33</line>
+          <properties class="org.example.lexer.Lexer" method="getNext">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
