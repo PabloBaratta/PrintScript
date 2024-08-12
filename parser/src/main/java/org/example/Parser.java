@@ -29,7 +29,7 @@ public class Parser {
 
         LinkedList<ASTNode> nodes = new LinkedList<>();
 
-        while (!tokens.hasAnyTokensLeft()) {
+        while (tokens.hasAnyTokensLeft()) {
             Response response = getAstNodeExceptionTry();
 
             Try<ASTNode, Exception> astNodeExceptionTry = response.result;
