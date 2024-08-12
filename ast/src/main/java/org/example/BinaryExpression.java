@@ -12,19 +12,19 @@ public class BinaryExpression implements Expression {
         this.right = right;
     }
 
-    public ASTNode getLeft(){
+    public Expression getLeft(){
         return this.left;
     }
 
-    public ASTNode getRight(){
+    public Expression getRight(){
         return this.right;
     }
 
+    public String getOperator(){return this.operator;}
+
     @Override
-    public void accept(ASTVisitor visitor) {
+    public void accept(ASTVisitor visitor) throws Exception {
         visitor.visit(this);
-        left.accept(visitor);
-        right.accept(visitor);
     }
 
     @Override

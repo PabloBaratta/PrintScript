@@ -14,11 +14,8 @@ public class Program implements ASTNode {
     }
 
     @Override
-    public void accept(ASTVisitor visitor) {
+    public void accept(ASTVisitor visitor) throws Exception {
         visitor.visit(this);
-        for (ASTNode child : children) {
-            child.accept(visitor);
-        }
     }
 
     @Override

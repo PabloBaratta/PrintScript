@@ -11,19 +11,17 @@ public class Assignation implements ASTNode {
         this.expression = expression;
     }
 
-    public Identifier getVariable() {
+    public Identifier getIdentifier() {
         return identifier;
     }
 
-    public ASTNode getExpression() {
+    public Expression getExpression() {
         return expression;
     }
 
     @Override
-    public void accept(ASTVisitor visitor) {
+    public void accept(ASTVisitor visitor) throws Exception {
         visitor.visit(this);
-        identifier.accept(visitor);
-        expression.accept(visitor);
     }
 
     @Override
