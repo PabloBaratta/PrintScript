@@ -5,12 +5,10 @@ import javax.swing.text.Position;
 public class UnaryExpression implements Expression{
     private ASTNode argument;
     private String operator;
-    private Position position;
 
-    public UnaryExpression(ASTNode argument, String operator, Position position) {
+    public UnaryExpression(ASTNode argument, String operator) {
         this.argument = argument;
         this.operator = operator;
-        this.position = position;
     }
 
 

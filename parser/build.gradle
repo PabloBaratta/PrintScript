@@ -3,15 +3,10 @@
  */
 
 plugins {
-    id 'buildlogic.java-application-conventions'
+    id 'buildlogic.java-library-conventions'
 }
 
 dependencies {
     implementation project(':lexer')
     implementation project(':ast')
-}
-
-application {
-    // Define the main class for the application.
-    mainClass = 'org.example.Parser'
 }

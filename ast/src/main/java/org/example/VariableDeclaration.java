@@ -8,13 +8,11 @@ public class VariableDeclaration implements ASTNode {
     private final Identifier identifier;
     private final Type type;
     private final Optional<Expression> expression;
-    private final Position position;
 
-    public VariableDeclaration(Identifier identifier, Type type, Optional<Expression> expression, Position position) {
+    public VariableDeclaration(Identifier identifier, Type type, Optional<Expression> expression) {
         this.identifier = identifier;
         this.type = type;
         this.expression = expression;
-        this.position = position;
     }
 
     public Identifier getIdentifier() {

@@ -1,7 +1,6 @@
 package org.example;
 
-import org.example.NativeTokenTypes;
-import org.example.Token;
+
 import org.example.lexer.Lexer;
 import org.example.lexer.NoMoreTokensAvailableException;
 import org.example.lexer.TokenConstructor;

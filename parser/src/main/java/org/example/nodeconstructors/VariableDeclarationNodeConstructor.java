@@ -62,9 +62,12 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
                     tokenBufferWithoutTypeAssig);
         }
 
-        Token proxUnknownToken = tokenBuffer.poll();
-        if (proxUnknownToken == null) {
-            return new Try<>(new Exception("was expecting closing after " + type.associatedString() + " in character " + type.offset()));
+        Token type = tokenBufferWithoutTypeAssig.getToken().get();
+        TokenBuffer tokenBufferWithoutType = tokenBufferWithoutTypeAssig.consumeToken();
+
+        if (!tokenBufferWithoutType.hasAnyTokensLeft()){
+            return response(new SemanticErrorException(type, "was expecting assignation or closing"),
+                    tokenBufferWithoutTypeAssig);
         }
 
         if (tokenBufferWithoutType.isNextTokenOfType(NativeTokenTypes.SEMICOLON.toTokenType())){
