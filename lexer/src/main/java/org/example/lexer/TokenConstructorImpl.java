@@ -1,7 +1,6 @@
 package org.example.lexer;
 
-
-
+import org.example.lexer.token.Position;
 import org.example.lexer.token.Token;
 import org.example.lexer.token.TokenType;
 
@@ -19,13 +18,14 @@ public class TokenConstructorImpl implements TokenConstructor {
     }
 
     @Override
-    public Optional<Token> constructToken(String code, int offset) {
+    public Optional<Token> constructToken(String code, int offset, int line) {
         for(Map.Entry<Pattern, TokenType> entry : map.entrySet()){
             Pattern key = entry.getKey();
             Matcher matcher = key.matcher(code);
             if (matcher.lookingAt()){
                 String chars = matcher.group();
-                Token token = new Token(entry.getValue(), chars, offset, chars.length());
+                Position position = new Position(offset, chars.length(), line);
+                Token token = new Token(entry.getValue(), chars, position);
                 return Optional.of(token);
             }
         }
