@@ -9,8 +9,9 @@ import java.util.Optional;
 import java.util.Queue;
 
 public class ExpressionNodeConstructor implements NodeConstructor {
+
     @Override
-    public Try<Optional<ASTNode>, Exception> build(Token token, Queue<Token> tokenBuffer) {
+    public NodeConstructionResponse build(TokenBuffer tokenBuffer) {
         return null;
     }
 }

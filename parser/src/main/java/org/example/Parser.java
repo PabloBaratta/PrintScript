@@ -6,7 +6,9 @@ import org.example.lexer.utils.Try;
 import org.example.Token;
 
 import org.example.nodeconstructors.BlockNodeConstructor;
+import org.example.nodeconstructors.NodeConstructionResponse;
 import org.example.nodeconstructors.NodeConstructor;
+import org.example.nodeconstructors.TokenBuffer;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -15,11 +17,11 @@ import java.util.Queue;
 
 public class Parser {
     private final List<NodeConstructor> nodeConstructors;
-    private final Queue<Token> tokens;
+    private TokenBuffer tokens;
 
     public Parser(List<NodeConstructor> nodeConstructors,
                   List<BlockNodeConstructor> blockNodeConstructors,
-                  Queue<Token> tokens) {
+                  TokenBuffer tokens) {
         blockNodeConstructors.forEach(cons -> cons.acceptParser(this));
         nodeConstructors.addAll(blockNodeConstructors);
         this.nodeConstructors = nodeConstructors;
@@ -30,52 +32,51 @@ public class Parser {
 
         LinkedList<ASTNode> nodes = new LinkedList<>();
 
-        while (!tokens.isEmpty()) {
+        while (!tokens.hasAnyTokensLeft()) {
+            Response response = getAstNodeExceptionTry();
 
-            org.example.Token token = getNextToken();
-
-          /*  if (token == null) {
-                return new Try<>(new NoMoreTokensAvailableException());
-            }
-           */
-
-            Try<ASTNode, Exception> astNodeExceptionTry = getAstNodeExceptionTry(token, nodes);
+            Try<ASTNode, Exception> astNodeExceptionTry = response.result;
 
             if (astNodeExceptionTry.isFail()){
                 return astNodeExceptionTry;
             }
 
             nodes.add(astNodeExceptionTry.getSuccess().get());
+            this.tokens = response.newBuffer();
         }
         
         return new Try<>(new Program(nodes));
         
     }
 
-    private Try<ASTNode, Exception> getAstNodeExceptionTry(Token token, LinkedList<ASTNode> nodes) {
+    private Response getAstNodeExceptionTry() {
         for (NodeConstructor nodeConstructor : nodeConstructors) {
 
-            Try<Optional<ASTNode>, Exception> possibleNodeOrError = nodeConstructor.build(token, tokens);
+            NodeConstructionResponse build = nodeConstructor.build(tokens);
+            Try<Optional<ASTNode>, Exception> possibleNodeOrError = build.possibleNode();
 
             //if node construction sends exception return exception
             if (possibleNodeOrError.isFail()) {
-                return new Try<>(possibleNodeOrError.getFail().get());
+                return new Response(new Try<>(possibleNodeOrError.getFail().get()),
+                        build.possibleBuffer());
             }
 
             Optional<ASTNode> astNode = possibleNodeOrError.getSuccess().get();
 
             //If node construction is positive --> return token
             if (astNode.isPresent()) {
-                return new Try<>(astNode.get());
+                return new Response(new Try<>(astNode.get()),
+                        build.possibleBuffer());
             }
 
             //If node constructión doesnt give any token --> pass
         }
-
-        return new Try<>(new SemanticErrorException(token));
+        return new Response(new Try<>(new SemanticErrorException(tokens.getToken().get())),
+                this.tokens);
     }
 
-    private Token getNextToken() {
-        return tokens.poll();
-    }
+    private record Response(
+            Try<ASTNode, Exception> result,
+            TokenBuffer newBuffer
+            ){}
 }

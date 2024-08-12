@@ -11,16 +11,11 @@ import java.util.Optional;
 import java.util.Queue;
 
 public interface NodeConstructor {
-
-    Try<Optional<ASTNode>, Exception> build(Token token, Queue<Token> tokenBuffer);
-    static TokenType getType(Token token) {
-        return token.type();
-    }
-
-    static boolean isThisTokenType(Token token, List<TokenType> types){
-        return types.contains(getType(token));
-    }
-
-
+    /**
+    Receives a buffer containing the other tokens and returns an object containing
+    a new token buffer and a node if it matches the pattern it is supposed to check or an exception
+    if has been a syntax error
+     **/
+    NodeConstructionResponse build(TokenBuffer tokenBuffer);
 
 }
