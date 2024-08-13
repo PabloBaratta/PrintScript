@@ -1,5 +1,8 @@
 package org.example.lexer.token;
 
+import org.example.lexer.token.TokenType;
+
+
 public record Token(TokenType type,
                     String associatedString, Position position) {
 

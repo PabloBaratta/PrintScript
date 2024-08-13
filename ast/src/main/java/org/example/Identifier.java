@@ -13,12 +13,17 @@ public class Identifier implements Expression {
     }
 
     @Override
-    public void accept(ASTVisitor visitor) {
+    public void accept(ASTVisitor visitor) throws Exception {
         visitor.visit(this);
     }
 
     @Override
     public String toString() {
         return name;
+    }
+
+    @Override
+    public Object getValue() {
+        return null;
     }
 }

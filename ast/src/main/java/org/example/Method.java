@@ -20,12 +20,8 @@ public class Method implements ASTNode{
     }
 
     @Override
-    public void accept(ASTVisitor visitor) {
+    public void accept(ASTVisitor visitor) throws Exception {
         visitor.visit(this);
-        identifier.accept(visitor);
-        for (ASTNode node : arguments){
-            node.accept(visitor);
-        }
     }
 
     // terminar de ver como printear

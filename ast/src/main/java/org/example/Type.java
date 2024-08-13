@@ -13,7 +13,7 @@ public class Type implements ASTNode {
     }
 
     @Override
-    public void accept(ASTVisitor visitor) {
-        visitor.visit(this);
+    public void accept(ASTVisitor visitor) throws Exception {
+
     }
 }
