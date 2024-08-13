@@ -16,9 +16,9 @@ import static org.example.nodeconstructors.NodeConstructionResponse.response;
 //TODO refactor
 public class AssignationNodeConstructor implements NodeConstructor{
 
-    private final ExpressionNodeConstructor expressionNodeConstructor;
+    private final NodeConstructor expressionNodeConstructor;
 
-    AssignationNodeConstructor(ExpressionNodeConstructor expressionNodeConstructor
+    AssignationNodeConstructor(NodeConstructor expressionNodeConstructor
     ) {
         this.expressionNodeConstructor = expressionNodeConstructor;
     }
@@ -29,9 +29,9 @@ public class AssignationNodeConstructor implements NodeConstructor{
         Token identifierToken = tokenBuffer.getToken().get();
         TokenBuffer tokenBufferWithoutIdentifier = tokenBuffer.consumeToken();
 
-        if (hasIdentifier &&
+        if (!(hasIdentifier &&
             tokenBufferWithoutIdentifier.hasAnyTokensLeft() &&
-            !tokenBufferWithoutIdentifier.isNextTokenOfType(NativeTokenTypes.EQUALS.toTokenType())) {
+            tokenBufferWithoutIdentifier.isNextTokenOfType(NativeTokenTypes.EQUALS.toTokenType()))) {
             return new NodeConstructionResponse(new Try<>(Optional.empty()), tokenBufferWithoutIdentifier);
         }
 
@@ -81,7 +81,7 @@ public class AssignationNodeConstructor implements NodeConstructor{
 
         ASTNode astNode = buildResult.possibleNode().getSuccess().get().get();
 
-        return response(getAssignation(identifierToken, (Expression) astNode), tokenBuffer);
+        return response(getAssignation(identifierToken, (Expression) astNode), tokenBuffer.consumeToken());
     }
 
     private static Assignation getAssignation(Token identifierToken, Expression expression) {
