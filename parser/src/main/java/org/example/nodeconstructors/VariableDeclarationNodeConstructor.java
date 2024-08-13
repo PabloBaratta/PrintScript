@@ -13,12 +13,12 @@ import static org.example.nodeconstructors.NodeConstructionResponse.response;
 
 public class VariableDeclarationNodeConstructor implements NodeConstructor {
 
-    private final ExpressionNodeConstructor expressionNodeConstructor;
+    private final NodeConstructor expressionNodeConstructor;
     private final List<TokenType> variableDeclarationTokenTypes;
     private final List<TokenType> literalTypes;
 
 
-    VariableDeclarationNodeConstructor(ExpressionNodeConstructor expressionNodeConstructor,
+    VariableDeclarationNodeConstructor(NodeConstructor expressionNodeConstructor,
                                        List<TokenType> variableDeclarationTokenTypes,
                                        List<TokenType> literalType
     ) {
@@ -54,7 +54,7 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
         }
 
         Token typeAssignationOp = tokenBufferWithoutIdentifier.getToken().get();
-        TokenBuffer tokenBufferWithoutTypeAssig = tokenBuffer.consumeToken();
+        TokenBuffer tokenBufferWithoutTypeAssig = tokenBufferWithoutIdentifier.consumeToken();
 
         if (!tokenBufferWithoutTypeAssig.hasAnyTokensLeft() &&
                 !tokenBufferWithoutTypeAssig.isNextTokenOfAnyOfThisTypes(literalTypes)) {
@@ -120,7 +120,7 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
 
         ASTNode astNode = buildResult.possibleNode().getSuccess().get().get();
 
-        return response(getVariableDeclaration(identifierToken, type, Optional.of((Expression) astNode)), tokenBuffer);
+        return response(getVariableDeclaration(identifierToken, type, Optional.of((Expression) astNode)), tokenBuffer.consumeToken());
     }
 
 

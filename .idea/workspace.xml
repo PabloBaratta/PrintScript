@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="daf00bfe-2a84-47c4-9530-f74cb2f4995c" name="Changes" comment="finishing lexer">
+    <list default="true" id="daf00bfe-2a84-47c4-9530-f74cb2f4995c" name="Changes" comment="merge fixes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lexer/src/test/java/org/example/LexerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/src/test/java/org/example/LexerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/parser/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/parser/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/parser/src/main/java/org/example/nodeconstructors/VariableDeclarationNodeConstructor.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/src/main/java/org/example/nodeconstructors/VariableDeclarationNodeConstructor.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -97,6 +94,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectColorInfo">{
@@ -119,6 +121,7 @@
     "Gradle.PrintScript:interpreter [build].executor": "Run",
     "Gradle.PrintScript:lexer [build].executor": "Run",
     "Gradle.PrintScript:parser [build].executor": "Run",
+    "Gradle.TokenBufferTests.executor": "Run",
     "Gradle.TokenConstructorTest.executor": "Run",
     "Gradle.ing_sis [build].executor": "Run",
     "Gradle.ing_sis [clean].executor": "Run",
@@ -128,9 +131,9 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "expressionBuilder",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/jmsapag/projects/ing-sis/PrintScript/lexer/src/main/java/org/example/lexer/utils",
+    "last_opened_file_path": "C:/Users/pablo/projects/leng-prog/haskell-exercises",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -152,30 +155,6 @@
     </key>
   </component>
   <component name="RunManager" selected="Gradle.ing_sis [build]">
-    <configuration name="LexerTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value=":lexer:test" />
-            <option value="--tests" />
-            <option value="&quot;org.example.LexerTest&quot;" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>true</RunAsTest>
-      <method v="2" />
-    </configuration>
     <configuration name="PrintScript:ast [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -218,6 +197,30 @@
       <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
       <DebugAllEnabled>false</DebugAllEnabled>
       <RunAsTest>false</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="TokenBufferTests" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":parser:test" />
+            <option value="--tests" />
+            <option value="&quot;org.example.TokenBufferTests&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
     <configuration name="ing_sis [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
@@ -267,10 +270,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Gradle.ing_sis [build]" />
+        <item itemvalue="Gradle.TokenBufferTests" />
         <item itemvalue="Gradle.ing_sis [clean]" />
         <item itemvalue="Gradle.PrintScript:lexer [build]" />
         <item itemvalue="Gradle.PrintScript:ast [build]" />
-        <item itemvalue="Gradle.LexerTest" />
       </list>
     </recent_temporary>
   </component>
@@ -347,7 +350,15 @@
       <option name="project" value="LOCAL" />
       <updated>1723480372592</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="merge fixes">
+      <option name="closed" value="true" />
+      <created>1723482272144</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1723482272144</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -358,7 +369,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/expressionBuilder" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -370,7 +393,8 @@
     <MESSAGE value="adding gradle and dividing in modules" />
     <MESSAGE value="fixing gradle" />
     <MESSAGE value="finishing lexer" />
-    <option name="LAST_COMMIT_MESSAGE" value="finishing lexer" />
+    <MESSAGE value="merge fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="merge fixes" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
