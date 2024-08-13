@@ -18,7 +18,8 @@ public class PrintScriptTokenConfig {
         NativeTokenTypes[] typeArray = new NativeTokenTypes[]{
                 NativeTokenTypes.LET,
                 NativeTokenTypes.STRING_TYPE,
-                NativeTokenTypes.NUMBER_TYPE};
+                NativeTokenTypes.NUMBER_TYPE,
+                NativeTokenTypes.PRINTLN};
 
         return getMapFromArray(typeArray);
     }
