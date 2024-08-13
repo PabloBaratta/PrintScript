@@ -31,7 +31,11 @@ public class ExpressionNodeConstructor implements NodeConstructor {
         if (tokenBuffer.isNextTokenOfAnyOfThisTypes(operators)){
             return buildExpression(tokenBuffer, currentToken);
         } else if (expressions.contains(tokenType)) {
-            return new NodeConstructionResponse(new Try<>(Optional.of(createExpressionFromToken(currentToken))), tokenBuffer);
+            Expression expression = createExpressionFromToken(currentToken);
+            if (expression == null) {
+                return new NodeConstructionResponse(new Try<>(Optional.empty()), tokenBuffer);
+            }
+            return new NodeConstructionResponse(new Try<>(Optional.of(expression)), tokenBuffer);
         } else {
             return new NodeConstructionResponse(new Try<>(Optional.empty()), tokenBuffer);
         }
@@ -39,18 +43,24 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 
     private NodeConstructionResponse buildExpression(TokenBuffer tokenBuffer, Token leftToken) {
         Expression leftExpression = createExpressionFromToken(leftToken);
+        if (leftExpression == null) {
+            return new NodeConstructionResponse(new Try<>(Optional.empty()), tokenBuffer);
+        }
 
         while (tokenBuffer.hasAnyTokensLeft() && isOperator(tokenBuffer.getToken().get().type())) {
             Token operatorToken = tokenBuffer.getToken().get();
             tokenBuffer = tokenBuffer.consumeToken();
 
             if (!tokenBuffer.hasAnyTokensLeft()) {
-                throw new IllegalStateException("Expected expression after operator");
+                return new NodeConstructionResponse(new Try<>(Optional.empty()), tokenBuffer);
             }
 
             Token rightToken = tokenBuffer.getToken().get();
             tokenBuffer = tokenBuffer.consumeToken();
             Expression rightExpression = createExpressionFromToken(rightToken);
+            if (rightExpression == null) {
+                return new NodeConstructionResponse(new Try<>(Optional.empty()), tokenBuffer);
+            }
 
             leftExpression = new BinaryExpression(leftExpression, operatorToken.associatedString(), rightExpression);
         }
@@ -71,7 +81,7 @@ public class ExpressionNodeConstructor implements NodeConstructor {
         } else if (Objects.equals(tokenType, NativeTokenTypes.STRING.toTokenType())) {
             return new TextLiteral(token.associatedString());
         } else {
-            throw new IllegalArgumentException("Unexpected token type: " + tokenType);
+            return null;
         }
     }
 }
