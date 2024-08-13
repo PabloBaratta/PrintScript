@@ -1,0 +1,94 @@
+@startuml
+
+' Define classes
+class Lexer {
+    -String code
+    -Collection<TokenConstructor> tokenConstructors
+    -TokenConstructor keywordConstructor
+    -List<Character> whiteSpaces
+    -int currentPosition
+    -int currentLine
+    +Lexer(String code, Collection<TokenConstructor> tokenConstructors, TokenConstructor keywordConstructor, List<Character> whiteSpaces)
+    +boolean hasNext()
+    +Try<Token, Exception> getNext()
+    -void skipCharactersFromList(char currentCharacter, List<Character> characters)
+    -void setCurrentPosition(int newPosition)
+}
+
+class Token {
+    -TokenType type
+    -String associatedString
+    -Position position
+    +Token(TokenType type, String associatedString, Position position)
+    +String toString()
+    +int length()
+}
+
+class TokenType {
+    -String name
+    +TokenType(String name)
+}
+
+class Position {
+    -int offset
+    -int length
+    -int line
+    +Position(int offset, int length, int line)
+    +int getOffset()
+    +int getLength()
+    +int getLine()
+}
+
+class NativeTokenTypes {
+    -String regex
+    +SEMICOLON
+    +LEFT_PARENTHESIS
+    +RIGHT_PARENTHESES
+    +COMMA
+    +COLON
+    +EOF
+    +EQUALS
+    +PLUS
+    +MINUS
+    +ASTERISK
+    +SLASH
+    +IDENTIFIER
+    +STRING
+    +NUMBER
+    +LET
+    +STRING_TYPE
+    +NUMBER_TYPE
+    +PRINTLN
+    +NativeTokenTypes(String regex)
+    +TokenType toTokenType()
+    +Pattern getRegex()
+}
+
+interface TokenConstructor {
+    +Optional<Token> constructToken(String code, int offset, int line)
+}
+
+class TokenConstructorImpl implements TokenConstructor {
+    -Map<Pattern, TokenType> map
+    +TokenConstructorImpl(Map<Pattern, TokenType> map)
+    +Optional<Token> constructToken(String code, int offset, int line)
+}
+
+class Try<T, E extends Exception> {
+    +Try(T value)
+    +Try(E exception)
+}
+
+' Define relationships
+Lexer --> Token
+Lexer --> TokenConstructor
+Lexer --> TokenType
+Lexer --> Position
+Token --> TokenType
+Token --> Position
+TokenConstructorImpl --> Token
+TokenConstructorImpl --> TokenType
+TokenConstructorImpl --> Position
+Try --> Exception
+
+@enduml

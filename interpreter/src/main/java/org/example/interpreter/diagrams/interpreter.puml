@@ -1,0 +1,151 @@
+@startuml
+
+' Define interfaces
+interface ASTNode {
+    +void accept(ASTVisitor visitor) throws Exception
+    +String toString()
+}
+
+interface ASTVisitor {
+    +void visit(Assignation assignation) throws Exception
+    +void visit(VariableDeclaration variableDeclaration) throws Exception
+    +void visit(Identifier identifier)
+    +void visit(TextLiteral textLiteral)
+    +void visit(NumericLiteral numericLiteral)
+    +void visit(Method method) throws Exception
+    +void visit(UnaryExpression unaryExpression) throws Exception
+    +void visit(BinaryExpression binaryExpression) throws Exception
+    +void visit(Program program) throws Exception
+}
+
+interface Expression extends ASTNode {
+    +Object getValue()
+}
+
+' Define classes
+class Interpreter implements ASTVisitor {
+    -Map<String, Variable> environment
+    -Stack<Expression> stack
+    +void visit(Assignation assignation) throws Exception
+    +void visit(VariableDeclaration variableDeclaration) throws Exception
+    +void visit(Identifier identifier)
+    +void visit(TextLiteral textLiteral)
+    +void visit(NumericLiteral numericLiteral)
+    +void visit(Method method) throws Exception
+    +void visit(UnaryExpression unaryExpression) throws Exception
+    +void visit(BinaryExpression binaryExpression) throws Exception
+    +void visit(Program program) throws Exception
+    -void evaluate(ASTNode node) throws Exception
+}
+
+class Assignation implements ASTNode {
+    -Identifier identifier
+    -Expression expression
+    +Assignation(Identifier identifier, Expression expression)
+    +Identifier getIdentifier()
+    +Expression getExpression()
+    +void accept(ASTVisitor visitor) throws Exception
+    +String toString()
+}
+
+class BinaryExpression implements Expression {
+    -Expression left
+    -String operator
+    -Expression right
+    +BinaryExpression(Expression left, String operator, Expression right)
+    +Expression getLeft()
+    +Expression getRight()
+    +String getOperator()
+    +void accept(ASTVisitor visitor) throws Exception
+    +String toString()
+    +Object getValue()
+}
+
+class Identifier implements Expression {
+    -String name
+    +Identifier(String name)
+    +String getName()
+    +void accept(ASTVisitor visitor) throws Exception
+    +String toString()
+    +Object getValue()
+}
+
+class Literal<T extends Comparable<T>> implements Expression {
+    -T value
+    +Literal(T value)
+    +T getValue()
+    +void accept(ASTVisitor visitor) throws Exception
+    +String toString()
+}
+
+class Method implements ASTNode {
+    -Identifier identifier
+    -List<Expression> arguments
+    +Method(Identifier identifier, List<Expression> arguments)
+    +Identifier getVariable()
+    +List<Expression> getArguments()
+    +void accept(ASTVisitor visitor) throws Exception
+    +String toString()
+}
+
+class NumericLiteral extends Literal<Double> {
+    +NumericLiteral(Double value)
+}
+
+class TextLiteral extends Literal<String> {
+    +TextLiteral(String value)
+}
+
+class Type implements ASTNode {
+    -String typeName
+    +Type(String typeName)
+    +String getTypeName()
+    +void accept(ASTVisitor visitor) throws Exception
+}
+
+class UnaryExpression implements Expression {
+    -Expression argument
+    -String operator
+    +UnaryExpression(Expression argument, String operator)
+    +Expression getArgument()
+    +String getOperator()
+    +void accept(ASTVisitor visitor) throws Exception
+    +String toString()
+    +Object getValue()
+}
+
+class Variable {
+    -Type type
+    -Expression expression
+    +Variable(Type type, Expression expression)
+    +Type getType()
+    +void setType(Type type)
+    +Expression getExpression()
+    +void setExpression(Object object)
+}
+
+class VariableDeclaration implements ASTNode {
+    -Identifier identifier
+    -Type type
+    -Optional<Expression> expression
+    +VariableDeclaration(Identifier identifier, Type type, Optional<Expression> expression)
+    +Identifier getIdentifier()
+    +Type getType()
+    +Optional<Expression> getExpression()
+    +void accept(ASTVisitor visitor) throws Exception
+    +String toString()
+}
+
+class Program implements ASTNode {
+    -List<ASTNode> children
+    +Program(List<ASTNode> children)
+    +List<ASTNode> getChildren()
+    +void accept(ASTVisitor visitor) throws Exception
+    +String toString()
+}
+
+ASTNode ..> ASTVisitor : uses
+Interpreter ..> ASTNode : visits
+ASTVisitor ..> Variable : uses
+
+@enduml

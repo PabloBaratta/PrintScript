@@ -98,20 +98,55 @@ class TokenConstructorTest {
         tokenAssertionMethod(inputWithoutSpaceBetween, offset, expectedToken, operatorConstructor, line);
     }
 
+    @Test
+    void separatorConstructorSemicolonTest() {
+        String input = "let a = 5;";
+        int offset = 9;
+        int line = 0;
+        String associatedString = ";";
+        Token expectedToken = new Token(NativeTokenTypes.SEMICOLON.toTokenType(), associatedString, new Position(offset, associatedString.length(), line));
+        tokenAssertionMethod(input, offset, expectedToken, separatorConstructor, line);
+    }
 
+    @Test
+    void separatorConstructorLeftParenthesisTest() {
+        String input = "println(";
+        int offset = 7;
+        int line = 0;
+        String associatedString = "(";
+        Token expectedToken = new Token(NativeTokenTypes.LEFT_PARENTHESIS.toTokenType(), associatedString, new Position(offset, associatedString.length(), line));
+        tokenAssertionMethod(input, offset, expectedToken, separatorConstructor, line);
+    }
 
+    @Test
+    void separatorConstructorRightParenthesisTest() {
+        String input = "println(a)";
+        int offset = 9;
+        int line = 0;
+        String associatedString = ")";
+        Token expectedToken = new Token(NativeTokenTypes.RIGHT_PARENTHESES.toTokenType(), associatedString, new Position(offset, associatedString.length(), line));
+        tokenAssertionMethod(input, offset, expectedToken, separatorConstructor, line);
+    }
 
-/*    private void tokenAssertionMethod(String input, int offset, Token expectedToken,
-                                      TokenConstructor constructor, int line) {
+    @Test
+    void separatorConstructorCommaTest() {
+        String input = "let a, b = 5";
+        int offset = 5;
+        int line = 0;
+        String associatedString = ",";
+        Token expectedToken = new Token(NativeTokenTypes.COMMA.toTokenType(), associatedString, new Position(offset, associatedString.length(), line));
+        tokenAssertionMethod(input, offset, expectedToken, separatorConstructor, line);
+    }
 
-        Optional<Token> optionalToken = constructor.constructToken(input.substring(offset), offset, line);
-
-        assertTrue(optionalToken.isPresent());
-
-        Token token = optionalToken.get();
-
-        assertEquals(expectedToken, token);
-    }*/
+    @Test
+    void separatorConstructorColonTest() {
+        String input = "let a: number";
+        int offset = 5;
+        int line = 0;
+        String associatedString = ":";
+        Token expectedToken = new Token(NativeTokenTypes.COLON.toTokenType(), associatedString, new Position(offset, associatedString.length(), line));
+        tokenAssertionMethod(input, offset, expectedToken, separatorConstructor, line);
+    }
 
     private void tokenAssertionMethod(String input, int offset, Token expectedToken,
                                       TokenConstructor constructor, int line) {
