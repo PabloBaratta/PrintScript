@@ -53,8 +53,6 @@ public class AssignationNodeConstructor implements NodeConstructor{
         Token currentToken = equalsToken;
         while (!tokenBuffer.isNextTokenOfType(NativeTokenTypes.SEMICOLON.toTokenType())){
 
-            tokenBuffer = tokenBuffer.consumeToken();
-
             if (!tokenBuffer.hasAnyTokensLeft()) {
                 return response(new SemanticErrorException(currentToken, "was expecting closing after"),
                         tokenBuffer);
@@ -62,6 +60,7 @@ public class AssignationNodeConstructor implements NodeConstructor{
 
             currentToken = tokenBuffer.getToken().get();
             tokens.add(currentToken);
+            tokenBuffer = tokenBuffer.consumeToken();
         }
 
         boolean noTokensBetweenEqualsAndSemiColon = tokens.isEmpty();

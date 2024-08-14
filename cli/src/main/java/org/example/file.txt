@@ -1,0 +1,3 @@
+let hola: number = 10;
+println(("hola" + hola));
+hola = 20;

@@ -11,10 +11,14 @@ import org.example.lexer.token.TokenType;
 import org.example.lexer.utils.Try;
 import org.example.nodeconstructors.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Runner {
 
@@ -64,7 +68,8 @@ public class Runner {
     }
 
 
-    public static void run(String code) throws Exception {
+    public static void run(String filePath) throws Exception {
+        String code = readFileAsString(filePath);
 
         Lexer lexer = createLexer(code);
         List<Token> tokens = new ArrayList<>();
@@ -88,6 +93,13 @@ public class Runner {
         Interpreter interpreter = createInterpreter();
         interpreter.visit((Program) ast);
 
+    }
+
+    public static String readFileAsString(String filePath) throws IOException {
+        String content = "";
+        content = Files.lines(Paths.get(filePath))
+                .collect(Collectors.joining(" "));
+        return content;
     }
 
 }

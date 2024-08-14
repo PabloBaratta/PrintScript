@@ -57,12 +57,12 @@ public class ParserTest {
         tokens.add(new Token(NativeTokenTypes.PLUS.toTokenType(), "+", new Position(2, 1, 1)));
         tokens.add(new Token(NativeTokenTypes.NUMBER.toTokenType(), "2", new Position(3, 1, 1)));
         tokens.add(new Token(NativeTokenTypes.ASTERISK.toTokenType(), "*", new Position(4, 1, 1)));
-        tokens.add(new Token(NativeTokenTypes.STRING.toTokenType(), "\"hola\"", new Position(5, 4, 1)));
+        tokens.add(new Token(NativeTokenTypes.STRING.toTokenType(), "\"hola\"", new Position(5, 6, 1)));
         TokenBuffer tokenBuffer = new TokenBuffer(tokens);
         Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
         Try<ASTNode, Exception> res = parser.parseExpression();
         ASTNode node = res.getSuccess().get();
-        Assertions.assertEquals("1.0+2.0*\"hola\"", node.toString());
+        Assertions.assertEquals("1.0+2.0*hola", node.toString());
     }
 
     @Test
@@ -101,12 +101,12 @@ public class ParserTest {
         expressions.add(NativeTokenTypes.IDENTIFIER.toTokenType());
         list.add(new ExpressionNodeConstructor(operators, expressions));
         List<Token> tokens = new ArrayList<>();
-        tokens.add(new Token(NativeTokenTypes.STRING.toTokenType(), "\"hola buenas tardes\"", new Position(1, 18, 1)));
+        tokens.add(new Token(NativeTokenTypes.STRING.toTokenType(), "\"hola buenas tardes\"", new Position(1, 20, 1)));
         TokenBuffer tokenBuffer = new TokenBuffer(tokens);
         Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
         Try<ASTNode, Exception> res = parser.parseExpression();
         ASTNode node = res.getSuccess().get();
-        Assertions.assertEquals("\"hola buenas tardes\"", node.toString());
+        Assertions.assertEquals("hola buenas tardes", node.toString());
     }
 
     @Test

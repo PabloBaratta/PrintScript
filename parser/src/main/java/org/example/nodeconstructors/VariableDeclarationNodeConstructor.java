@@ -91,15 +91,14 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
 
         Token currentToken = equalsToken;
         while (!tokenBuffer.isNextTokenOfType(NativeTokenTypes.SEMICOLON.toTokenType())){
-            currentToken = tokenBuffer.getToken().get();
-
-            tokenBuffer = tokenBuffer.consumeToken();
 
             if (!tokenBuffer.hasAnyTokensLeft()) {
                 return response(new SemanticErrorException(currentToken, "was expecting closing after"),
                         tokenBuffer);
             }
 
+            currentToken = tokenBuffer.getToken().get();
+            tokenBuffer = tokenBuffer.consumeToken();
             tokens.add(currentToken);
         }
 
