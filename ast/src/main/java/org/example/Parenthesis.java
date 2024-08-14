@@ -9,7 +9,7 @@ public class Parenthesis implements Expression{
     }
 
     @Override
-    public void accept(ASTVisitor visitor) {
+    public void accept(ASTVisitor visitor) throws Exception {
         visitor.visit(this);
     }
 
@@ -20,5 +20,10 @@ public class Parenthesis implements Expression{
     @Override
     public String toString() {
         return "(" + expression.toString() + ")";
+    }
+
+    @Override
+    public Object getValue() {
+        return null;
     }
 }

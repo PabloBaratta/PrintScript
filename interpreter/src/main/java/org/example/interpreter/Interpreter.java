@@ -143,6 +143,11 @@ public class Interpreter implements ASTVisitor {
         }
     }
 
+    @Override
+    public void visit(Parenthesis parenthesis) throws Exception {
+        evaluate(parenthesis.getExpression());
+    }
+
     private void evaluate(ASTNode node) throws Exception {
         node.accept(this);
     }

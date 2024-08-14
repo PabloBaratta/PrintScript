@@ -21,4 +21,6 @@ public interface ASTVisitor {
     void visit(BinaryExpression binaryExpression) throws Exception;
 
     void visit(Program program) throws Exception;
+
+    void visit(Parenthesis parenthesis) throws Exception;
 }

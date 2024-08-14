@@ -157,7 +157,7 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 
             Token string = tokenBuffer.getToken().get();
             tokenBuffer = tokenBuffer.consumeToken();
-            return response(new TextLiteral(string.associatedString()), tokenBuffer);
+            return response(new TextLiteral(string.associatedString().substring(1, string.length()-1)), tokenBuffer);
 
         } else if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.IDENTIFIER.toTokenType())) {
 

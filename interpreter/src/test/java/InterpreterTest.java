@@ -1,7 +1,5 @@
 import org.example.*;
 import org.example.interpreter.Interpreter;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
