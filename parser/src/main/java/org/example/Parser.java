@@ -19,9 +19,9 @@ public class Parser {
     public Parser(List<NodeConstructor> nodeConstructors,
                   List<BlockNodeConstructor> blockNodeConstructors,
                   TokenBuffer tokens) {
+        this.nodeConstructors = new LinkedList(nodeConstructors);
         blockNodeConstructors.forEach(cons -> cons.acceptParser(this));
-        nodeConstructors.addAll(blockNodeConstructors);
-        this.nodeConstructors = nodeConstructors;
+        this.nodeConstructors.addAll(blockNodeConstructors);
         this.tokens = tokens;
     }
 
@@ -29,7 +29,7 @@ public class Parser {
 
         LinkedList<ASTNode> nodes = new LinkedList<>();
 
-        while (!tokens.hasAnyTokensLeft()) {
+        while (tokens.hasAnyTokensLeft()) {
             Response response = getAstNodeExceptionTry();
 
             Try<ASTNode, Exception> astNodeExceptionTry = response.result;

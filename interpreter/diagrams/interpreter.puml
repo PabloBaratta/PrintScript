@@ -1,0 +1,43 @@
+@startuml
+
+' Define interfaces
+interface ASTNode {
+    +void accept(ASTVisitor visitor) throws Exception
+    +String toString()
+}
+
+interface ASTVisitor {
+    +void visit(Assignation assignation) throws Exception
+    +void visit(VariableDeclaration variableDeclaration) throws Exception
+    +void visit(Identifier identifier)
+    +void visit(TextLiteral textLiteral)
+    +void visit(NumericLiteral numericLiteral)
+    +void visit(Method method) throws Exception
+    +void visit(UnaryExpression unaryExpression) throws Exception
+    +void visit(BinaryExpression binaryExpression) throws Exception
+    +void visit(Program program) throws Exception
+}
+
+
+' Define classes
+class Interpreter implements ASTVisitor {
+    -Map<String, Variable> environment
+    -Stack<Expression> stack
+}
+
+class Variable {
+    -Type type
+    -Expression expression
+    +Variable(Type type, Expression expression)
+    +Type getType()
+    +void setType(Type type)
+    +Expression getExpression()
+    +void setExpression(Object object)
+}
+
+
+ASTNode ..> ASTVisitor : uses
+Interpreter ..> ASTNode : visits
+ASTVisitor ..> Variable : uses
+
+@enduml

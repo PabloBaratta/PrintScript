@@ -6,6 +6,7 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 
     @Override
     public NodeConstructionResponse build(TokenBuffer tokenBuffer) {
-        return null;
+        return NodeConstructionResponse.response(new Exception("not implemented yet"),
+                tokenBuffer);
     }
 }

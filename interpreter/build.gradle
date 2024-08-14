@@ -8,4 +8,5 @@ plugins {
 
 dependencies {
     implementation project(':parser')
+    implementation project(':ast')
 }

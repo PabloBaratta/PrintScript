@@ -63,7 +63,7 @@ class Literal<T extends Comparable<T>> implements Expression {
     +String toString()
 }
 
-class Method implements ASTNode {
+class Method implements Expression {
     -Identifier identifier
     -List<Expression> arguments
     +Method(Identifier identifier, List<Expression> arguments)
@@ -121,5 +121,6 @@ class Program implements ASTNode {
 
 ASTNode ..> ASTVisitor : uses
 
+Program *-- ASTNode
 
 @enduml

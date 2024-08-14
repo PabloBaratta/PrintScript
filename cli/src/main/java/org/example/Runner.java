@@ -5,47 +5,49 @@ import org.example.lexer.Lexer;
 import org.example.lexer.PrintScriptTokenConfig;
 import org.example.lexer.TokenConstructor;
 import org.example.lexer.TokenConstructorImpl;
+import org.example.lexer.token.NativeTokenTypes;
 import org.example.lexer.token.Token;
 import org.example.lexer.utils.Try;
 import org.example.nodeconstructors.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
-public class Cli {
+public class Runner {
 
-    private final String code;
-
-    public Cli(String code) {
-        this.code = code;
-    }
-
-    private Interpreter createInterpreter() {
+    private static Interpreter createInterpreter() {
         return new Interpreter();
     }
 
-    private Lexer createLexer() {
-        List<Character> whiteSpaces = List.of(' ', '\t', '\n', '\r');
+    private static Lexer createLexer(String code) {
+        List<Character> whiteSpaces = List.of(' ', '\t', '\n');
         TokenConstructor keywordConstructor = new TokenConstructorImpl(PrintScriptTokenConfig.keywordTokenTypeMap());
         Collection<TokenConstructor> tokenConstructors = List.of(
                 new TokenConstructorImpl(PrintScriptTokenConfig.separatorTokenTypeMap()),
-                new TokenConstructorImpl(PrintScriptTokenConfig.operatorTokenTypeMap())
+                new TokenConstructorImpl(PrintScriptTokenConfig.operatorTokenTypeMap()),
+                new TokenConstructorImpl(PrintScriptTokenConfig.literalTokenTypeMap())
         );
-        return new Lexer(this.code, tokenConstructors, keywordConstructor, whiteSpaces);
+        return new Lexer(code, tokenConstructors, keywordConstructor, whiteSpaces);
     }
 
-    private Parser createParser(List<Token> tokens, Lexer lexer) {
+    private static Parser createParser(List<Token> tokens) {
         List<NodeConstructor> nodeConstructors = getNodeConstructors();
-        List<BlockNodeConstructor> blockNodeConstructors = List.of();
-        TokenBuffer tokenBuffer = new TokenBuffer(tokens); // Assuming TokenBuffer takes a Lexer
+        List<BlockNodeConstructor> blockNodeConstructors = new LinkedList<>();
+        TokenBuffer tokenBuffer = new TokenBuffer(tokens);
         return new Parser(nodeConstructors, blockNodeConstructors, tokenBuffer);
     }
 
     private static List<NodeConstructor> getNodeConstructors() {
         ExpressionNodeConstructor expressionNodeConstructor = new ExpressionNodeConstructor();
         AssignationNodeConstructor assignationNodeConstructor = new AssignationNodeConstructor(expressionNodeConstructor);
-        VariableDeclarationNodeConstructor variableDeclarationNodeConstructor = new VariableDeclarationNodeConstructor();
+        VariableDeclarationNodeConstructor variableDeclarationNodeConstructor =
+                new VariableDeclarationNodeConstructor(expressionNodeConstructor,
+                        List.of(NativeTokenTypes.LET.toTokenType()),
+                        List.copyOf(PrintScriptTokenConfig.literalTokenTypeMap().values()));
+
+        // add call expression constructor
         return List.of(
                 expressionNodeConstructor,
                 assignationNodeConstructor,
@@ -53,9 +55,9 @@ public class Cli {
         );
     }
 
-    public void run() throws Exception {
+    public static void run(String code) throws Exception {
 
-        Lexer lexer = createLexer();
+        Lexer lexer = createLexer(code);
         List<Token> tokens = new ArrayList<>();
 
         while (lexer.hasNext()){
@@ -64,18 +66,18 @@ public class Cli {
                 throw possibleToken.getFail().get();
             }
             else {
-                tokens.add(lexer.getNext().getSuccess().get());
+                tokens.add(possibleToken.getSuccess().get());
             }
         }
 
-        Parser parser = createParser(tokens, lexer);
+        Parser parser = createParser(tokens);
         Try<ASTNode, Exception> possibleAst = parser.parseExpression();
         if (possibleAst.isFail()){
             throw possibleAst.getFail().get();
         }
         ASTNode ast = possibleAst.getSuccess().get();
         Interpreter interpreter = createInterpreter();
-        interpreter.visit(ast);
+        interpreter.visit((Program) ast);
 
     }
 

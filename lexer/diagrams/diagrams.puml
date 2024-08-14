@@ -80,15 +80,13 @@ class Try<T, E extends Exception> {
 }
 
 ' Define relationships
-Lexer --> Token
 Lexer --> TokenConstructor
-Lexer --> TokenType
-Lexer --> Position
+Lexer ..> Token
 Token --> TokenType
 Token --> Position
-TokenConstructorImpl --> Token
-TokenConstructorImpl --> TokenType
-TokenConstructorImpl --> Position
+NativeTokenTypes ..> TokenType
+TokenConstructor ..> Token
+TokenConstructor --> TokenType
 Try --> Exception
 
 @enduml
