@@ -22,7 +22,7 @@ public class Variable {
         return expression;
     }
 
-    public void setExpression(Object object) {
+    public void setExpression(Expression expression) {
         this.expression = expression;
     }
 }

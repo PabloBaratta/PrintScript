@@ -36,7 +36,10 @@ public class Interpreter implements ASTVisitor {
     public void visit(VariableDeclaration variableDeclaration) throws Exception {
         Identifier identifier = variableDeclaration.getIdentifier();
         Type type = variableDeclaration.getType();
-        if (variableDeclaration.getExpression().isPresent()){ // ver si la variable ya esta declarada, type safety
+        if (environment.containsKey(identifier.toString())){
+            throw new Exception("la variable ya esta declarada");
+        }
+        if (variableDeclaration.getExpression().isPresent()){ // type safety
             evaluate(variableDeclaration.getExpression().get());
             Expression astNodeResult = stack.pop();
             if (type.getTypeName().equals("string") && astNodeResult instanceof TextLiteral){
@@ -52,6 +55,7 @@ public class Interpreter implements ASTVisitor {
             environment.put(identifier.toString(), new Variable(type, null));
         }
     }
+
 
     @Override
     public void visit(Identifier identifier) {
@@ -74,7 +78,7 @@ public class Interpreter implements ASTVisitor {
     @Override
     public void visit(Method method) throws Exception {
         evaluate(method.getArguments().getFirst()); // ver de evaluar otras funciones
-        System.out.println(stack.pop());
+        System.out.println(stack.pop().getValue());
     }
 
 
@@ -110,7 +114,7 @@ public class Interpreter implements ASTVisitor {
             if (left instanceof NumericLiteral && right instanceof NumericLiteral){
                 stack.push(new NumericLiteral((Double) left.getValue() + (Double) right.getValue()));
             } else {
-                stack.push(new TextLiteral((String) left.getValue() + (String) right.getValue()));
+                stack.push(new TextLiteral( left.getValue().toString() + right.getValue().toString()));
             }
         } else if (!(left instanceof NumericLiteral && right instanceof NumericLiteral)){
             throw new Exception("para las siguientes operaciones tienen que ser numeros");
@@ -118,12 +122,17 @@ public class Interpreter implements ASTVisitor {
             switch (binaryExpression.getOperator()){
                 case "-":
                     stack.push(new NumericLiteral((Double) left.getValue() - (Double) right.getValue()));
+                    break;
                 case "/":
-                    stack.push(new NumericLiteral((Double) left.getValue() / (Double) right.getValue())); // ver que pasa si es cero
+                    stack.push(new NumericLiteral((Double) left.getValue() / (Double) right.getValue()));
+                    break; // ver que pasa si es cero
                 case "*":
-                    stack.push(new NumericLiteral((Double) left.getValue() * (Double) right.getValue()));;
+                    stack.push(new NumericLiteral((Double) left.getValue() * (Double) right.getValue()));
+                    break;
+                default:
+                    throw new Exception("Operador no válido: " + binaryExpression.getOperator());
             }
-        } throw new Exception("no es posible hacer la operacion");
+        }
     }
 
     @Override
@@ -134,11 +143,15 @@ public class Interpreter implements ASTVisitor {
         }
     }
 
-
     private void evaluate(ASTNode node) throws Exception {
         node.accept(this);
     }
 
-    public void visit(org.example.ASTNode ast) {
+    public Map<String, Variable> getEnvironment() {
+        return environment;
+    }
+
+    public Stack<Expression> getStack() {
+        return stack;
     }
 }
