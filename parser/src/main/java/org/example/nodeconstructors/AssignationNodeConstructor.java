@@ -18,7 +18,7 @@ public class AssignationNodeConstructor implements NodeConstructor{
 
     private final NodeConstructor expressionNodeConstructor;
 
-    AssignationNodeConstructor(NodeConstructor expressionNodeConstructor
+    public AssignationNodeConstructor(NodeConstructor expressionNodeConstructor
     ) {
         this.expressionNodeConstructor = expressionNodeConstructor;
     }

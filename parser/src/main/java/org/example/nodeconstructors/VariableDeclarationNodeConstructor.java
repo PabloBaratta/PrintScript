@@ -18,9 +18,9 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
     private final List<TokenType> literalTypes;
 
 
-    VariableDeclarationNodeConstructor(NodeConstructor expressionNodeConstructor,
-                                       List<TokenType> variableDeclarationTokenTypes,
-                                       List<TokenType> literalType
+    public VariableDeclarationNodeConstructor(NodeConstructor expressionNodeConstructor,
+                                              List<TokenType> variableDeclarationTokenTypes,
+                                              List<TokenType> literalType
     ) {
         this.expressionNodeConstructor = expressionNodeConstructor;
         this.variableDeclarationTokenTypes = variableDeclarationTokenTypes;

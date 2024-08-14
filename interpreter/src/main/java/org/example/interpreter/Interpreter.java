@@ -138,4 +138,7 @@ public class Interpreter implements ASTVisitor {
     private void evaluate(ASTNode node) throws Exception {
         node.accept(this);
     }
+
+    public void visit(org.example.ASTNode ast) {
+    }
 }
