@@ -24,4 +24,11 @@ public record NodeConstructionResponse(
                 buffer
         );
     }
+
+    static NodeConstructionResponse emptyResponse(TokenBuffer buffer){
+        return new NodeConstructionResponse(
+                new Try<>(Optional.empty()),
+                buffer
+        );
+    }
 }

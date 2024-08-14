@@ -20,6 +20,8 @@ class TokenConstructorTest {
 
     TokenConstructor separatorConstructor = new TokenConstructorImpl(PrintScriptTokenConfig.separatorTokenTypeMap());
 
+    TokenConstructor literalConstructor = new TokenConstructorImpl(PrintScriptTokenConfig.literalTokenTypeMap());
+
     @Test
     void keywordConstructorLetTest() {
         String input = "let a : string = \"string\"";
@@ -107,6 +109,19 @@ class TokenConstructorTest {
         Token expectedToken = new Token(NativeTokenTypes.SEMICOLON.toTokenType(), associatedString, new Position(offset, associatedString.length(), line));
         tokenAssertionMethod(input, offset, expectedToken, separatorConstructor, line);
     }
+    @Test
+    void literalconstructor() {
+        String input = "let a : number = 5 / 5";
+        int offset = 17;
+        int line = 0;
+        String associatedString = "5";
+        Token expectedToken = new Token(NativeTokenTypes.NUMBER.toTokenType(), associatedString, new Position(offset, associatedString.length(), line));
+        tokenAssertionMethod(input, offset, expectedToken, literalConstructor, line);
+        String inputWithoutSpaceBetween = "let a : number = 5 /5";
+        tokenAssertionMethod(inputWithoutSpaceBetween, offset, expectedToken, literalConstructor, line);
+    }
+
+
 
     @Test
     void separatorConstructorLeftParenthesisTest() {
