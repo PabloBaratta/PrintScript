@@ -96,5 +96,8 @@ public class AssignationNodeConstructorTest {
         ASTNode astNode = build.possibleNode().getSuccess().get().get();
         assertInstanceOf(Assignation.class, astNode);
         assertEquals(intermediateTokens, collector.collectedTokens.size());
+        collector.collectedTokens.forEach( token ->
+                assertNotEquals(SEMICOLON.toTokenType(), token.type())
+        );
     }
 }

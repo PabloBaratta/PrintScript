@@ -158,6 +158,10 @@ class VariableDeclarationNodeConstructorTest {
         assertTrue(node.getExpression().isPresent());
 
         assertEquals(numberOfExpressionTokens, collector.collectedTokens.size());
+
+        collector.collectedTokens.forEach( token ->
+                assertNotEquals(SEMICOLON.toTokenType(), token.type())
+        );
     }
 
 
