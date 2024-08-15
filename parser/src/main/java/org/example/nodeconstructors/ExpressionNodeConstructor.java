@@ -63,7 +63,7 @@ public class ExpressionNodeConstructor implements NodeConstructor {
             NodeConstructionResponse possibleRightExpression = factor(newTokenBuffer);
 
             if (possibleRightExpression.possibleNode().isFail()) {
-                return possibleExpression;
+                return possibleRightExpression;
             }
 
             Expression rightExpression = (Expression) possibleRightExpression.possibleNode().getSuccess().get().get();
@@ -103,7 +103,7 @@ public class ExpressionNodeConstructor implements NodeConstructor {
             NodeConstructionResponse possibleRightExpression = unary(newTokenBuffer);
 
             if (possibleRightExpression.possibleNode().isFail()) {
-                return possibleExpression;
+                return possibleRightExpression;
             }
 
             Expression rightExpression = (Expression) possibleRightExpression.possibleNode().getSuccess().get().get();

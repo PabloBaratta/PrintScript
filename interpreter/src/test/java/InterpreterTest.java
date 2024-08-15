@@ -29,7 +29,7 @@ public class InterpreterTest {
 
         assertTrue(interpreter.getEnvironment().containsKey("a"));
         assertEquals(interpreter.getEnvironment().get("a").getType().getTypeName(), "string");
-        assertNull(interpreter.getEnvironment().get("a").getExpression());
+        assertTrue(interpreter.getEnvironment().get("a").getExpression().isEmpty());
     }
 
     @Test
@@ -45,7 +45,10 @@ public class InterpreterTest {
         interpreter.visit(variableDeclaration);
 
         assertTrue(interpreter.getEnvironment().containsKey("a"));
-        assertEquals("hola", interpreter.getEnvironment().get("a").getExpression().getValue());
+        Optional<Expression> optionalExpression = interpreter.getEnvironment().get("a").getExpression();
+
+        assertTrue(optionalExpression.isPresent());
+        assertEquals("hola", optionalExpression.get().getValue());
     }
 
     @Test
@@ -115,7 +118,10 @@ public class InterpreterTest {
 
         interpreter.visit(assignation);
 
-        assertEquals("hola", interpreter.getEnvironment().get("a").getExpression().getValue());
+        Optional<Expression> optionalExpression = interpreter.getEnvironment().get("a").getExpression();
+        assertTrue(optionalExpression.isPresent());
+
+        assertEquals("hola", optionalExpression.get().getValue());
     }
 
     @Test
@@ -156,7 +162,9 @@ public class InterpreterTest {
 
         interpreter.visit(assignation);
 
-        assertEquals(5.0, interpreter.getEnvironment().get("result").getExpression().getValue());
+        Optional<Expression> optionalExpression = interpreter.getEnvironment().get("result").getExpression();
+        assertTrue(optionalExpression.isPresent());
+        assertEquals(5.0, optionalExpression.get().getValue());
     }
 
     @Test
@@ -180,7 +188,9 @@ public class InterpreterTest {
 
         interpreter.visit(assignation);
 
-        assertEquals("Hello 2.0", interpreter.getEnvironment().get("result").getExpression().getValue());
+        Optional<Expression> optionalExpression = interpreter.getEnvironment().get("result").getExpression();
+        assertTrue(optionalExpression.isPresent());
+        assertEquals("Hello 2.0", optionalExpression.get().getValue());
     }
 
     @Test
@@ -193,7 +203,10 @@ public class InterpreterTest {
         VariableDeclaration variableDeclaration = new VariableDeclaration(resultIdentifier, numType, Optional.of(expression));
         interpreter.visit(variableDeclaration);
 
-        assertEquals(2.0 / 3.0, interpreter.getEnvironment().get("result").getExpression().getValue());
+        Optional<Expression> optionalExpression = interpreter.getEnvironment().get("result").getExpression();
+        assertTrue(optionalExpression.isPresent());
+
+        assertEquals(2.0 / 3.0, optionalExpression.get().getValue());
     }
 
     @Test
@@ -211,8 +224,9 @@ public class InterpreterTest {
         Assignation assignation = new Assignation(identifier, expression);
 
         interpreter.visit(assignation);
-
-        assertEquals(13.0, interpreter.getEnvironment().get("result").getExpression().getValue());
+        Optional<Expression> optionalExpression = interpreter.getEnvironment().get("result").getExpression();
+        assertTrue(optionalExpression.isPresent());
+        assertEquals(13.0, optionalExpression.get().getValue());
     }
 
     // METHOD

@@ -116,6 +116,10 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
         if (buildResult.possibleNode().isFail()) {
             return buildResult;
         }
+        else if (buildResult.possibleBuffer().hasAnyTokensLeft()){
+            Optional<Token> token = buildResult.possibleBuffer().getToken();
+            return response(new SemanticErrorException(token.get(), "unexpected expression"), buildResult.possibleBuffer());
+        }
 
         ASTNode astNode = buildResult.possibleNode().getSuccess().get().get();
 
