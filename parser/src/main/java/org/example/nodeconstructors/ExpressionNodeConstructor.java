@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static org.example.nodeconstructors.NodeConstructionResponse.emptyResponse;
 import static org.example.nodeconstructors.NodeConstructionResponse.response;
 
 public class ExpressionNodeConstructor implements NodeConstructor {
@@ -28,31 +29,30 @@ public class ExpressionNodeConstructor implements NodeConstructor {
     public NodeConstructionResponse build(TokenBuffer tokenBuffer) {
 
         // statement should start with an opening parenthesis, operator or a single expression
-        if ( !(tokenBuffer.isNextTokenOfAnyOfThisTypes(operators)
-                    || tokenBuffer.isNextTokenOfAnyOfThisTypes(expressions)
-                        || tokenBuffer.isNextTokenOfType(NativeTokenTypes.LEFT_PARENTHESIS.toTokenType()))) {
-            return new NodeConstructionResponse(new Try<>(Optional.empty()),
-                                                        tokenBuffer);
+        if (!isThisExpression(tokenBuffer)) {
+            return emptyResponse(tokenBuffer);
         }
-
         return term(tokenBuffer);
     }
-// + -
-    private NodeConstructionResponse term(TokenBuffer tokenBuffer) {
-        NodeConstructionResponse possibleExpression = factor(tokenBuffer);
 
+    private boolean isThisExpression(TokenBuffer tokenBuffer) {
+        return tokenBuffer.isNextTokenOfAnyOfThisTypes(operators)
+                || tokenBuffer.isNextTokenOfAnyOfThisTypes(expressions)
+                || tokenBuffer.isNextTokenOfType(NativeTokenTypes.LEFT_PARENTHESIS.toTokenType());
+    }
+
+    private NodeConstructionResponse parseBinaryExpression(TokenBuffer tokenBuffer,
+                                                           Function<TokenBuffer, NodeConstructionResponse> higherPrecedenceParser,
+                                                           List<TokenType> operatorTypes) {
+        NodeConstructionResponse possibleExpression = higherPrecedenceParser.apply(tokenBuffer);
         if (possibleExpression.possibleNode().isFail()) {
             return possibleExpression;
         }
-// 1 + + 2
-        Expression expression = (Expression) possibleExpression.possibleNode().getSuccess().get().get();
 
+        Expression expression = (Expression) possibleExpression.possibleNode().getSuccess().get().get();
         TokenBuffer newTokenBuffer = possibleExpression.possibleBuffer();
 
-        List<TokenType> termTokenTypes = List.of(NativeTokenTypes.PLUS.toTokenType(),
-                NativeTokenTypes.MINUS.toTokenType());
-        while (newTokenBuffer.isNextTokenOfAnyOfThisTypes(termTokenTypes)) {
-
+        while (newTokenBuffer.isNextTokenOfAnyOfThisTypes(operatorTypes)) {
             Token operator = newTokenBuffer.getToken().get();
             newTokenBuffer = newTokenBuffer.consumeToken();
 
@@ -60,137 +60,95 @@ public class ExpressionNodeConstructor implements NodeConstructor {
                 return response(new SemanticErrorException(operator, "expected expression after operator"), newTokenBuffer);
             }
 
-            NodeConstructionResponse possibleRightExpression = factor(newTokenBuffer);
-
+            NodeConstructionResponse possibleRightExpression = higherPrecedenceParser.apply(newTokenBuffer);
             if (possibleRightExpression.possibleNode().isFail()) {
                 return possibleRightExpression;
             }
 
             Expression rightExpression = (Expression) possibleRightExpression.possibleNode().getSuccess().get().get();
-
             newTokenBuffer = possibleRightExpression.possibleBuffer();
-
             expression = new BinaryExpression(expression, operator.associatedString(), rightExpression);
         }
 
         return response(expression, newTokenBuffer);
     }
-// * /
+    //TODO modify to accept post operators
+    private NodeConstructionResponse parseUnaryExpression(TokenBuffer tokenBuffer) {
+        Token operator = tokenBuffer.getToken().get();
+        tokenBuffer = tokenBuffer.consumeToken();
 
-    // -5
-    private NodeConstructionResponse factor(TokenBuffer tokenBuffer) {
+        if (!tokenBuffer.hasAnyTokensLeft()) {
+            return response(new SemanticErrorException(operator, "expected expression after operator"), tokenBuffer);
+        }
+
         NodeConstructionResponse possibleExpression = unary(tokenBuffer);
-
         if (possibleExpression.possibleNode().isFail()) {
             return possibleExpression;
         }
 
         Expression expression = (Expression) possibleExpression.possibleNode().getSuccess().get().get();
+        tokenBuffer = possibleExpression.possibleBuffer();
+        return response(new UnaryExpression(expression, operator.associatedString()), tokenBuffer);
+    }
 
-        TokenBuffer newTokenBuffer = possibleExpression.possibleBuffer();
+    private NodeConstructionResponse parseLiteral(TokenBuffer tokenBuffer,
+                                                  Function<String, Expression> expressionConstructor) {
+        Token token = tokenBuffer.getToken().get();
+        tokenBuffer = tokenBuffer.consumeToken();
+        return response(expressionConstructor.apply(token.associatedString()), tokenBuffer);
+    }
 
-        List<TokenType> termTokenTypes = List.of(NativeTokenTypes.SLASH.toTokenType(),
-                NativeTokenTypes.ASTERISK.toTokenType());
-        while (newTokenBuffer.isNextTokenOfAnyOfThisTypes(termTokenTypes)) {
+    private NodeConstructionResponse parseParenthesisExpression(TokenBuffer tokenBuffer) {
+        Token leftParToken = tokenBuffer.getToken().get();
+        tokenBuffer = tokenBuffer.consumeToken();
+        NodeConstructionResponse possibleExpression = term(tokenBuffer);
 
-            Token operator = newTokenBuffer.getToken().get();
-            newTokenBuffer = newTokenBuffer.consumeToken();
-
-            if (!newTokenBuffer.hasAnyTokensLeft()) {
-                return response(new SemanticErrorException(operator, "expected expression after operator"), newTokenBuffer);
-            }
-
-            NodeConstructionResponse possibleRightExpression = unary(newTokenBuffer);
-
-            if (possibleRightExpression.possibleNode().isFail()) {
-                return possibleRightExpression;
-            }
-
-            Expression rightExpression = (Expression) possibleRightExpression.possibleNode().getSuccess().get().get();
-
-            newTokenBuffer = possibleRightExpression.possibleBuffer();
-
-            expression = new BinaryExpression(expression, operator.associatedString(), rightExpression);
+        if (possibleExpression.possibleNode().isFail()) {
+            return possibleExpression;
         }
 
-        return response(expression, newTokenBuffer);
+        tokenBuffer = possibleExpression.possibleBuffer();
+        Expression expression = (Expression) possibleExpression.possibleNode().getSuccess().get().get();
+
+        if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.RIGHT_PARENTHESES.toTokenType())) {
+            tokenBuffer = tokenBuffer.consumeToken();
+        } else {
+            return response(new SemanticErrorException(leftParToken, "expecting closing of this parenthesis"), tokenBuffer);
+        }
+
+        return response(new Parenthesis(expression), tokenBuffer);
+    }
+
+    private NodeConstructionResponse term(TokenBuffer tokenBuffer) {
+        return parseBinaryExpression(tokenBuffer, this::factor, List.of(NativeTokenTypes.PLUS.toTokenType(),
+                NativeTokenTypes.MINUS.toTokenType()));
+    }
+
+    private NodeConstructionResponse factor(TokenBuffer tokenBuffer) {
+        return parseBinaryExpression(tokenBuffer, this::unary, List.of(NativeTokenTypes.SLASH.toTokenType(),
+                NativeTokenTypes.ASTERISK.toTokenType()));
     }
 
     private NodeConstructionResponse unary(TokenBuffer tokenBuffer) {
-
-        List<TokenType> termTokenTypes = List.of(NativeTokenTypes.MINUS.toTokenType());
-
-        if (tokenBuffer.isNextTokenOfAnyOfThisTypes(termTokenTypes)) {
-            Token operator = tokenBuffer.getToken().get();
-            tokenBuffer = tokenBuffer.consumeToken();
-
-            if (!tokenBuffer.hasAnyTokensLeft()) {
-                return response(new SemanticErrorException(operator, "expected expression after operator"), tokenBuffer);
-            }
-
-            NodeConstructionResponse possibleExpression = unary(tokenBuffer);
-
-            if (possibleExpression.possibleNode().isFail()){
-                return possibleExpression;
-            }
-
-            Expression expression = (Expression) possibleExpression.possibleNode().getSuccess().get().get();
-            tokenBuffer = possibleExpression.possibleBuffer();
-            return response(new UnaryExpression(expression, operator.associatedString()), tokenBuffer);
-
+        if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.MINUS.toTokenType())) {
+            return parseUnaryExpression(tokenBuffer);
         }
-
         return primary(tokenBuffer);
-
     }
 
     // number, string, identifier and left parenthesis
     private NodeConstructionResponse primary(TokenBuffer tokenBuffer) {
-
-        if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.NUMBER.toTokenType())){
-
-            Token number = tokenBuffer.getToken().get();
-            tokenBuffer = tokenBuffer.consumeToken();
-            return response(new NumericLiteral(Double.parseDouble(number.associatedString())), tokenBuffer);
-
+        if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.NUMBER.toTokenType())) {
+            return parseLiteral(tokenBuffer, s -> new NumericLiteral(Double.parseDouble(s)));
         } else if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.STRING.toTokenType())) {
-
-            Token string = tokenBuffer.getToken().get();
-            tokenBuffer = tokenBuffer.consumeToken();
-            return response(new TextLiteral(string.associatedString().substring(1, string.length()-1)), tokenBuffer);
-
+            return parseLiteral(tokenBuffer, s -> new TextLiteral(s.substring(1, s.length() - 1)));
         } else if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.IDENTIFIER.toTokenType())) {
-
-            Token identifier = tokenBuffer.getToken().get();
-            tokenBuffer = tokenBuffer.consumeToken();
-            return response(new Identifier(identifier.associatedString()), tokenBuffer); // improve to accept functions
-
+            return parseLiteral(tokenBuffer, Identifier::new);
         } else if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.LEFT_PARENTHESIS.toTokenType())) {
-
-            Token leftParToken = tokenBuffer.getToken().get();
-            tokenBuffer = tokenBuffer.consumeToken();
-            NodeConstructionResponse possibleExpression = term(tokenBuffer);
-
-            if (possibleExpression.possibleNode().isFail()){
-                return possibleExpression;
-            }
-            tokenBuffer = possibleExpression.possibleBuffer();
-            Expression expression = (Expression) possibleExpression.possibleNode().getSuccess().get().get();
-
-            if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.RIGHT_PARENTHESES.toTokenType())) {
-                tokenBuffer = tokenBuffer.consumeToken();
-            }
-            else {
-                return response(new SemanticErrorException(leftParToken,
-                        "expecting closing of this parenthesis"), tokenBuffer);
-            }
-
-            return response(new Parenthesis(expression), tokenBuffer);
+            return parseParenthesisExpression(tokenBuffer);
         }
-
         return response(new SemanticErrorException(tokenBuffer.getToken().get(),
                 "expecting valid expression"), tokenBuffer);
-
     }
 }
 
