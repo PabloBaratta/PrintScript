@@ -15,7 +15,7 @@ public class Lexer {
     private final TokenConstructor keywordConstructor;
     private final List<Character> whiteSpaces;
     int currentPosition = 0;
-    int currentLine = 0;
+    int currentLine = 1;
 
     public Lexer(String code,
                  Collection<TokenConstructor> tokenConstructors,
@@ -54,7 +54,7 @@ public class Lexer {
             return new Try<>(token);
         }
 
-        UnsupportedCharacterException lexicalError = new UnsupportedCharacterException(currentCharacter, currentPosition);
+        UnsupportedCharacterException lexicalError = new UnsupportedCharacterException(currentCharacter, currentPosition, currentLine);
 
         return new Try<>(lexicalError);
     }
@@ -76,9 +76,6 @@ public class Lexer {
     private void skipCharactersFromList(char currentCharacter, List<Character> characters) {
 
         while (characters.contains(currentCharacter) && hasNext()) {
-            if (currentCharacter == '\n') {
-                currentLine++;
-            }
             setCurrentPosition(currentPosition + 1);
             if (hasNext()) {
                 currentCharacter = code.charAt(currentPosition);

@@ -69,7 +69,8 @@ public class CallExpressionNodeConstructor implements NodeConstructor{
             else if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.RIGHT_PARENTHESES.toTokenType())) {
                 parenthesisCount--;
                 lastToken = tokenBuffer.getToken().get();
-                if (parenthesisCount != 0) {
+                boolean partOfInsideExpression = parenthesisCount != 0;
+                if (partOfInsideExpression) {
                     tokenAcc.add(lastToken);
                 }
                 tokenBuffer = tokenBuffer.consumeToken(); //continue
@@ -91,7 +92,11 @@ public class CallExpressionNodeConstructor implements NodeConstructor{
             
                 if (build.possibleNode().isFail()){
                     return build;
-                } 
+                }
+                else if (build.possibleBuffer().hasAnyTokensLeft()){
+                    Token errorToken = build.possibleBuffer().getToken().get();
+                    return response(new SemanticErrorException(errorToken, "not part or the desired expression as argument"), tokenBuffer);
+                }
                 else if (build.possibleNode().getSuccess().isEmpty()) {
                     Token errorToken = build.possibleBuffer().getToken().get();
                     return response(new SemanticErrorException(errorToken, "not an expression"), tokenBuffer);
@@ -114,6 +119,10 @@ public class CallExpressionNodeConstructor implements NodeConstructor{
 
             if (build.possibleNode().isFail()){
                 return build;
+            }
+            else if (build.possibleBuffer().hasAnyTokensLeft()){
+                Token errorToken = build.possibleBuffer().getToken().get();
+                return response(new SemanticErrorException(errorToken, "not part or the desired expression as argument"), tokenBuffer);
             }
             else if (build.possibleNode().getSuccess().isEmpty()) {
                 Token errorToken = build.possibleBuffer().getToken().get();

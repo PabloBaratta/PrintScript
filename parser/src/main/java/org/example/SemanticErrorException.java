@@ -10,7 +10,7 @@ public class SemanticErrorException extends Exception{
     }
 
     private static String getMessage(Token token) {
-        int line = token.position().getLine() + 1;
+        int line = token.position().getLine();
         return "Error on:\n\t" + token.associatedString() + "\n in character "
                 + token.position().getOffset() + "\n on line: " + line;
     }
