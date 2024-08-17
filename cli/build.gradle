@@ -10,3 +10,7 @@ dependencies {
     implementation project(':interpreter')
     implementation project(':ast')
 }
+
+application{
+    mainClass = "org.example.Main"
+        }
