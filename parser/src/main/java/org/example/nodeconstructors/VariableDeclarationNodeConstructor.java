@@ -35,34 +35,51 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
             return new NodeConstructionResponse(new Try<>(Optional.empty()), tokenBuffer);
         }
 
-        Optional<Token> varDeclToken = tokenBuffer.getToken();
+        Token varDeclToken = tokenBuffer.getToken().get();
         TokenBuffer tokenBufferWithoutVarDecl = tokenBuffer.consumeToken();
 
-        if (!tokenBufferWithoutVarDecl.hasAnyTokensLeft() &&
-                !tokenBufferWithoutVarDecl.isNextTokenOfType(NativeTokenTypes.IDENTIFIER.toTokenType())) {
-            return response(new SemanticErrorException(varDeclToken.get(), "was expecting variable declaration with an identifier"),
+        if (!tokenBufferWithoutVarDecl.hasAnyTokensLeft()) {
+            return response(new SemanticErrorException(varDeclToken, "was expecting variable declaration with an identifier"),
                     tokenBufferWithoutVarDecl);
         }
 
         Token identifier = tokenBufferWithoutVarDecl.getToken().get();
+
+
+        if (!tokenBufferWithoutVarDecl.isNextTokenOfType(NativeTokenTypes.IDENTIFIER.toTokenType())) {
+            return response(new SemanticErrorException(identifier, "was expecting variable declaration with an identifier"),
+                    tokenBufferWithoutVarDecl);
+        }
+
         TokenBuffer tokenBufferWithoutIdentifier = tokenBufferWithoutVarDecl.consumeToken();
 
-        if (!tokenBufferWithoutIdentifier.hasAnyTokensLeft() &&
-                !tokenBufferWithoutIdentifier.isNextTokenOfType(NativeTokenTypes.COLON.toTokenType())) {
+        if (!tokenBufferWithoutIdentifier.hasAnyTokensLeft()) {
             return response(new SemanticErrorException(identifier, "was expecting type assignation operator"),
                     tokenBufferWithoutIdentifier);
         }
 
         Token typeAssignationOp = tokenBufferWithoutIdentifier.getToken().get();
+
+        if (!tokenBufferWithoutIdentifier.isNextTokenOfType(NativeTokenTypes.COLON.toTokenType())) {
+            return response(new SemanticErrorException(typeAssignationOp, "was expecting type assignation operator"),
+                    tokenBufferWithoutIdentifier);
+        }
+
         TokenBuffer tokenBufferWithoutTypeAssig = tokenBufferWithoutIdentifier.consumeToken();
 
-        if (!tokenBufferWithoutTypeAssig.hasAnyTokensLeft() &&
-                !tokenBufferWithoutTypeAssig.isNextTokenOfAnyOfThisTypes(literalTypes)) {
+        if (!tokenBufferWithoutTypeAssig.hasAnyTokensLeft()) {
             return response(new SemanticErrorException(typeAssignationOp, "was expecting a valid type"),
                     tokenBufferWithoutTypeAssig);
         }
 
         Token type = tokenBufferWithoutTypeAssig.getToken().get();
+
+        if (!tokenBufferWithoutTypeAssig.isNextTokenOfAnyOfThisTypes(literalTypes)) {
+            return response(new SemanticErrorException(type, "was expecting a valid type"),
+                    tokenBufferWithoutTypeAssig);
+        }
+
+
         TokenBuffer tokenBufferWithoutType = tokenBufferWithoutTypeAssig.consumeToken();
 
         if (!tokenBufferWithoutType.hasAnyTokensLeft()){
@@ -103,7 +120,6 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
         }
 
         boolean noTokensBetweenEqualsAndSemiColon = tokens.isEmpty();
-
         if (noTokensBetweenEqualsAndSemiColon){
             return response(new SemanticErrorException(equalsToken, "was expecting assignation"),
                     tokenBuffer);
@@ -115,6 +131,10 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
 
         if (buildResult.possibleNode().isFail()) {
             return buildResult;
+        }
+        else if (buildResult.possibleBuffer().hasAnyTokensLeft()){
+            Optional<Token> token = buildResult.possibleBuffer().getToken();
+            return response(new SemanticErrorException(token.get(), "unexpected expression"), buildResult.possibleBuffer());
         }
 
         ASTNode astNode = buildResult.possibleNode().getSuccess().get().get();
@@ -128,4 +148,7 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
         Type type = new Type(typeToken.associatedString());
         return new VariableDeclaration(identifier, type, optionalExpression);
     }
+
+
+
 }

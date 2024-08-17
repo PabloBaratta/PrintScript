@@ -8,7 +8,7 @@ public interface ASTVisitor {
 
     void visit(VariableDeclaration variableDeclaration) throws Exception;
 
-    void visit(Identifier identifier);
+    void visit(Identifier identifier) throws Exception;
 
     void visit(TextLiteral textLiteral);
 

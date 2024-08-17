@@ -98,7 +98,7 @@ public class Runner {
     public static String readFileAsString(String filePath) throws IOException {
         String content = "";
         content = Files.lines(Paths.get(filePath))
-                .collect(Collectors.joining(" "));
+                .collect(Collectors.joining("\n"));
         return content;
     }
 

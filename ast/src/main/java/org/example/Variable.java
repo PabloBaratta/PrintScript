@@ -1,13 +1,15 @@
 package org.example;
 
+import java.util.Optional;
+
 public class Variable {
 
     private Type type;
-    private Expression expression;
+    private Optional<Expression> expression;
 
     public Variable(Type type, Expression expression){
         this.type = type;
-        this.expression = expression;
+        this.expression = Optional.ofNullable(expression);
     }
 
     public Type getType() {
@@ -18,11 +20,11 @@ public class Variable {
         this.type = type;
     }
 
-    public Expression getExpression() {
+    public Optional<Expression> getExpression() {
         return expression;
     }
 
     public void setExpression(Expression expression) {
-        this.expression = expression;
+        this.expression = Optional.ofNullable(expression);
     }
 }

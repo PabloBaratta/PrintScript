@@ -58,10 +58,21 @@ public class Interpreter implements ASTVisitor {
 
 
     @Override
-    public void visit(Identifier identifier) {
+    public void visit(Identifier identifier) throws Exception {
         String identifierName = identifier.getName();
         if (environment.containsKey(identifierName)) {
-            stack.push(environment.get(identifierName).getExpression());
+
+            Variable variable = environment.get(identifierName);
+            Optional<Expression> optionalExpression = variable.getExpression();
+
+            if (optionalExpression.isEmpty()) {
+                throw new Exception("variable was declared but not assigned");
+            }
+
+            stack.push(optionalExpression.get());
+        }
+        else {
+            throw new Exception("undeclared variable");
         }
     }
 
