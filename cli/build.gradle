@@ -1,12 +1,5 @@
 plugins {
-    id 'java'
-}
-
-group = 'org.example'
-version = '1.0-SNAPSHOT'
-
-repositories {
-    mavenCentral()
+    id 'buildlogic.java-application-conventions'
 }
 
 dependencies {
@@ -16,8 +9,4 @@ dependencies {
     implementation project(':parser')
     implementation project(':interpreter')
     implementation project(':ast')
-}
-
-test {
-    useJUnitPlatform()
 }
