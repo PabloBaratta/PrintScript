@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'com.diffplug.spotless' version '6.18.0'
+    id 'checkstyle'
 }
 
 group = 'org.example'
@@ -35,5 +36,18 @@ jacocoTestReport {
     reports {
         xml.required = true
         html.required = true
+    }
+}
+
+checkstyle {
+    toolVersion = '10.12.1' // You can specify the desired version
+    config = resources.text.fromFile('config/checkstyle/checkstyle.xml')
+}
+
+tasks.withType(Checkstyle) {
+    reports {
+        xml.required = false
+        html.required = true
+        html.destination = file("${buildDir}/reports/checkstyle.html")
     }
 }
