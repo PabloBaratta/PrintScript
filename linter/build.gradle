@@ -1,0 +1,8 @@
+plugins {
+    id 'buildlogic.java-library-conventions'
+}
+
+dependencies {
+    implementation project(':lexer') //may be changed to utils due to json reading
+    implementation project(':ast')
+}
