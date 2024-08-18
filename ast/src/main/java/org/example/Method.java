@@ -1,14 +1,19 @@
 package org.example;
 
+import org.example.lexer.token.Position;
+
 import java.util.List;
 
 public class Method implements ASTNode{
+
     private Identifier identifier;
     private List<Expression> arguments;
+    private final Position position;
 
-    public Method(Identifier identifier, List<Expression> arguments) {
+    public Method(Identifier identifier, List<Expression> arguments, Position position) {
         this.identifier = identifier;
         this.arguments = arguments;
+        this.position = position;
     }
 
     public Identifier getVariable() {
@@ -28,5 +33,10 @@ public class Method implements ASTNode{
     @Override
     public String toString() {
         return identifier.toString() + "(" + arguments.toString() + ")";
+    }
+
+    @Override
+    public Position getPosition() {
+        return position;
     }
 }
