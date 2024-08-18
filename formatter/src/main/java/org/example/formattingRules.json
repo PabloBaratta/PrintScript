@@ -1,0 +1,7 @@
+{
+  "spaceBeforeColon": { "rule": true },
+  "spaceAfterColon": { "rule": true },
+  "spaceBeforeAssignation": { "rule": true },
+  "spaceAfterAssignation": { "rule": true },
+  "newLineBeforePrintln": { "rule": true, "qty": 2 }
+}
