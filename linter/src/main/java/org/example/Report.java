@@ -13,14 +13,14 @@ public class Report {
         reportLines.add(new ReportLine(position, errorMessage));
     }
 
+    public List<ReportLine> getReportLines() {
+        return reportLines;
+    }
 
     public String printReport() {
         return reportLines.stream()
                 .map(line -> line.errorMessage() +
                         "\n on \t" + line.position().toString())
                 .collect(Collectors.joining());
-    }
-
-    private record ReportLine(Position position, String errorMessage) {
     }
 }
