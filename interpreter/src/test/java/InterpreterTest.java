@@ -249,7 +249,7 @@ public class InterpreterTest {
         Interpreter interpreter = new Interpreter();
         Method printMethod = new Method(new Identifier("println"), Collections.singletonList(new TextLiteral("hola")));
 
-        printMethod.accept(interpreter);
+        printMethod.accept(interpreter.getExecutionVisitor());
 
         assertEquals("hola", outputStream.toString().trim());
     }
@@ -264,7 +264,7 @@ public class InterpreterTest {
 
         Method printMethod = new Method(new Identifier("println"), Collections.singletonList(expression));
 
-        printMethod.accept(interpreter);
+        printMethod.accept(interpreter.getExecutionVisitor());
 
         assertEquals("4.0", outputStream.toString().trim());
     }
@@ -278,11 +278,11 @@ public class InterpreterTest {
         NumericLiteral value = new NumericLiteral(10.0);
         VariableDeclaration declaration = new VariableDeclaration(identifier, type, Optional.of(value));
 
-        declaration.accept(interpreter);
+        declaration.accept(interpreter.getExecutionVisitor());
 
         Method printMethod = new Method(new Identifier("println"), Collections.singletonList(identifier));
 
-        printMethod.accept(interpreter);
+        printMethod.accept(interpreter.getExecutionVisitor());
 
         assertEquals("10.0", outputStream.toString().trim());
     }
@@ -319,7 +319,7 @@ public class InterpreterTest {
         // armo program
         Program program = new Program(Arrays.asList(declarationA, assignation, declarationB, assignationB, printMethod));
 
-        program.accept(interpreter);
+        program.accept(interpreter.getExecutionVisitor());
 
         assertEquals("Hola", outputStream.toString().trim());
 
