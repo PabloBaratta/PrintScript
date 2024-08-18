@@ -22,10 +22,12 @@ test {
 }
 
 spotless {
-    java {
-        googleJavaFormat('1.10.0')
-        target 'src/**/*.java'
-    }
+	format 'misc', {
+		target '**/*.java'
+		trimTrailingWhitespace()
+		indentWithTabs()
+		endWithNewline()
+	}
 }
 
 jacoco {
