@@ -29,7 +29,7 @@ public class BinaryExpression implements Expression {
 
     @Override
     public String toString() {
-        return left.toString() + operator + right.toString();
+        return left.toString() + " " + operator + " " + right.toString();
     }
 
     @Override
