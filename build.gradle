@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'com.diffplug.spotless' version '6.18.0'
     id 'checkstyle'
+    id 'jacoco-report-aggregation'
 }
 
 group = 'org.example'
@@ -14,7 +15,25 @@ repositories {
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    jacocoAggregation project(':lexer')
+    jacocoAggregation project(':interpreter')
+    jacocoAggregation project(':parser')
+    jacocoAggregation project(':cli')
+    jacocoAggregation project(':ast')
 }
+
+tasks.named('testCodeCoverageReport', JacocoReport) {
+    doLast {
+        def reportLocation = reports.html.outputLocation.get().asFile
+        println("HTML report generated: file://${reportLocation.absolutePath}/index.html")
+    }
+}
+
+tasks.named('check') {
+    dependsOn testCodeCoverageReport
+}
+
+
 
 test {
     useJUnitPlatform()
