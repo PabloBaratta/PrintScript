@@ -8,12 +8,10 @@ public class Method implements ASTNode{
 
     private Identifier identifier;
     private List<Expression> arguments;
-    private final Position position;
 
-    public Method(Identifier identifier, List<Expression> arguments, Position position) {
+    public Method(Identifier identifier, List<Expression> arguments) {
         this.identifier = identifier;
         this.arguments = arguments;
-        this.position = position;
     }
 
     public Identifier getVariable() {
@@ -37,6 +35,6 @@ public class Method implements ASTNode{
 
     @Override
     public Position getPosition() {
-        return position;
+        return identifier.getPosition();
     }
 }

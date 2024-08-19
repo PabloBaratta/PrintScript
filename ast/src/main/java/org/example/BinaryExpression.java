@@ -7,13 +7,11 @@ public class BinaryExpression implements Expression {
     private Expression left;
     private String operator;
     private Expression right;
-    private final Position position;
 
-    public BinaryExpression(Expression left, String operator, Expression right, Position position){
+    public BinaryExpression(Expression left, String operator, Expression right){
         this.left = left;
         this.operator = operator;
         this.right = right;
-        this.position = position;
     }
 
     public Expression getLeft(){
@@ -38,7 +36,7 @@ public class BinaryExpression implements Expression {
 
     @Override
     public Position getPosition() {
-        return position;
+        return left.getPosition();
     }
 
     @Override

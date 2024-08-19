@@ -7,11 +7,9 @@ import java.util.List;
 public class Program implements ASTNode {
 
     private final List<ASTNode> children;
-    private final Position position;
 
-    public Program(List<ASTNode> children, Position position) {
+    public Program(List<ASTNode> children) {
         this.children = children;
-        this.position = position;
     }
 
     public List<ASTNode> getChildren() {
@@ -34,7 +32,7 @@ public class Program implements ASTNode {
 
     @Override
     public Position getPosition() {
-        return position;
+        return new Position(0,0,0);
     }
 
 }

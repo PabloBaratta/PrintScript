@@ -1,7 +1,6 @@
 package org.example.interpreter;
 
 import org.example.*;
-
 import java.util.*;
 
 public class Interpreter implements ASTVisitor {
@@ -123,22 +122,23 @@ public class Interpreter implements ASTVisitor {
         Expression left = stack.pop();
         if (binaryExpression.getOperator().equals("+")){
             if (left instanceof NumericLiteral && right instanceof NumericLiteral){
-                stack.push(new NumericLiteral((Double) left.getValue() + (Double) right.getValue()));
+                org.example.lexer.token.Position position = left.getPosition();
+                stack.push(new NumericLiteral((Double) left.getValue() + (Double) right.getValue(), position));
             } else {
-                stack.push(new TextLiteral( left.getValue().toString() + right.getValue().toString()));
+                stack.push(new TextLiteral( left.getValue().toString() + right.getValue().toString(), left.getPosition()));
             }
         } else if (!(left instanceof NumericLiteral && right instanceof NumericLiteral)){
             throw new Exception("para las siguientes operaciones tienen que ser numeros");
         } else {
             switch (binaryExpression.getOperator()){
                 case "-":
-                    stack.push(new NumericLiteral((Double) left.getValue() - (Double) right.getValue()));
+                    stack.push(new NumericLiteral((Double) left.getValue() - (Double) right.getValue(), left.getPosition()));
                     break;
                 case "/":
-                    stack.push(new NumericLiteral((Double) left.getValue() / (Double) right.getValue()));
+                    stack.push(new NumericLiteral((Double) left.getValue() / (Double) right.getValue(), left.getPosition()));
                     break; // ver que pasa si es cero
                 case "*":
-                    stack.push(new NumericLiteral((Double) left.getValue() * (Double) right.getValue()));
+                    stack.push(new NumericLiteral((Double) left.getValue() * (Double) right.getValue(), left.getPosition()));
                     break;
                 default:
                     throw new Exception("Operador no válido: " + binaryExpression.getOperator());
