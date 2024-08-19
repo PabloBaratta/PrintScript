@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.lexer.token.Position;
+
 public class BinaryExpression implements Expression {
 
     private Expression left;
@@ -30,6 +32,11 @@ public class BinaryExpression implements Expression {
     @Override
     public String toString() {
         return left.toString() + operator + right.toString();
+    }
+
+    @Override
+    public Position getPosition() {
+        return left.getPosition();
     }
 
     @Override

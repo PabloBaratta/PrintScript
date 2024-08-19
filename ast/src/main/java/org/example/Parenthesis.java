@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.lexer.token.Position;
+
 public class Parenthesis implements Expression{
 
     private final Expression expression;
@@ -20,6 +22,11 @@ public class Parenthesis implements Expression{
     @Override
     public String toString() {
         return "(" + expression.toString() + ")";
+    }
+
+    @Override
+    public Position getPosition() {
+        return expression.getPosition();
     }
 
     @Override

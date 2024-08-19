@@ -1,13 +1,18 @@
 package org.example;
 
 
+import org.example.lexer.token.Position;
+
 public class UnaryExpression implements Expression{
+
     private Expression argument;
     private String operator;
+    private final Position position;
 
-    public UnaryExpression(Expression argument, String operator){
+    public UnaryExpression(Expression argument, String operator, Position position){
         this.argument = argument;
         this.operator = operator;
+        this.position = position;
     }
 
     public Expression getArgument() {
@@ -26,6 +31,11 @@ public class UnaryExpression implements Expression{
     @Override
     public String toString() {
         return operator + argument.toString();
+    }
+
+    @Override
+    public Position getPosition() {
+        return position;
     }
 
     @Override

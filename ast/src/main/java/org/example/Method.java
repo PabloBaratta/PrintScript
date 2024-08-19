@@ -1,8 +1,11 @@
 package org.example;
 
+import org.example.lexer.token.Position;
+
 import java.util.List;
 
 public class Method implements ASTNode{
+
     private Identifier identifier;
     private List<Expression> arguments;
 
@@ -28,5 +31,10 @@ public class Method implements ASTNode{
     @Override
     public String toString() {
         return identifier.toString() + "(" + arguments.toString() + ")";
+    }
+
+    @Override
+    public Position getPosition() {
+        return identifier.getPosition();
     }
 }

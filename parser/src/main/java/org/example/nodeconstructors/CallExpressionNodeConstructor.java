@@ -145,6 +145,6 @@ public class CallExpressionNodeConstructor implements NodeConstructor{
     }
 
     private static Method createMethodNode(Token identifier, List<Expression> listOfArguments) {
-        return new Method(new Identifier(identifier.associatedString()), listOfArguments);
+        return new Method(new Identifier(identifier.associatedString(), identifier.position()), listOfArguments);
     }
 }

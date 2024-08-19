@@ -2,6 +2,7 @@ package org.example.nodeconstructors;
 
 import org.example.*;
 import org.example.lexer.token.NativeTokenTypes;
+import org.example.lexer.token.Position;
 import org.example.lexer.token.Token;
 import org.example.lexer.token.TokenType;
 import org.example.lexer.utils.Try;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static org.example.nodeconstructors.NodeConstructionResponse.emptyResponse;
@@ -88,14 +90,14 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 
         Expression expression = (Expression) possibleExpression.possibleNode().getSuccess().get().get();
         tokenBuffer = possibleExpression.possibleBuffer();
-        return response(new UnaryExpression(expression, operator.associatedString()), tokenBuffer);
+        return response(new UnaryExpression(expression, operator.associatedString(), operator.position()), tokenBuffer);
     }
 
     private NodeConstructionResponse parseLiteral(TokenBuffer tokenBuffer,
-                                                  Function<String, Expression> expressionConstructor) {
+                                                  BiFunction<String, Position, Expression> expressionConstructor) {
         Token token = tokenBuffer.getToken().get();
         tokenBuffer = tokenBuffer.consumeToken();
-        return response(expressionConstructor.apply(token.associatedString()), tokenBuffer);
+        return response(expressionConstructor.apply(token.associatedString(), token.position()), tokenBuffer);
     }
 
     private NodeConstructionResponse parseParenthesisExpression(TokenBuffer tokenBuffer) {
@@ -139,9 +141,9 @@ public class ExpressionNodeConstructor implements NodeConstructor {
     // number, string, identifier and left parenthesis
     private NodeConstructionResponse primary(TokenBuffer tokenBuffer) {
         if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.NUMBER.toTokenType())) {
-            return parseLiteral(tokenBuffer, s -> new NumericLiteral(Double.parseDouble(s)));
+            return parseLiteral(tokenBuffer, (s, position) -> new NumericLiteral(Double.parseDouble(s), position));
         } else if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.STRING.toTokenType())) {
-            return parseLiteral(tokenBuffer, s -> new TextLiteral(s.substring(1, s.length() - 1)));
+            return parseLiteral(tokenBuffer, (s, position) -> new TextLiteral(s.substring(1, s.length() - 1), position));
         } else if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.IDENTIFIER.toTokenType())) {
             return parseLiteral(tokenBuffer, Identifier::new);
         } else if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.LEFT_PARENTHESIS.toTokenType())) {
