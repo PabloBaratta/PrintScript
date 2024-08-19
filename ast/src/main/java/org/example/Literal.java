@@ -1,11 +1,15 @@
 package org.example;
 
+import org.example.lexer.token.Position;
+
 public class Literal<T extends Comparable<T>> implements Expression{
 
     private final T value;
+    private final Position position;
 
-    public Literal(T value) {
+    public Literal(T value, Position position) {
         this.value = value;
+        this.position = position;
     }
 
     public T getValue(){
@@ -24,5 +28,10 @@ public class Literal<T extends Comparable<T>> implements Expression{
     @Override
     public String toString() {
         return value.toString();
+    }
+
+    @Override
+    public Position getPosition() {
+        return position;
     }
 }

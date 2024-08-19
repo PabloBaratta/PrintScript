@@ -84,8 +84,8 @@ public class AssignationNodeConstructor implements NodeConstructor{
     }
 
     private static Assignation getAssignation(Token identifierToken, Expression expression) {
-        Identifier identifier = new Identifier(identifierToken.associatedString());
-        return new Assignation(identifier, expression);
+        Identifier identifier = new Identifier(identifierToken.associatedString(), identifierToken.position());
+        return new Assignation(identifier, expression, identifier.getPosition());
     }
 
 

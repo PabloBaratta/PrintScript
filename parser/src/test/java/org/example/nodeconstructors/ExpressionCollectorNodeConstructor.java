@@ -2,6 +2,7 @@ package org.example.nodeconstructors;
 
 import org.example.TextLiteral;
 import org.example.TokenBuffer;
+import org.example.lexer.token.Position;
 import org.example.lexer.token.Token;
 import org.example.lexer.utils.Try;
 
@@ -20,7 +21,7 @@ public class ExpressionCollectorNodeConstructor implements NodeConstructor{
         }
 
         return new NodeConstructionResponse(
-                new Try<>(Optional.of(new TextLiteral("default value"))),
+                new Try<>(Optional.of(new TextLiteral("default value", new Position(0,0,0)))),
                 tokenBuffer
         );
     }

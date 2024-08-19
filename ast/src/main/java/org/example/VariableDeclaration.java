@@ -1,6 +1,7 @@
 package org.example;
 
-import javax.swing.text.Position;
+import org.example.lexer.token.Position;
+
 import java.util.Optional;
 
 public class VariableDeclaration implements ASTNode {
@@ -35,5 +36,10 @@ public class VariableDeclaration implements ASTNode {
     @Override
     public String toString() {
         return identifier.toString() + " : " + type.toString() + ";\n";
+    }
+
+    @Override
+    public Position getPosition() {
+        return identifier.getPosition();
     }
 }

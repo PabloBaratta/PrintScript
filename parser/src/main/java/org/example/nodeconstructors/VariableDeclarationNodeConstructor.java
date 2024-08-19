@@ -144,8 +144,8 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
 
 
     private static VariableDeclaration getVariableDeclaration(Token identifierToken, Token typeToken, Optional<Expression> optionalExpression) {
-        Identifier identifier = new Identifier(identifierToken.associatedString());
-        Type type = new Type(typeToken.associatedString());
+        Identifier identifier = new Identifier(identifierToken.associatedString(), identifierToken.position());
+        Type type = new Type(typeToken.associatedString(), typeToken.position());
         return new VariableDeclaration(identifier, type, optionalExpression);
     }
 
