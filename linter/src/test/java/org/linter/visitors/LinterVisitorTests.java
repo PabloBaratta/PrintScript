@@ -26,7 +26,7 @@ class LinterVisitorTests {
                                 List.of(new Identifier("a", new Position(31, 1,2))))));
 
         Report report = new Report();
-        PrintLineRules printLineRules = new PrintLineRules(report);
+        PrintLineRules printLineRules = new PrintLineRules(true, report);
         IdentifierRules identifierRules = new IdentifierRules(Case.CAMEL_CASE, report);
 
         LinterVisitor linterVisitor = new LinterVisitor(List.of(printLineRules, identifierRules));

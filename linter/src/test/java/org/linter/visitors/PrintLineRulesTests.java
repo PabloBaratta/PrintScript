@@ -68,7 +68,7 @@ public class PrintLineRulesTests {
                 )));
 
         Report report = new Report();
-        PrintLineRules printLineRules = new PrintLineRules(report);
+        PrintLineRules printLineRules = new PrintLineRules(true, report);
 
         printLineRules.visit(variableDeclaration);
 
@@ -83,7 +83,7 @@ public class PrintLineRulesTests {
                         arguments));
 
         Report report = new Report();
-        PrintLineRules printLineRules = new PrintLineRules(report);
+        PrintLineRules printLineRules = new PrintLineRules(true, report);
 
         printLineRules.visit(program);
         assertFalse(report.getReportLines().isEmpty());
@@ -96,7 +96,7 @@ public class PrintLineRulesTests {
                         arguments));
 
         Report report = new Report();
-        PrintLineRules printLineRules = new PrintLineRules(report);
+        PrintLineRules printLineRules = new PrintLineRules(true, report);
 
         printLineRules.visit(program);
         assertTrue(report.getReportLines().isEmpty());
