@@ -1,64 +1,60 @@
-package org.example.visitors;
+package org.linter.visitors;
 
 import org.example.*;
+import org.linter.Report;
 
-public class PrintLineRules implements ASTVisitor {
+import java.util.regex.Matcher;
 
-    public static final String ERROR_MESSAGE = "printLn should only be called with a identifier or a literal";
+public class IdentifierRules implements ASTVisitor {
+
+    private final Case caseToCheck;
     private final Report report;
+    private final String message;
 
-    public PrintLineRules(Report report) {
+    public IdentifierRules(Case caseToCheck, Report report) {
+        this.caseToCheck = caseToCheck;
         this.report = report;
+        this.message = "This identifier does not match the desired configuration" + caseToCheck;
     }
-
-
     @Override
     public void visit(Assignation assignation) throws Exception {
-
     }
 
     @Override
     public void visit(VariableDeclaration variableDeclaration) throws Exception {
-
+        Identifier identifier = variableDeclaration.getIdentifier();
+        Matcher matcher = caseToCheck.getRegex().matcher(identifier.getName());
+        if (!matcher.matches()) {
+            report.addLine(identifier.getPosition(), message);
+        }
     }
 
     @Override
     public void visit(Identifier identifier) throws Exception {
-
     }
 
     @Override
     public void visit(TextLiteral textLiteral) {
-
     }
 
     @Override
     public void visit(NumericLiteral numericLiteral) {
-
     }
 
     @Override
     public void visit(Method method) throws Exception {
-        if (!method.getVariable().getName().equals("println")) {
-            return;
-        }
-        Expression first = method.getArguments().getFirst();
-        first.accept(this);
     }
 
     @Override
     public void visit(UnaryExpression unaryExpression) throws Exception {
-        report.addLine(unaryExpression.getPosition(), ERROR_MESSAGE);
     }
 
     @Override
     public void visit(BinaryExpression binaryExpression) throws Exception {
-        report.addLine(unaryExpression.getPosition(), ERROR_MESSAGE);
     }
 
     @Override
     public void visit(Program program) throws Exception {
-
     }
 
     @Override

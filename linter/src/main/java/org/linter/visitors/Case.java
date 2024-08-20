@@ -1,10 +1,10 @@
-package org.example.visitors;
+package org.linter.visitors;
 
 
 import java.util.regex.Pattern;
 
 public enum Case {
-    CAMEL_CASE ("[a-zA-Z_][a-z0-9_]*([A-Z][a-zA-Z0-9_]*)*"), SNAKE_CASE("[a-z0-9_]+(_[a-z0-9_]+)*");
+    CAMEL_CASE ("(__)?[a-z]+(?:[A-Z][a-z]*)*\\d*"), SNAKE_CASE("(?!.*__)[a-z]+(_[a-z]+)*(_\\d+)?");
 
     private final String regex;
 

@@ -1,4 +1,4 @@
-package org.example.visitors;
+package org.linter.visitors;
 
 import org.example.*;
 

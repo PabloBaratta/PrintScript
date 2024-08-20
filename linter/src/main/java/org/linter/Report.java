@@ -1,4 +1,4 @@
-package org.example;
+package org.linter;
 
 import org.example.lexer.token.Position;
 
