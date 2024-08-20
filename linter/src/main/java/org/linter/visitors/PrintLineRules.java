@@ -7,9 +7,11 @@ public class PrintLineRules implements ASTVisitor {
 
     public static final String ERROR_MESSAGE = "printLn should only be called with a identifier or a literal";
     private final Report report;
+    private final boolean shouldCheck;
 
-    public PrintLineRules(Report report) {
+    public PrintLineRules(boolean shouldCheck, Report report) {
         this.report = report;
+        this.shouldCheck = shouldCheck;
     }
 
 
@@ -40,6 +42,9 @@ public class PrintLineRules implements ASTVisitor {
 
     @Override
     public void visit(Method method) throws Exception {
+        if (!shouldCheck) {
+            return;
+        }
         if (!method.getVariable().getName().equals("println")) {
             return;
         }
@@ -49,11 +54,17 @@ public class PrintLineRules implements ASTVisitor {
 
     @Override
     public void visit(UnaryExpression unaryExpression) throws Exception {
+        if (!shouldCheck) {
+            return;
+        }
         report.addLine(unaryExpression.getPosition(), ERROR_MESSAGE);
     }
 
     @Override
     public void visit(BinaryExpression binaryExpression) throws Exception {
+        if (!shouldCheck) {
+            return;
+        }
         report.addLine(binaryExpression.getPosition(), ERROR_MESSAGE);
     }
 
@@ -64,6 +75,9 @@ public class PrintLineRules implements ASTVisitor {
 
     @Override
     public void visit(Parenthesis parenthesis) throws Exception {
+        if (!shouldCheck) {
+            return;
+        }
         report.addLine(parenthesis.getPosition(), ERROR_MESSAGE);
     }
 }
