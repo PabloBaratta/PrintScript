@@ -18,7 +18,6 @@ dependencies {
     jacocoAggregation project(':interpreter')
     jacocoAggregation project(':parser')
     jacocoAggregation project(':cli')
-    jacocoAggregation project(':ast')
 }
 
 tasks.named('testCodeCoverageReport', JacocoReport) {

@@ -4,9 +4,14 @@
         "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
 <module name="Checker">
-    <module name="JavadocPackage"/>
     <module name="TreeWalker">
-        <module name="AvoidStarImport"/>
-
+        <module name="MethodName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
     </module>
+    <module name="LineLength">
+        <property name="max" value="100"/>
+        <property name="ignorePattern" value="^import"/>
+    </module>
+
 </module>
