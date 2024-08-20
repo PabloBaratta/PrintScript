@@ -44,7 +44,9 @@ public class Validator implements ASTVisitor {
 
     @Override
     public void visit(Method method) throws Exception {
-        // Validate method arguments if needed
+        if (method.getArguments().getFirst() instanceof Identifier && !environment.containsKey(method.getArguments().getFirst().toString())) {
+            throw new Exception("undeclared variable");
+        }
     }
 
     @Override

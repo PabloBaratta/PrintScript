@@ -79,7 +79,7 @@ public class Executor implements ASTVisitor {
 
     @Override
     public void visit(Method method) throws Exception {
-        evaluate(method.getArguments().getFirst());
+        evaluate(method.getArguments().getFirst()); // chequear si el identifier existe
         System.out.println(stack.pop().getValue());
     }
 
