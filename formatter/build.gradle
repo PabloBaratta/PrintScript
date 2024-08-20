@@ -5,6 +5,9 @@ plugins {
 
 dependencies {
     implementation project(':ast')
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.3'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.4.1'
+    // Jackson Core
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.15.0'
+
+    // Jackson Databind
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.0'
 }

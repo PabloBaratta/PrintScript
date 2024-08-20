@@ -84,7 +84,7 @@ public class Formatter {
         if (rules.get("spaceAfterColon").getRule()) {
             result.append(" ");
         }
-        result.append(type.toString());
+        result.append(type.getTypeName());
         if (expression.isPresent()){
             if (rules.get("spaceBeforeAssignation").getRule()) {
                 result.append(" ");
