@@ -29,16 +29,13 @@ public class LinterVisitor implements ASTVisitor {
     }
 
     @Override
-    public void visit(Identifier identifier) throws Exception {
-    }
+    public void visit(Identifier identifier) throws Exception {}
 
     @Override
-    public void visit(TextLiteral textLiteral) {
-    }
+    public void visit(TextLiteral textLiteral) {}
 
     @Override
-    public void visit(NumericLiteral numericLiteral) {
-    }
+    public void visit(NumericLiteral numericLiteral) {}
 
     @Override
     public void visit(Method method) throws Exception {
@@ -48,12 +45,10 @@ public class LinterVisitor implements ASTVisitor {
     }
 
     @Override
-    public void visit(UnaryExpression unaryExpression) throws Exception {
-    }
+    public void visit(UnaryExpression unaryExpression) throws Exception {}
 
     @Override
-    public void visit(BinaryExpression binaryExpression) throws Exception {
-    }
+    public void visit(BinaryExpression binaryExpression) throws Exception {}
 
     @Override
     public void visit(Program program) throws Exception {
@@ -64,7 +59,5 @@ public class LinterVisitor implements ASTVisitor {
     }
 
     @Override
-    public void visit(Parenthesis parenthesis) throws Exception {
-
-    }
+    public void visit(Parenthesis parenthesis) throws Exception {}
 }

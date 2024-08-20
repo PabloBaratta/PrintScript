@@ -1,13 +1,11 @@
 package org.linter.visitors;
 
-import org.example.Identifier;
-import org.example.TextLiteral;
-import org.example.Type;
-import org.example.VariableDeclaration;
+import org.example.*;
 import org.example.lexer.token.Position;
 import org.junit.jupiter.api.Test;
 import org.linter.Report;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -110,10 +108,38 @@ class IdentifierRulesTest {
         assertVarDeclSnakeCaseFalse(identifierString);
     }
 
-        private static void assertVarDeclCamelCase(String identifierString) throws Exception {
-        Report report = getReportFromVarDecl(identifierString, Case.CAMEL_CASE);
+    @Test
+    public void doesNotChangeWithOtherNodes() throws Exception {
+        Identifier identifier = new Identifier("hi", new Position(0, 0, 0));
+        Assignation assignation = new Assignation(identifier, identifier, new Position(0, 0, 0));
+        Method method = new Method(identifier, List.of(identifier));
+        TextLiteral lit = new TextLiteral("a", new Position(0,0,0));
+        NumericLiteral num = new NumericLiteral(1.0, new Position(0,0,0));
+        BinaryExpression bin = new BinaryExpression(identifier, "+", identifier);
+        Parenthesis parenthesis = new Parenthesis(bin);
+        UnaryExpression un = new UnaryExpression(bin, "+", new Position(0,0,0));
+
+        Report report = new Report();
+        IdentifierRules identifierRules = new IdentifierRules(Case.CAMEL_CASE, report);
+
+        identifierRules.visit(identifier);
+        identifierRules.visit(identifier);
+        identifierRules.visit(assignation);
+        identifierRules.visit(method);
+        identifierRules.visit(lit);
+        identifierRules.visit(num);
+        identifierRules.visit(bin);
+        identifierRules.visit(parenthesis);
+        identifierRules.visit(un);
 
         assertTrue(report.getReportLines().isEmpty());
+    }
+
+        private static void assertVarDeclCamelCase(String identifierString) throws Exception {
+            Report report = getReportFromVarDecl(identifierString, Case.CAMEL_CASE);
+
+            assertTrue(report.getReportLines().isEmpty());
+
     }
 
 

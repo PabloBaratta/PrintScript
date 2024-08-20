@@ -43,7 +43,7 @@ public class PrintLineConfiguration implements Configurator {
         if (!isValidRuleOption(ruleOption)) {
             throw new WrongConfigurationException(ruleName, ruleOption, getOptions());
         }
-        return new PrintLineRules(mapOptionCase.get(config.defaultValue()), report);
+        return new PrintLineRules(mapOptionCase.get(ruleOption), report);
     }
 
     @Override

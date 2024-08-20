@@ -15,8 +15,7 @@ public class IdentifierConfiguration implements Configurator {
     private final Map<String, Case> mapOptionCase = Map.of("camel", Case.CAMEL_CASE, "snake", Case.SNAKE_CASE);
     private final RuleBasicConfig config = RuleBasicConfig.rule(mapOptionCase.keySet().toArray(new String[0]), "camel");
 
-    public IdentifierConfiguration() {
-    }
+    public IdentifierConfiguration() {}
 
     public boolean isThisRule(String ruleName) {
         return this.ruleName.equals(ruleName);

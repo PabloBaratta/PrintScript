@@ -36,5 +36,28 @@ class LinterVisitorTests {
         assertTrue(report.getReportLines().isEmpty());
     }
 
+    @Test
+    public void doesNotChangeWithOtherNodes() throws Exception {
+        Identifier identifier = new Identifier("hi", new Position(0, 0, 0));
+        Assignation assignation = new Assignation(identifier, identifier, new Position(0, 0, 0));
+        TextLiteral lit = new TextLiteral("a", new Position(0,0,0));
+        NumericLiteral num = new NumericLiteral(1.0, new Position(0,0,0));
+        BinaryExpression bin = new BinaryExpression(identifier, "+", identifier);
+        Parenthesis parenthesis = new Parenthesis(bin);
+        UnaryExpression un = new UnaryExpression(bin, "+", new Position(0,0,0));
+
+        CollectorVisitor collectorVisitor = new CollectorVisitor();
+        LinterVisitor visitor = new LinterVisitor(List.of(collectorVisitor));
+
+        visitor.visit(identifier);
+        visitor.visit(lit);
+        visitor.visit(num);
+        visitor.visit(bin);
+        visitor.visit(parenthesis);
+        visitor.visit(un);
+
+        assertTrue(collectorVisitor.getVisitedNodes().isEmpty());
+    }
+
 
 }

@@ -76,6 +76,7 @@ public class PrintLineRulesTests {
     }
 
 
+
     private static void assertUnsuccessfulScenario(Expression arguments) throws Exception {
         Method program = new Method(
                 new Identifier("println", new Position(0,7,1)),
