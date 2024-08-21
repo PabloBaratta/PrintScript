@@ -17,87 +17,87 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class AssignationNodeConstructorTest {
 
-    @Test
-    public void doesNotRecognizeOtherTokens() {
+	@Test
+	public void doesNotRecognizeOtherTokens() {
 
-        NodeConstructor builder = new AssignationNodeConstructor(new ExpressionCollectorNodeConstructor());
+		NodeConstructor builder = new AssignationNodeConstructor(new ExpressionCollectorNodeConstructor());
 
-        Arrays.stream(NativeTokenTypes.values()).filter(
-                type -> !type.equals(NativeTokenTypes.IDENTIFIER)
-        ).forEach(type ->
-                {TokenBuffer tokenBuffer = new TokenBuffer(List.of(getaTokenFromTokenType(type)));
-                NodeConstructionResponse build = builder.build(tokenBuffer);
-                assertTrue(build.possibleNode().isSuccess());
-                assertTrue(build.possibleNode().getSuccess().get().isEmpty());}
-        );
+		Arrays.stream(NativeTokenTypes.values()).filter(
+				type -> !type.equals(NativeTokenTypes.IDENTIFIER)
+		).forEach(type ->
+				{TokenBuffer tokenBuffer = new TokenBuffer(List.of(getaTokenFromTokenType(type)));
+				NodeConstructionResponse build = builder.build(tokenBuffer);
+				assertTrue(build.possibleNode().isSuccess());
+				assertTrue(build.possibleNode().getSuccess().get().isEmpty());}
+		);
 
-        Arrays.stream(NativeTokenTypes.values()).filter(
-                type -> !type.equals(NativeTokenTypes.EQUALS)).
-                forEach(type ->
-                {TokenBuffer tokenBuffer = new TokenBuffer(List.of(getaTokenFromTokenType(NativeTokenTypes.IDENTIFIER),
-                        getaTokenFromTokenType(type)));
-                    NodeConstructionResponse build = builder.build(tokenBuffer);
-                    assertTrue(build.possibleNode().isSuccess());
-                    assertTrue(build.possibleNode().getSuccess().get().isEmpty());});
-    }
+		Arrays.stream(NativeTokenTypes.values()).filter(
+				type -> !type.equals(NativeTokenTypes.EQUALS)).
+				forEach(type ->
+				{TokenBuffer tokenBuffer = new TokenBuffer(List.of(getaTokenFromTokenType(NativeTokenTypes.IDENTIFIER),
+						getaTokenFromTokenType(type)));
+					NodeConstructionResponse build = builder.build(tokenBuffer);
+					assertTrue(build.possibleNode().isSuccess());
+					assertTrue(build.possibleNode().getSuccess().get().isEmpty());});
+	}
 
-    @Test
-    public void successfulScenarios(){
-        NativeTokenTypes[] nativeTokenTypes = new NativeTokenTypes[]{
-                IDENTIFIER, EQUALS, STRING, SEMICOLON
-        };
+	@Test
+	public void successfulScenarios(){
+		NativeTokenTypes[] nativeTokenTypes = new NativeTokenTypes[]{
+				IDENTIFIER, EQUALS, STRING, SEMICOLON
+		};
 
-        List<Token> tokens = getTokens(nativeTokenTypes);
+		List<Token> tokens = getTokens(nativeTokenTypes);
 
-        int intermediateTokens = 1;
+		int intermediateTokens = 1;
 
-        assertSuccess(tokens, intermediateTokens);
+		assertSuccess(tokens, intermediateTokens);
 
-        nativeTokenTypes = new NativeTokenTypes[]{
-                IDENTIFIER, EQUALS, STRING, PLUS, NUMBER, SEMICOLON
-        };
+		nativeTokenTypes = new NativeTokenTypes[]{
+				IDENTIFIER, EQUALS, STRING, PLUS, NUMBER, SEMICOLON
+		};
 
-        tokens = getTokens(nativeTokenTypes);
+		tokens = getTokens(nativeTokenTypes);
 
-        intermediateTokens = 3;
+		intermediateTokens = 3;
 
-        assertSuccess(tokens, intermediateTokens);
-    }
-    
-    @Test
-    public void syntaxErrors() {
-        NativeTokenTypes[] nativeTokenTypes = new NativeTokenTypes[]{
-                IDENTIFIER, EQUALS, STRING, SEMICOLON
-        };
+		assertSuccess(tokens, intermediateTokens);
+	}
 
-        NodeConstructor builder = new AssignationNodeConstructor(new ExpressionCollectorNodeConstructor());
+	@Test
+	public void syntaxErrors() {
+		NativeTokenTypes[] nativeTokenTypes = new NativeTokenTypes[]{
+				IDENTIFIER, EQUALS, STRING, SEMICOLON
+		};
+
+		NodeConstructor builder = new AssignationNodeConstructor(new ExpressionCollectorNodeConstructor());
 
 
-        List<Token> tokens = getTokens(nativeTokenTypes);
+		List<Token> tokens = getTokens(nativeTokenTypes);
 
-        int originalTokenListSize = tokens.size();
-        for (int i = 2; i < originalTokenListSize; i++) {
-            tokens.removeLast();
-            NodeConstructionResponse build = builder.build(new TokenBuffer(tokens));
-            assertTrue(build.possibleNode().isFail());
-        }
+		int originalTokenListSize = tokens.size();
+		for (int i = 2; i < originalTokenListSize; i++) {
+			tokens.removeLast();
+			NodeConstructionResponse build = builder.build(new TokenBuffer(tokens));
+			assertTrue(build.possibleNode().isFail());
+		}
 
-    }
+	}
 
-    private void assertSuccess(List<Token> tokens, int intermediateTokens) {
-        ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
-        NodeConstructor assignationNodeConstructor = new AssignationNodeConstructor(collector);
+	private void assertSuccess(List<Token> tokens, int intermediateTokens) {
+		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
+		NodeConstructor assignationNodeConstructor = new AssignationNodeConstructor(collector);
 
-        NodeConstructionResponse build = assignationNodeConstructor.build(new TokenBuffer(tokens));
+		NodeConstructionResponse build = assignationNodeConstructor.build(new TokenBuffer(tokens));
 
-        assertTrue(build.possibleNode().isSuccess());
-        assertFalse(build.possibleBuffer().hasAnyTokensLeft());
-        assertTrue(build.possibleNode().getSuccess().isPresent());
-        ASTNode astNode = build.possibleNode().getSuccess().get().get();
-        assertInstanceOf(Assignation.class, astNode);
-        assertEquals(intermediateTokens, collector.collectedTokens.size());
-        collector.collectedTokens.forEach( token ->
-                assertNotEquals(SEMICOLON.toTokenType(), token.type())
-        );
-    }
+		assertTrue(build.possibleNode().isSuccess());
+		assertFalse(build.possibleBuffer().hasAnyTokensLeft());
+		assertTrue(build.possibleNode().getSuccess().isPresent());
+		ASTNode astNode = build.possibleNode().getSuccess().get().get();
+		assertInstanceOf(Assignation.class, astNode);
+		assertEquals(intermediateTokens, collector.collectedTokens.size());
+		collector.collectedTokens.forEach( token ->
+				assertNotEquals(SEMICOLON.toTokenType(), token.type())
+		);
+	}
 }

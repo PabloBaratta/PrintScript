@@ -21,164 +21,164 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class VariableDeclarationNodeConstructorTest {
 
-    @Test
-    public void doesNotRecognizeOtherTokens() {
-        ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
+	@Test
+	public void doesNotRecognizeOtherTokens() {
+		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
 
-        VariableDeclarationNodeConstructor builder = getVariableDeclarationNodeConstructor(collector);
+		VariableDeclarationNodeConstructor builder = getVariableDeclarationNodeConstructor(collector);
 
-        Arrays.stream(values())
-                .filter(type -> type != LET)
-                .forEach(type ->
-                {
-                    TokenBuffer tokenBuffer = new TokenBuffer(List.of(getaTokenFromTokenType(type)));
-                    NodeConstructionResponse build = builder.build(tokenBuffer);
-                    assertTrue(build.possibleNode().isSuccess());
-                    assertTrue(build.possibleNode().getSuccess().get().isEmpty());
-                });
-    }
+		Arrays.stream(values())
+				.filter(type -> type != LET)
+				.forEach(type ->
+				{
+					TokenBuffer tokenBuffer = new TokenBuffer(List.of(getaTokenFromTokenType(type)));
+					NodeConstructionResponse build = builder.build(tokenBuffer);
+					assertTrue(build.possibleNode().isSuccess());
+					assertTrue(build.possibleNode().getSuccess().get().isEmpty());
+				});
+	}
 
-    @Test
-    public void successfulStringVariableDeclarationAssignation() {
-        NativeTokenTypes[] nativeTokenTypes = new NativeTokenTypes[]{
-                LET, IDENTIFIER, COLON, STRING_TYPE, EQUALS, STRING, SEMICOLON
-        };
+	@Test
+	public void successfulStringVariableDeclarationAssignation() {
+		NativeTokenTypes[] nativeTokenTypes = new NativeTokenTypes[]{
+				LET, IDENTIFIER, COLON, STRING_TYPE, EQUALS, STRING, SEMICOLON
+		};
 
-        List<Token> tokens = getTokens(nativeTokenTypes);
-        int intermediateTokens = 1;
-        successfulVarDeclAss(tokens, intermediateTokens);
+		List<Token> tokens = getTokens(nativeTokenTypes);
+		int intermediateTokens = 1;
+		successfulVarDeclAss(tokens, intermediateTokens);
 
-        nativeTokenTypes = new NativeTokenTypes[]{
-                LET, IDENTIFIER, COLON, STRING_TYPE, EQUALS, STRING, PLUS, STRING, SEMICOLON
-        };
+		nativeTokenTypes = new NativeTokenTypes[]{
+				LET, IDENTIFIER, COLON, STRING_TYPE, EQUALS, STRING, PLUS, STRING, SEMICOLON
+		};
 
-        tokens = getTokens(nativeTokenTypes);
-        intermediateTokens = 3;
-        successfulVarDeclAss(tokens, intermediateTokens);
+		tokens = getTokens(nativeTokenTypes);
+		intermediateTokens = 3;
+		successfulVarDeclAss(tokens, intermediateTokens);
 
-    }
-
-
-    @Test
-    public void alwaysMissingTokenTypes() {
-        NativeTokenTypes[] nativeTokenTypes = new NativeTokenTypes[]{
-                LET, IDENTIFIER, COLON, STRING_TYPE, EQUALS, STRING, SEMICOLON
-        };
-
-        List<Token> defaultCorrectSequence = getTokens(nativeTokenTypes);
-        int originalSize = defaultCorrectSequence.size();
-        ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
-
-        VariableDeclarationNodeConstructor builder = getVariableDeclarationNodeConstructor(collector);
-        for (int i = 1; i < originalSize; i++) {
-            defaultCorrectSequence.removeLast();
-            TokenBuffer tokenBuffer = new TokenBuffer(defaultCorrectSequence);
-            NodeConstructionResponse build = builder.build(tokenBuffer);
-            assertTrue(build.possibleNode().isFail());
-            System.out.println(build.possibleNode().getFail().get().getMessage());
-        }
-    }
-
-    @Test
-    public void incorrectSituations() {
-        NativeTokenTypes[] nativeTokenTypes = new NativeTokenTypes[]{
-                LET, IDENTIFIER, STRING_TYPE, EQUALS, STRING, SEMICOLON
-        };
-
-        assertIncorrectSituations(nativeTokenTypes);
-
-        nativeTokenTypes = new NativeTokenTypes[]{
-                LET, IDENTIFIER, COLON, STRING_TYPE, STRING, SEMICOLON
-        };
-        assertIncorrectSituations(nativeTokenTypes);
-    }
-
-    private static void assertIncorrectSituations(NativeTokenTypes[] nativeTokenTypes) {
-        List<Token> defaultCorrectSequence = getTokens(nativeTokenTypes);
-        ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
-
-        VariableDeclarationNodeConstructor builder = getVariableDeclarationNodeConstructor(collector);
-
-        NodeConstructionResponse build = builder.build(new TokenBuffer(defaultCorrectSequence));
-
-        assertTrue(build.possibleNode().isFail());
-    }
-
-    @Test
-    public void successfulVariableDeclaration() {
-        List<Token> tokens = getDefaultCorrectSequenceForVarDecl();
-        ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
-
-        NodeConstructor variableDeclarationNodeConstructor = getVariableDeclarationNodeConstructor(collector);
-
-        NodeConstructionResponse build = variableDeclarationNodeConstructor.build(new TokenBuffer(tokens));
+	}
 
 
-        assertTrue(build.possibleNode().isSuccess());
-        //consumes all tokens
-        assertFalse(build.possibleBuffer().hasAnyTokensLeft());
+	@Test
+	public void alwaysMissingTokenTypes() {
+		NativeTokenTypes[] nativeTokenTypes = new NativeTokenTypes[]{
+				LET, IDENTIFIER, COLON, STRING_TYPE, EQUALS, STRING, SEMICOLON
+		};
+
+		List<Token> defaultCorrectSequence = getTokens(nativeTokenTypes);
+		int originalSize = defaultCorrectSequence.size();
+		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
+
+		VariableDeclarationNodeConstructor builder = getVariableDeclarationNodeConstructor(collector);
+		for (int i = 1; i < originalSize; i++) {
+			defaultCorrectSequence.removeLast();
+			TokenBuffer tokenBuffer = new TokenBuffer(defaultCorrectSequence);
+			NodeConstructionResponse build = builder.build(tokenBuffer);
+			assertTrue(build.possibleNode().isFail());
+			System.out.println(build.possibleNode().getFail().get().getMessage());
+		}
+	}
+
+	@Test
+	public void incorrectSituations() {
+		NativeTokenTypes[] nativeTokenTypes = new NativeTokenTypes[]{
+				LET, IDENTIFIER, STRING_TYPE, EQUALS, STRING, SEMICOLON
+		};
+
+		assertIncorrectSituations(nativeTokenTypes);
+
+		nativeTokenTypes = new NativeTokenTypes[]{
+				LET, IDENTIFIER, COLON, STRING_TYPE, STRING, SEMICOLON
+		};
+		assertIncorrectSituations(nativeTokenTypes);
+	}
+
+	private static void assertIncorrectSituations(NativeTokenTypes[] nativeTokenTypes) {
+		List<Token> defaultCorrectSequence = getTokens(nativeTokenTypes);
+		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
+
+		VariableDeclarationNodeConstructor builder = getVariableDeclarationNodeConstructor(collector);
+
+		NodeConstructionResponse build = builder.build(new TokenBuffer(defaultCorrectSequence));
+
+		assertTrue(build.possibleNode().isFail());
+	}
+
+	@Test
+	public void successfulVariableDeclaration() {
+		List<Token> tokens = getDefaultCorrectSequenceForVarDecl();
+		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
+
+		NodeConstructor variableDeclarationNodeConstructor = getVariableDeclarationNodeConstructor(collector);
+
+		NodeConstructionResponse build = variableDeclarationNodeConstructor.build(new TokenBuffer(tokens));
 
 
-        Optional<ASTNode> optionalASTNode = build.possibleNode().getSuccess().get();
-
-        assertTrue(optionalASTNode.isPresent());
-
-        ASTNode astNode = optionalASTNode.get();
-        assertInstanceOf(VariableDeclaration.class, astNode);
-
-        VariableDeclaration node = (VariableDeclaration) astNode;
-
-        assertTrue(node.getExpression().isEmpty());
-        assertTrue(collector.collectedTokens.isEmpty());
-    }
-
-    private static void successfulVarDeclAss(List<Token> tokens, int numberOfExpressionTokens) {
+		assertTrue(build.possibleNode().isSuccess());
+		//consumes all tokens
+		assertFalse(build.possibleBuffer().hasAnyTokensLeft());
 
 
-        ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
-        NodeConstructor variableDeclarationNodeConstructor = getVariableDeclarationNodeConstructor(collector);
+		Optional<ASTNode> optionalASTNode = build.possibleNode().getSuccess().get();
 
-        NodeConstructionResponse build = variableDeclarationNodeConstructor.build(new TokenBuffer(tokens));
+		assertTrue(optionalASTNode.isPresent());
 
+		ASTNode astNode = optionalASTNode.get();
+		assertInstanceOf(VariableDeclaration.class, astNode);
 
-        assertTrue(build.possibleNode().isSuccess());
-        //consumes all tokens
-        assertFalse(build.possibleBuffer().hasAnyTokensLeft());
+		VariableDeclaration node = (VariableDeclaration) astNode;
 
+		assertTrue(node.getExpression().isEmpty());
+		assertTrue(collector.collectedTokens.isEmpty());
+	}
 
-        Optional<ASTNode> optionalASTNode = build.possibleNode().getSuccess().get();
-
-        assertTrue(optionalASTNode.isPresent());
-
-        ASTNode astNode = optionalASTNode.get();
-        assertInstanceOf(VariableDeclaration.class, astNode);
-
-        VariableDeclaration node = (VariableDeclaration) astNode;
-
-        assertTrue(node.getExpression().isPresent());
-
-        assertEquals(numberOfExpressionTokens, collector.collectedTokens.size());
-
-        collector.collectedTokens.forEach( token ->
-                assertNotEquals(SEMICOLON.toTokenType(), token.type())
-        );
-    }
+	private static void successfulVarDeclAss(List<Token> tokens, int numberOfExpressionTokens) {
 
 
-    private static List<Token> getDefaultCorrectSequenceForVarDecl() {
-        NativeTokenTypes[] nativeTokenTypes = new NativeTokenTypes[]{
-                LET, IDENTIFIER, COLON, STRING_TYPE, SEMICOLON
-        };
+		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
+		NodeConstructor variableDeclarationNodeConstructor = getVariableDeclarationNodeConstructor(collector);
 
-        return getTokens(nativeTokenTypes);
-    }
+		NodeConstructionResponse build = variableDeclarationNodeConstructor.build(new TokenBuffer(tokens));
 
 
+		assertTrue(build.possibleNode().isSuccess());
+		//consumes all tokens
+		assertFalse(build.possibleBuffer().hasAnyTokensLeft());
 
-    private static VariableDeclarationNodeConstructor getVariableDeclarationNodeConstructor(NodeConstructor expressionNodeConstructor) {
-        return new VariableDeclarationNodeConstructor(expressionNodeConstructor,
-                List.of(LET.toTokenType()), List.of(STRING_TYPE.toTokenType(), NUMBER_TYPE.toTokenType()));
-    }
+
+		Optional<ASTNode> optionalASTNode = build.possibleNode().getSuccess().get();
+
+		assertTrue(optionalASTNode.isPresent());
+
+		ASTNode astNode = optionalASTNode.get();
+		assertInstanceOf(VariableDeclaration.class, astNode);
+
+		VariableDeclaration node = (VariableDeclaration) astNode;
+
+		assertTrue(node.getExpression().isPresent());
+
+		assertEquals(numberOfExpressionTokens, collector.collectedTokens.size());
+
+		collector.collectedTokens.forEach( token ->
+				assertNotEquals(SEMICOLON.toTokenType(), token.type())
+		);
+	}
+
+
+	private static List<Token> getDefaultCorrectSequenceForVarDecl() {
+		NativeTokenTypes[] nativeTokenTypes = new NativeTokenTypes[]{
+				LET, IDENTIFIER, COLON, STRING_TYPE, SEMICOLON
+		};
+
+		return getTokens(nativeTokenTypes);
+	}
+
+
+
+	private static VariableDeclarationNodeConstructor getVariableDeclarationNodeConstructor(NodeConstructor expressionNodeConstructor) {
+		return new VariableDeclarationNodeConstructor(expressionNodeConstructor,
+				List.of(LET.toTokenType()), List.of(STRING_TYPE.toTokenType(), NUMBER_TYPE.toTokenType()));
+	}
 
 
 }
