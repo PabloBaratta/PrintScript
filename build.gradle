@@ -42,7 +42,8 @@ test {
 spotless {
 	format 'misc', {
 		target '**/*.java'
-		trimTrailingWhitespace()
+        targetExclude '**/build*/**'
+        trimTrailingWhitespace()
 		indentWithTabs()
 		endWithNewline()
 	}

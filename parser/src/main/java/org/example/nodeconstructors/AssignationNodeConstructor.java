@@ -16,77 +16,77 @@ import static org.example.nodeconstructors.NodeConstructionResponse.response;
 //TODO refactor
 public class AssignationNodeConstructor implements NodeConstructor{
 
-    private final NodeConstructor expressionNodeConstructor;
+	private final NodeConstructor expressionNodeConstructor;
 
-    public AssignationNodeConstructor(NodeConstructor expressionNodeConstructor
-    ) {
-        this.expressionNodeConstructor = expressionNodeConstructor;
-    }
-    @Override
-    public NodeConstructionResponse build(TokenBuffer tokenBuffer) {
-        boolean hasIdentifier = tokenBuffer.isNextTokenOfType(NativeTokenTypes.IDENTIFIER.toTokenType());
+	public AssignationNodeConstructor(NodeConstructor expressionNodeConstructor
+	) {
+		this.expressionNodeConstructor = expressionNodeConstructor;
+	}
+	@Override
+	public NodeConstructionResponse build(TokenBuffer tokenBuffer) {
+		boolean hasIdentifier = tokenBuffer.isNextTokenOfType(NativeTokenTypes.IDENTIFIER.toTokenType());
 
-        Token identifierToken = tokenBuffer.getToken().get();
-        TokenBuffer tokenBufferWithoutIdentifier = tokenBuffer.consumeToken();
+		Token identifierToken = tokenBuffer.getToken().get();
+		TokenBuffer tokenBufferWithoutIdentifier = tokenBuffer.consumeToken();
 
-        if (!(hasIdentifier &&
-            tokenBufferWithoutIdentifier.hasAnyTokensLeft() &&
-            tokenBufferWithoutIdentifier.isNextTokenOfType(NativeTokenTypes.EQUALS.toTokenType()))) {
-            return new NodeConstructionResponse(new Try<>(Optional.empty()), tokenBufferWithoutIdentifier);
-        }
+		if (!(hasIdentifier &&
+			tokenBufferWithoutIdentifier.hasAnyTokensLeft() &&
+			tokenBufferWithoutIdentifier.isNextTokenOfType(NativeTokenTypes.EQUALS.toTokenType()))) {
+			return new NodeConstructionResponse(new Try<>(Optional.empty()), tokenBufferWithoutIdentifier);
+		}
 
 
-        Token equals = tokenBufferWithoutIdentifier.getToken().get();
-        TokenBuffer tokenBufferWithoutEquals = tokenBufferWithoutIdentifier.consumeToken();
+		Token equals = tokenBufferWithoutIdentifier.getToken().get();
+		TokenBuffer tokenBufferWithoutEquals = tokenBufferWithoutIdentifier.consumeToken();
 
-        if (!tokenBufferWithoutEquals.hasAnyTokensLeft()) {
-            return response(new SemanticErrorException(equals, "was expecting closing after"),
-                    tokenBufferWithoutEquals);
-        }
+		if (!tokenBufferWithoutEquals.hasAnyTokensLeft()) {
+			return response(new SemanticErrorException(equals, "was expecting closing after"),
+					tokenBufferWithoutEquals);
+		}
 
-        return handleEqualsToken(identifierToken, equals, tokenBufferWithoutEquals);
-    }
+		return handleEqualsToken(identifierToken, equals, tokenBufferWithoutEquals);
+	}
 
-    private NodeConstructionResponse handleEqualsToken(Token identifierToken, Token equalsToken, TokenBuffer tokenBuffer) {
-        List<Token> tokens = new LinkedList<>();
+	private NodeConstructionResponse handleEqualsToken(Token identifierToken, Token equalsToken, TokenBuffer tokenBuffer) {
+		List<Token> tokens = new LinkedList<>();
 
-        Token currentToken = equalsToken;
-        while (!tokenBuffer.isNextTokenOfType(NativeTokenTypes.SEMICOLON.toTokenType())){
+		Token currentToken = equalsToken;
+		while (!tokenBuffer.isNextTokenOfType(NativeTokenTypes.SEMICOLON.toTokenType())){
 
-            if (!tokenBuffer.hasAnyTokensLeft()) {
-                return response(new SemanticErrorException(currentToken, "was expecting closing after"),
-                        tokenBuffer);
-            }
+			if (!tokenBuffer.hasAnyTokensLeft()) {
+				return response(new SemanticErrorException(currentToken, "was expecting closing after"),
+						tokenBuffer);
+			}
 
-            currentToken = tokenBuffer.getToken().get();
-            tokens.add(currentToken);
-            tokenBuffer = tokenBuffer.consumeToken();
-        }
+			currentToken = tokenBuffer.getToken().get();
+			tokens.add(currentToken);
+			tokenBuffer = tokenBuffer.consumeToken();
+		}
 
-        boolean noTokensBetweenEqualsAndSemiColon = tokens.isEmpty();
+		boolean noTokensBetweenEqualsAndSemiColon = tokens.isEmpty();
 
-        if (noTokensBetweenEqualsAndSemiColon){
-            return response(new SemanticErrorException(equalsToken, "was expecting assignation"),
-                    tokenBuffer);
-        }
+		if (noTokensBetweenEqualsAndSemiColon){
+			return response(new SemanticErrorException(equalsToken, "was expecting assignation"),
+					tokenBuffer);
+		}
 
-        TokenBuffer expressionTokenBuffer = new TokenBuffer(tokens);
+		TokenBuffer expressionTokenBuffer = new TokenBuffer(tokens);
 
-        NodeConstructionResponse buildResult = expressionNodeConstructor.build(expressionTokenBuffer);
+		NodeConstructionResponse buildResult = expressionNodeConstructor.build(expressionTokenBuffer);
 
-        if (buildResult.possibleNode().isFail()) {
-            return buildResult;
-        }
+		if (buildResult.possibleNode().isFail()) {
+			return buildResult;
+		}
 
-        ASTNode astNode = buildResult.possibleNode().getSuccess().get().get();
+		ASTNode astNode = buildResult.possibleNode().getSuccess().get().get();
 
-        return response(getAssignation(identifierToken, (Expression) astNode), tokenBuffer.consumeToken());
-    }
+		return response(getAssignation(identifierToken, (Expression) astNode), tokenBuffer.consumeToken());
+	}
 
-    private static Assignation getAssignation(Token identifierToken, Expression expression) {
-        Identifier identifier = new Identifier(identifierToken.associatedString(), identifierToken.position());
-        return new Assignation(identifier, expression, identifier.getPosition());
-    }
+	private static Assignation getAssignation(Token identifierToken, Expression expression) {
+		Identifier identifier = new Identifier(identifierToken.associatedString(), identifierToken.position());
+		return new Assignation(identifier, expression, identifier.getPosition());
+	}
 
 
 }
