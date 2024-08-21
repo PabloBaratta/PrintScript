@@ -10,41 +10,41 @@ import java.util.List;
 import java.util.Map;
 public class LinterConfigurator {
 
-    private final Map<String, Configurator> propToConfigurators;
+	private final Map<String, Configurator> propToConfigurators;
 
-    public LinterConfigurator(List<Configurator> configurators) {
-        this.propToConfigurators = getPropToConfigurators(configurators);
-    }
+	public LinterConfigurator(List<Configurator> configurators) {
+		this.propToConfigurators = getPropToConfigurators(configurators);
+	}
 
-    public LinterVisitor getLinterFromConfig(Map<String, String> config, Report report) throws WrongConfigurationException {
+	public LinterVisitor getLinterFromConfig(Map<String, String> config, Report report) throws WrongConfigurationException {
 
-        List<ASTVisitor> linters = new LinkedList<>();
+		List<ASTVisitor> linters = new LinkedList<>();
 
-        for (Map.Entry<String, String> stringStringEntry : config.entrySet()) {
+		for (Map.Entry<String, String> stringStringEntry : config.entrySet()) {
 
-            String property = stringStringEntry.getKey();
-            checkIsValidOption(property);
-            String option = stringStringEntry.getValue();
+			String property = stringStringEntry.getKey();
+			checkIsValidOption(property);
+			String option = stringStringEntry.getValue();
 
-            Configurator configurator = propToConfigurators.get(property);
-            ASTVisitor linterRule = configurator.getLinterRule(report, option);
+			Configurator configurator = propToConfigurators.get(property);
+			ASTVisitor linterRule = configurator.getLinterRule(report, option);
 
-            linters.add(linterRule);
-        }
+			linters.add(linterRule);
+		}
 
-        return new LinterVisitor(linters);
-    }
+		return new LinterVisitor(linters);
+	}
 
-    private void checkIsValidOption(String property) throws WrongConfigurationException{
-        if (!propToConfigurators.containsKey(property)) {
-            throw new WrongConfigurationException(property);
-        }
-    }
+	private void checkIsValidOption(String property) throws WrongConfigurationException{
+		if (!propToConfigurators.containsKey(property)) {
+			throw new WrongConfigurationException(property);
+		}
+	}
 
-    private Map<String, Configurator> getPropToConfigurators(List<Configurator> configurators) {
+	private Map<String, Configurator> getPropToConfigurators(List<Configurator> configurators) {
 
-        Map<String, Configurator> map = new HashMap<>();
-        configurators.forEach(c -> map.put(c.getProp(), c));
-        return map;
-    }
+		Map<String, Configurator> map = new HashMap<>();
+		configurators.forEach(c -> map.put(c.getProp(), c));
+		return map;
+	}
 }

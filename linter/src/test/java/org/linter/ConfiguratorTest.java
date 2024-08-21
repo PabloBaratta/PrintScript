@@ -10,51 +10,51 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ConfiguratorTest {
 
-    @Test
-    public void identifierConfiguration() {
+	@Test
+	public void identifierConfiguration() {
 
-        IdentifierConfiguration identifierConfiguration = new IdentifierConfiguration();
-        Report report = new Report();
+		IdentifierConfiguration identifierConfiguration = new IdentifierConfiguration();
+		Report report = new Report();
 
-        assertEquals("case", identifierConfiguration.getProp());
-        assertTrue(identifierConfiguration.isThisRule("case"));
-        assertTrue(identifierConfiguration.isValidRuleOption("snake"));
-        assertTrue(identifierConfiguration.isValidRuleOption("camel"));
-
-
-        assertDoesNotThrow(() -> {
-            ASTVisitor linterRule = identifierConfiguration.getLinterRule(report, "camel");
-        });
-
-        assertDoesNotThrow(() -> {
-            ASTVisitor linterRule = identifierConfiguration.getLinterRule(report, "snake");
-        });
-
-        assertThrows(WrongConfigurationException.class,() -> {
-            ASTVisitor linterRule = identifierConfiguration.getLinterRule(report, "pascal");
-        });
-
-    }
-
-    @Test
-    public void printLineConfiguration() {
-
-        PrintLineConfiguration printLineConfiguration = new PrintLineConfiguration();
-        Report report = new Report();
-
-        assertEquals("printWithIdentifiers", printLineConfiguration.getProp());
-        assertTrue(printLineConfiguration.isThisRule("printWithIdentifiers"));
-        assertTrue(printLineConfiguration.isValidRuleOption("true"));
-        assertTrue(printLineConfiguration.isValidRuleOption("false"));
+		assertEquals("case", identifierConfiguration.getProp());
+		assertTrue(identifierConfiguration.isThisRule("case"));
+		assertTrue(identifierConfiguration.isValidRuleOption("snake"));
+		assertTrue(identifierConfiguration.isValidRuleOption("camel"));
 
 
-        assertDoesNotThrow(() -> {
-            ASTVisitor linterRule = printLineConfiguration.getLinterRule(report, "true");
-        });
+		assertDoesNotThrow(() -> {
+			ASTVisitor linterRule = identifierConfiguration.getLinterRule(report, "camel");
+		});
 
-        assertThrows(WrongConfigurationException.class,() -> {
-            ASTVisitor linterRule = printLineConfiguration.getLinterRule(report, "True");
-        });
+		assertDoesNotThrow(() -> {
+			ASTVisitor linterRule = identifierConfiguration.getLinterRule(report, "snake");
+		});
 
-    }
+		assertThrows(WrongConfigurationException.class,() -> {
+			ASTVisitor linterRule = identifierConfiguration.getLinterRule(report, "pascal");
+		});
+
+	}
+
+	@Test
+	public void printLineConfiguration() {
+
+		PrintLineConfiguration printLineConfiguration = new PrintLineConfiguration();
+		Report report = new Report();
+
+		assertEquals("printWithIdentifiers", printLineConfiguration.getProp());
+		assertTrue(printLineConfiguration.isThisRule("printWithIdentifiers"));
+		assertTrue(printLineConfiguration.isValidRuleOption("true"));
+		assertTrue(printLineConfiguration.isValidRuleOption("false"));
+
+
+		assertDoesNotThrow(() -> {
+			ASTVisitor linterRule = printLineConfiguration.getLinterRule(report, "true");
+		});
+
+		assertThrows(WrongConfigurationException.class,() -> {
+			ASTVisitor linterRule = printLineConfiguration.getLinterRule(report, "True");
+		});
+
+	}
 }
