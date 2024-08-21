@@ -13,67 +13,67 @@ import java.util.List;
 import java.util.Optional;
 
 public class Parser {
-    private final List<NodeConstructor> nodeConstructors;
-    private TokenBuffer tokens;
+	private final List<NodeConstructor> nodeConstructors;
+	private TokenBuffer tokens;
 
-    public Parser(List<NodeConstructor> nodeConstructors,
-                  List<BlockNodeConstructor> blockNodeConstructors,
-                  TokenBuffer tokens) {
-        this.nodeConstructors = new LinkedList(nodeConstructors);
-        blockNodeConstructors.forEach(cons -> cons.acceptParser(this));
-        this.nodeConstructors.addAll(blockNodeConstructors);
-        this.tokens = tokens;
-    }
+	public Parser(List<NodeConstructor> nodeConstructors,
+				List<BlockNodeConstructor> blockNodeConstructors,
+				TokenBuffer tokens) {
+		this.nodeConstructors = new LinkedList(nodeConstructors);
+		blockNodeConstructors.forEach(cons -> cons.acceptParser(this));
+		this.nodeConstructors.addAll(blockNodeConstructors);
+		this.tokens = tokens;
+	}
 
-    public Try<ASTNode, Exception> parseExpression() {
+	public Try<ASTNode, Exception> parseExpression() {
 
-        LinkedList<ASTNode> nodes = new LinkedList<>();
+		LinkedList<ASTNode> nodes = new LinkedList<>();
 
-        while (tokens.hasAnyTokensLeft()) {
-            Response response = getAstNodeExceptionTry();
+		while (tokens.hasAnyTokensLeft()) {
+			Response response = getAstNodeExceptionTry();
 
-            Try<ASTNode, Exception> astNodeExceptionTry = response.result;
+			Try<ASTNode, Exception> astNodeExceptionTry = response.result;
 
-            if (astNodeExceptionTry.isFail()){
-                return astNodeExceptionTry;
-            }
+			if (astNodeExceptionTry.isFail()){
+				return astNodeExceptionTry;
+			}
 
-            nodes.add(astNodeExceptionTry.getSuccess().get());
-            this.tokens = response.newBuffer();
-        }
-        
-        return new Try<>(new Program(nodes));
-        
-    }
+			nodes.add(astNodeExceptionTry.getSuccess().get());
+			this.tokens = response.newBuffer();
+		}
 
-    private Response getAstNodeExceptionTry() {
-        for (NodeConstructor nodeConstructor : nodeConstructors) {
+		return new Try<>(new Program(nodes));
 
-            NodeConstructionResponse build = nodeConstructor.build(tokens);
-            Try<Optional<ASTNode>, Exception> possibleNodeOrError = build.possibleNode();
+	}
 
-            //if node construction sends exception return exception
-            if (possibleNodeOrError.isFail()) {
-                return new Response(new Try<>(possibleNodeOrError.getFail().get()),
-                        build.possibleBuffer());
-            }
+	private Response getAstNodeExceptionTry() {
+		for (NodeConstructor nodeConstructor : nodeConstructors) {
 
-            Optional<ASTNode> astNode = possibleNodeOrError.getSuccess().get();
+			NodeConstructionResponse build = nodeConstructor.build(tokens);
+			Try<Optional<ASTNode>, Exception> possibleNodeOrError = build.possibleNode();
 
-            //If node construction is positive --> return token
-            if (astNode.isPresent()) {
-                return new Response(new Try<>(astNode.get()),
-                        build.possibleBuffer());
-            }
+			//if node construction sends exception return exception
+			if (possibleNodeOrError.isFail()) {
+				return new Response(new Try<>(possibleNodeOrError.getFail().get()),
+						build.possibleBuffer());
+			}
 
-            //If node constructión doesnt give any token --> pass
-        }
-        return new Response(new Try<>(new SemanticErrorException(tokens.getToken().get())),
-                this.tokens);
-    }
+			Optional<ASTNode> astNode = possibleNodeOrError.getSuccess().get();
 
-    private record Response(
-            Try<ASTNode, Exception> result,
-            TokenBuffer newBuffer
-            ){}
+			//If node construction is positive --> return token
+			if (astNode.isPresent()) {
+				return new Response(new Try<>(astNode.get()),
+						build.possibleBuffer());
+			}
+
+			//If node constructión doesnt give any token --> pass
+		}
+		return new Response(new Try<>(new SemanticErrorException(tokens.getToken().get())),
+				this.tokens);
+	}
+
+	private record Response(
+			Try<ASTNode, Exception> result,
+			TokenBuffer newBuffer
+			){}
 }
