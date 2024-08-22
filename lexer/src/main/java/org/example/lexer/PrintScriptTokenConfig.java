@@ -60,10 +60,10 @@ public class PrintScriptTokenConfig {
 		return getMapFromArray(typeArray);
 	}
 
-	private static LinkedHashMap<Pattern, TokenType> getMapFromArray(NativeTokenTypes[] typeArray) {
+	private static LinkedHashMap<Pattern, TokenType> getMapFromArray(NativeTokenTypes[] a) {
 		LinkedHashMap<Pattern, TokenType> map = new LinkedHashMap<>();
 
-		Arrays.stream(typeArray).forEach(x -> map.put(x.getRegex(), x.toTokenType()));
+		Arrays.stream(a).forEach(x -> map.put(x.getRegex(), x.toTokenType()));
 		return map;
 	}
 

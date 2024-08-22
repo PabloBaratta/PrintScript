@@ -25,7 +25,7 @@ public class Formatter {
 	private void formatNode(ASTNode child, StringBuilder result) {
 		switch (child) {
 			case VariableDeclaration variableDeclaration:
-				formatVariableDeclaration(variableDeclaration, result);
+				formatVarDec(variableDeclaration, result);
 				break;
 			case Assignation assignation:
 				formatAssignation(assignation, result);
@@ -34,7 +34,8 @@ public class Formatter {
 				formatMethod(method, result);
 				break;
 			default:
-				throw new IllegalArgumentException("Unknown node type: " + child.getClass());
+				String s = "Unknown node type: ";
+				throw new IllegalArgumentException(s + child.getClass());
 		}
 	}
 
@@ -72,10 +73,10 @@ public class Formatter {
 		result.append(";\n");
 	}
 
-	private void formatVariableDeclaration(VariableDeclaration variableDeclaration, StringBuilder result) {
-		Identifier identifier = variableDeclaration.getIdentifier();
-		Type type = variableDeclaration.getType();
-		Optional<Expression> expression = variableDeclaration.getExpression();
+	private void formatVarDec(VariableDeclaration varDec, StringBuilder result) {
+		Identifier identifier = varDec.getIdentifier();
+		Type type = varDec.getType();
+		Optional<Expression> expression = varDec.getExpression();
 		result.append("let ").append(identifier.toString());
 		if (rules.get("spaceBeforeColon").getRule()) {
 			result.append(" ");
@@ -85,7 +86,7 @@ public class Formatter {
 			result.append(" ");
 		}
 		result.append(type.getTypeName());
-		if (expression.isPresent()){
+		if (expression.isPresent()) {
 			if (rules.get("spaceBeforeAssignation").getRule()) {
 				result.append(" ");
 			}
@@ -97,5 +98,4 @@ public class Formatter {
 		}
 		result.append(";\n");
 	}
-
 }

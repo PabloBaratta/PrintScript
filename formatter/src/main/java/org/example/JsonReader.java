@@ -20,7 +20,9 @@ public class JsonReader {
 			String key = entry.getKey();
 			JsonNode value = entry.getValue();
 			boolean rule = value.get("rule").asBoolean();
-			Optional<Integer> qty = value.has("qty") ? Optional.of(value.get("qty").asInt()) : Optional.empty();
+			Optional<Integer> qty = value.has("qty")
+					? Optional.of(value.get("qty").asInt())
+					: Optional.empty();
 			rules.put(key, new Rule(rule, qty));
 		});
 
