@@ -43,7 +43,7 @@ public class Lexer {
 
 		Optional<Token> op = keyConstr.constructToken(code.substring(pos), pos, line)
 				.or(() -> tokConstr.stream()
-						.map(constructor -> constructor.constructToken(code.substring(pos), pos, line))
+						.map(c -> c.constructToken(code.substring(pos), pos, line))
 						.filter(Optional::isPresent)
 						.map(Optional::get)
 						.max(Comparator.comparingInt(Token::length)));

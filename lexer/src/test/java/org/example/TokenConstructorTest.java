@@ -6,9 +6,12 @@ import org.example.lexer.PrintScriptTokenConfig;
 import org.example.lexer.token.NativeTokenTypes;
 import org.example.lexer.token.Position;
 import org.example.lexer.token.Token;
+import org.example.lexer.token.TokenType;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,7 +21,12 @@ class TokenConstructorTest {
 	TokenConstructor keywordConstructor = new TokenConstructorImpl(PrintScriptTokenConfig.keywordTokenTypeMap());
 	TokenConstructor operatorConstructor = new TokenConstructorImpl(PrintScriptTokenConfig.operatorTokenTypeMap());
 
-	TokenConstructor separatorConstructor = new TokenConstructorImpl(PrintScriptTokenConfig.separatorTokenTypeMap());
+	TokenConstructor sepConst;
+
+	{
+		Map<Pattern, TokenType> map = PrintScriptTokenConfig.separatorTokenTypeMap();
+		sepConst = new TokenConstructorImpl(map);
+	}
 
 	TokenConstructor literalConstructor = new TokenConstructorImpl(PrintScriptTokenConfig.literalTokenTypeMap());
 
@@ -28,7 +36,9 @@ class TokenConstructorTest {
 		int offset = 0;
 		int line = 0;
 		String associatedString = "let";
-		Token expectedToken = new Token(NativeTokenTypes.LET.toTokenType(), associatedString, new Position(offset, associatedString.length(), line));
+		TokenType tokenType = NativeTokenTypes.LET.toTokenType();
+		Position position = new Position(offset, associatedString.length(), line);
+		Token expectedToken = new Token(tokenType, associatedString, position);
 		tokenAssertionMethod(input, offset, expectedToken, keywordConstructor, line);
 	}
 
@@ -38,7 +48,9 @@ class TokenConstructorTest {
 		int offset = 8;
 		int line = 0;
 		String associatedString = "string";
-		Token expectedToken = new Token(NativeTokenTypes.STRING_TYPE.toTokenType(), associatedString, new Position(offset, associatedString.length(), line));
+		TokenType tokenType = NativeTokenTypes.STRING_TYPE.toTokenType();
+		Position position = new Position(offset, associatedString.length(), line);
+		Token expectedToken = new Token(tokenType, associatedString, position);
 		tokenAssertionMethod(input, offset, expectedToken, keywordConstructor, line);
 	}
 
@@ -48,7 +60,9 @@ class TokenConstructorTest {
 		int offset = 8;
 		int line = 0;
 		String associatedString = "number";
-		Token expectedToken = new Token(NativeTokenTypes.NUMBER_TYPE.toTokenType(), associatedString, new Position(offset, associatedString.length(), line));
+		TokenType tokenType = NativeTokenTypes.NUMBER_TYPE.toTokenType();
+		Position position = new Position(offset, associatedString.length(), line);
+		Token expectedToken = new Token(tokenType, associatedString, position);
 		tokenAssertionMethod(input, offset, expectedToken, keywordConstructor, line);
 	}
 
@@ -58,7 +72,9 @@ class TokenConstructorTest {
 		int offset = 19;
 		int line = 0;
 		String associatedString = "+";
-		Token expectedToken = new Token(NativeTokenTypes.PLUS.toTokenType(), associatedString, new Position(offset, associatedString.length(), line));
+		TokenType tokenType = NativeTokenTypes.PLUS.toTokenType();
+		Position position = new Position(offset, associatedString.length(), line);
+		Token expectedToken = new Token(tokenType, associatedString, position);
 		tokenAssertionMethod(input, offset, expectedToken, operatorConstructor, line);
 		String inputWithoutSpaceBetween = "let a : number = 5 +5";
 		tokenAssertionMethod(inputWithoutSpaceBetween, offset, expectedToken, operatorConstructor, line);
@@ -70,7 +86,9 @@ class TokenConstructorTest {
 		int offset = 19;
 		int line = 0;
 		String associatedString = "-";
-		Token expectedToken = new Token(NativeTokenTypes.MINUS.toTokenType(), associatedString, new Position(offset, associatedString.length(), line));
+		TokenType tokenType = NativeTokenTypes.MINUS.toTokenType();
+		Position position = new Position(offset, associatedString.length(), line);
+		Token expectedToken = new Token(tokenType, associatedString, position);
 		tokenAssertionMethod(input, offset, expectedToken, operatorConstructor, line);
 		String inputWithoutSpaceBetween = "let a : number = 5 -5";
 		tokenAssertionMethod(inputWithoutSpaceBetween, offset, expectedToken, operatorConstructor, line);
@@ -82,7 +100,9 @@ class TokenConstructorTest {
 		int offset = 19;
 		int line = 0;
 		String associatedString = "*";
-		Token expectedToken = new Token(NativeTokenTypes.ASTERISK.toTokenType(), associatedString, new Position(offset, associatedString.length(), line));
+		TokenType tokenType = NativeTokenTypes.ASTERISK.toTokenType();
+		Position position = new Position(offset, associatedString.length(), line);
+		Token expectedToken = new Token(tokenType, associatedString, position);
 		tokenAssertionMethod(input, offset, expectedToken, operatorConstructor, line);
 		String inputWithoutSpaceBetween = "let a : number = 5 *5";
 		tokenAssertionMethod(inputWithoutSpaceBetween, offset, expectedToken, operatorConstructor, line);
@@ -94,7 +114,9 @@ class TokenConstructorTest {
 		int offset = 19;
 		int line = 0;
 		String associatedString = "/";
-		Token expectedToken = new Token(NativeTokenTypes.SLASH.toTokenType(), associatedString, new Position(offset, associatedString.length(), line));
+		TokenType tokenType = NativeTokenTypes.SLASH.toTokenType();
+		Position position = new Position(offset, associatedString.length(), line);
+		Token expectedToken = new Token(tokenType, associatedString, position);
 		tokenAssertionMethod(input, offset, expectedToken, operatorConstructor, line);
 		String inputWithoutSpaceBetween = "let a : number = 5 /5";
 		tokenAssertionMethod(inputWithoutSpaceBetween, offset, expectedToken, operatorConstructor, line);
@@ -106,8 +128,10 @@ class TokenConstructorTest {
 		int offset = 9;
 		int line = 0;
 		String associatedString = ";";
-		Token expectedToken = new Token(NativeTokenTypes.SEMICOLON.toTokenType(), associatedString, new Position(offset, associatedString.length(), line));
-		tokenAssertionMethod(input, offset, expectedToken, separatorConstructor, line);
+		TokenType tokenType = NativeTokenTypes.SEMICOLON.toTokenType();
+		Position position = new Position(offset, associatedString.length(), line);
+		Token expectedToken = new Token(tokenType, associatedString, position);
+		tokenAssertionMethod(input, offset, expectedToken, sepConst, line);
 	}
 	@Test
 	void literalconstructor() {
@@ -115,7 +139,9 @@ class TokenConstructorTest {
 		int offset = 17;
 		int line = 0;
 		String associatedString = "5";
-		Token expectedToken = new Token(NativeTokenTypes.NUMBER.toTokenType(), associatedString, new Position(offset, associatedString.length(), line));
+		TokenType tokenType = NativeTokenTypes.NUMBER.toTokenType();
+		Position position = new Position(offset, associatedString.length(), line);
+		Token expectedToken = new Token(tokenType, associatedString, position);
 		tokenAssertionMethod(input, offset, expectedToken, literalConstructor, line);
 		String inputWithoutSpaceBetween = "let a : number = 5 /5";
 		tokenAssertionMethod(inputWithoutSpaceBetween, offset, expectedToken, literalConstructor, line);
@@ -129,8 +155,10 @@ class TokenConstructorTest {
 		int offset = 7;
 		int line = 0;
 		String associatedString = "(";
-		Token expectedToken = new Token(NativeTokenTypes.LEFT_PARENTHESIS.toTokenType(), associatedString, new Position(offset, associatedString.length(), line));
-		tokenAssertionMethod(input, offset, expectedToken, separatorConstructor, line);
+		TokenType tokenType = NativeTokenTypes.LEFT_PARENTHESIS.toTokenType();
+		Position position = new Position(offset, associatedString.length(), line);
+		Token expectedToken = new Token(tokenType, associatedString, position);
+		tokenAssertionMethod(input, offset, expectedToken, sepConst, line);
 	}
 
 	@Test
@@ -139,8 +167,10 @@ class TokenConstructorTest {
 		int offset = 9;
 		int line = 0;
 		String associatedString = ")";
-		Token expectedToken = new Token(NativeTokenTypes.RIGHT_PARENTHESES.toTokenType(), associatedString, new Position(offset, associatedString.length(), line));
-		tokenAssertionMethod(input, offset, expectedToken, separatorConstructor, line);
+		TokenType tokenType = NativeTokenTypes.RIGHT_PARENTHESES.toTokenType();
+		Position position = new Position(offset, associatedString.length(), line);
+		Token expectedToken = new Token(tokenType, associatedString, position);
+		tokenAssertionMethod(input, offset, expectedToken, sepConst, line);
 	}
 
 	@Test
@@ -149,8 +179,10 @@ class TokenConstructorTest {
 		int offset = 5;
 		int line = 0;
 		String associatedString = ",";
-		Token expectedToken = new Token(NativeTokenTypes.COMMA.toTokenType(), associatedString, new Position(offset, associatedString.length(), line));
-		tokenAssertionMethod(input, offset, expectedToken, separatorConstructor, line);
+		TokenType tokenType = NativeTokenTypes.COMMA.toTokenType();
+		Position position = new Position(offset, associatedString.length(), line);
+		Token expectedToken = new Token(tokenType, associatedString, position);
+		tokenAssertionMethod(input, offset, expectedToken, sepConst, line);
 	}
 
 	@Test
@@ -159,8 +191,10 @@ class TokenConstructorTest {
 		int offset = 5;
 		int line = 0;
 		String associatedString = ":";
-		Token expectedToken = new Token(NativeTokenTypes.COLON.toTokenType(), associatedString, new Position(offset, associatedString.length(), line));
-		tokenAssertionMethod(input, offset, expectedToken, separatorConstructor, line);
+		TokenType tokenType = NativeTokenTypes.COLON.toTokenType();
+		Position position = new Position(offset, associatedString.length(), line);
+		Token expectedToken = new Token(tokenType, associatedString, position);
+		tokenAssertionMethod(input, offset, expectedToken, sepConst, line);
 	}
 
 	private void tokenAssertionMethod(String input, int offset, Token expectedToken,

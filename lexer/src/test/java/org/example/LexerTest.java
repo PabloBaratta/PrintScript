@@ -1,6 +1,5 @@
 package org.example;
 
-
 import org.example.lexer.Lexer;
 import org.example.lexer.NoMoreTokensAvailableException;
 import org.example.lexer.TokenConstructor;
@@ -8,6 +7,7 @@ import org.example.lexer.TokenConstructorImpl;
 import org.example.lexer.token.NativeTokenTypes;
 import org.example.lexer.token.Position;
 import org.example.lexer.token.Token;
+import org.example.lexer.token.TokenType;
 import org.example.lexer.utils.Try;
 import org.junit.jupiter.api.Test;
 
@@ -21,15 +21,16 @@ class LexerTest {
 
 	@Test
 	public void testHasNext() {
-		TokenConstructor keywordConstructor = new TokenConstructorImpl(Map.of(
+		TokenConstructor keyConst = new TokenConstructorImpl(Map.of(
 				NativeTokenTypes.LET.getRegex(), NativeTokenTypes.LET.toTokenType()
 		));
 
-		Collection<TokenConstructor> tokenConstructors = List.of(new TokenConstructorImpl(Map.of(
-				NativeTokenTypes.IDENTIFIER.getRegex(), NativeTokenTypes.IDENTIFIER.toTokenType(), NativeTokenTypes.SEMICOLON.getRegex(), NativeTokenTypes.SEMICOLON.toTokenType()
+		Collection<TokenConstructor> tokenConst = List.of(new TokenConstructorImpl(Map.of(
+				NativeTokenTypes.IDENTIFIER.getRegex(), NativeTokenTypes.IDENTIFIER.toTokenType(),
+				NativeTokenTypes.SEMICOLON.getRegex(), NativeTokenTypes.SEMICOLON.toTokenType()
 		)));
 
-		Lexer lexerWithTokens = new Lexer("let my_variable;", tokenConstructors, keywordConstructor, whiteSpaces);
+		Lexer lexerWithTokens = new Lexer("let my_variable;", tokenConst, keyConst, whiteSpaces);
 		assertTrue(lexerWithTokens.hasNext());
 
 		lexerWithTokens.getNext();
@@ -39,7 +40,7 @@ class LexerTest {
 		lexerWithTokens.getNext();
 		assertFalse(lexerWithTokens.hasNext());
 
-		Lexer emptyLexer = new Lexer("", tokenConstructors, keywordConstructor, whiteSpaces);
+		Lexer emptyLexer = new Lexer("", tokenConst, keyConst, whiteSpaces);
 		assertFalse(emptyLexer.hasNext());
 	}
 
@@ -49,7 +50,8 @@ class LexerTest {
 				NativeTokenTypes.LET.getRegex(), NativeTokenTypes.LET.toTokenType()
 		));
 
-		Lexer lexer = new Lexer("let a = 5", Collections.singletonList(new TokenConstructorImpl(Map.of())), keywordConstructor, whiteSpaces);
+		Lexer lexer = new Lexer("let a = 5", Collections.singletonList(new TokenConstructorImpl(Map.of())),
+				keywordConstructor, whiteSpaces);
 
 		Try<Token, Exception> result = lexer.getNext();
 
@@ -63,12 +65,12 @@ class LexerTest {
 
 	@Test
 	public void testNoMoreTokens() {
-
 		TokenConstructor keywordConstructor = new TokenConstructorImpl(Map.of(
 				NativeTokenTypes.LET.getRegex(), NativeTokenTypes.LET.toTokenType()
 		));
 
-		Lexer lexer = new Lexer("", Collections.singletonList(new TokenConstructorImpl(Map.of())), keywordConstructor, whiteSpaces);
+		Lexer lexer = new Lexer("", Collections.singletonList(new TokenConstructorImpl(Map.of())),
+				keywordConstructor, whiteSpaces);
 
 		Try<Token, Exception> result = lexer.getNext();
 
@@ -78,7 +80,6 @@ class LexerTest {
 
 	@Test
 	public void testKeywordAndIdentifier() {
-
 		TokenConstructor keywordConstructor = new TokenConstructorImpl(Map.of(
 				NativeTokenTypes.LET.getRegex(), NativeTokenTypes.LET.toTokenType()
 		));
@@ -96,14 +97,13 @@ class LexerTest {
 		Try<Token, Exception> result2 = lexer.getNext();
 		assertTrue(result2.isSuccess());
 		Token token2 = result2.getSuccess().orElseThrow();
-		assertEquals(NativeTokenTypes.IDENTIFIER.toTokenType(), token2.type(), "Expected token type: IDENTIFIER");
+		String message = "Expected token type: IDENTIFIER";
+		assertEquals(NativeTokenTypes.IDENTIFIER.toTokenType(), token2.type(), message);
 		assertEquals("letter", token2.associatedString(), "Expected associated string: 'letter'");
 	}
 
-
 	@Test
 	public void testVariableDeclaration() {
-
 		TokenConstructor keywordConstructor = new TokenConstructorImpl(Map.of(
 				NativeTokenTypes.LET.getRegex(), NativeTokenTypes.LET.toTokenType(),
 				NativeTokenTypes.STRING_TYPE.getRegex(), NativeTokenTypes.STRING_TYPE.toTokenType()
@@ -117,11 +117,13 @@ class LexerTest {
 				NativeTokenTypes.COLON.getRegex(), NativeTokenTypes.COLON.toTokenType()
 		)));
 
-		Lexer lexer = new Lexer("let my_cool_variable: string = \"ciclon\";", tokenConstructors, keywordConstructor, whiteSpaces);
+		Lexer lexer = new Lexer("let my_cool_variable: string = \"ciclon\";", tokenConstructors,
+				keywordConstructor, whiteSpaces);
 
+		String var = "my_cool_variable";
 		List<Token> expectedTokens = Arrays.asList(
 				new Token(NativeTokenTypes.LET.toTokenType(), "let", new Position(0, 3, 1)),
-				new Token(NativeTokenTypes.IDENTIFIER.toTokenType(), "my_cool_variable", new Position(4, 16, 1)),
+				new Token(NativeTokenTypes.IDENTIFIER.toTokenType(), var, new Position(4, 16, 1)),
 				new Token(NativeTokenTypes.COLON.toTokenType(), ":", new Position(20, 1, 1)),
 				new Token(NativeTokenTypes.STRING_TYPE.toTokenType(), "string", new Position(22, 6, 1)),
 				new Token(NativeTokenTypes.EQUALS.toTokenType(), "=", new Position(29, 1, 1)),
@@ -146,29 +148,38 @@ class LexerTest {
 
 	@Test
 	public void testPrintln() {
-
-		TokenConstructor keywordConstructor = new TokenConstructorImpl(Map.of(
+		TokenConstructor keyConst = new TokenConstructorImpl(Map.of(
 				NativeTokenTypes.PRINTLN.getRegex(), NativeTokenTypes.PRINTLN.toTokenType()
 		));
 
-		Collection<TokenConstructor> tokenConstructors = List.of(new TokenConstructorImpl(Map.of(
-				NativeTokenTypes.IDENTIFIER.getRegex(), NativeTokenTypes.IDENTIFIER.toTokenType(),
-				NativeTokenTypes.EQUALS.getRegex(), NativeTokenTypes.EQUALS.toTokenType(),
-				NativeTokenTypes.STRING.getRegex(), NativeTokenTypes.STRING.toTokenType(),
-				NativeTokenTypes.SEMICOLON.getRegex(), NativeTokenTypes.SEMICOLON.toTokenType(),
-				NativeTokenTypes.LEFT_PARENTHESIS.getRegex(), NativeTokenTypes.LEFT_PARENTHESIS.toTokenType(),
-				NativeTokenTypes.RIGHT_PARENTHESES.getRegex(), NativeTokenTypes.RIGHT_PARENTHESES.toTokenType(),
-				NativeTokenTypes.COLON.getRegex(), NativeTokenTypes.COLON.toTokenType()
+		TokenType tokenType = NativeTokenTypes.IDENTIFIER.toTokenType();
+		TokenType tokenType1 = NativeTokenTypes.RIGHT_PARENTHESES.toTokenType();
+		Collection<TokenConstructor> tokenConst = List.of(new TokenConstructorImpl(Map.of(
+				NativeTokenTypes.IDENTIFIER.getRegex(),
+				tokenType,
+				NativeTokenTypes.EQUALS.getRegex(),
+				NativeTokenTypes.EQUALS.toTokenType(),
+				NativeTokenTypes.STRING.getRegex(),
+				NativeTokenTypes.STRING.toTokenType(),
+				NativeTokenTypes.SEMICOLON.getRegex(),
+				NativeTokenTypes.SEMICOLON.toTokenType(),
+				NativeTokenTypes.LEFT_PARENTHESIS.getRegex(),
+				NativeTokenTypes.LEFT_PARENTHESIS.toTokenType(),
+				NativeTokenTypes.RIGHT_PARENTHESES.getRegex(),
+				tokenType1,
+				NativeTokenTypes.COLON.getRegex(),
+				NativeTokenTypes.COLON.toTokenType()
 		)));
 
 		List<Character> whiteSpaces = Arrays.asList(' ', '\t', '\n');
-		Lexer lexer = new Lexer("println(my_cool_variable);", tokenConstructors, keywordConstructor, whiteSpaces);
+		String code = "println(my_cool_variable);";
+		Lexer lexer = new Lexer(code, tokenConst, keyConst, whiteSpaces);
 
 		List<Token> expectedTokens = Arrays.asList(
 				new Token(NativeTokenTypes.PRINTLN.toTokenType(), "println", new Position(0, 7, 1)),
 				new Token(NativeTokenTypes.LEFT_PARENTHESIS.toTokenType(), "(", new Position(7, 1, 1)),
-				new Token(NativeTokenTypes.IDENTIFIER.toTokenType(), "my_cool_variable", new Position(8, 16, 1)),
-				new Token(NativeTokenTypes.RIGHT_PARENTHESES.toTokenType(), ")", new Position(24, 1, 1)),
+				new Token(tokenType, "my_cool_variable", new Position(8, 16, 1)),
+				new Token(tokenType1, ")", new Position(24, 1, 1)),
 				new Token(NativeTokenTypes.SEMICOLON.toTokenType(), ";", new Position(25, 1, 1))
 		);
 
@@ -186,5 +197,4 @@ class LexerTest {
 
 		assertEquals(expectedTokens, actualTokens, "Token lists do not match");
 	}
-
 }
