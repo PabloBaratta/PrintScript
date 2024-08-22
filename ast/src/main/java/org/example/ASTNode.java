@@ -3,9 +3,9 @@ import org.example.lexer.token.Position;
 
 public interface ASTNode {
 
-    void accept(ASTVisitor visitor) throws Exception;
+	void accept(ASTVisitor visitor) throws Exception;
 
-    String toString();
+	String toString();
 
-    Position getPosition();
+	Position getPosition();
 }
