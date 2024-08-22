@@ -38,10 +38,9 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
 		Token varDeclToken = tokenBuffer.getToken().get();
 		TokenBuffer tokenBufferWithoutVarDecl = tokenBuffer.consumeToken();
 
-		String message1 = "was expecting variable declaration with an identifier";
+		String vdError = "was expecting variable declaration with an identifier";
 		if (!tokenBufferWithoutVarDecl.hasAnyTokensLeft()) {
-			String message = message1;
-			SemanticErrorException exception = new SemanticErrorException(varDeclToken, message);
+			SemanticErrorException exception = new SemanticErrorException(varDeclToken, vdError);
 			return response(exception,
 					tokenBufferWithoutVarDecl);
 		}
@@ -50,16 +49,16 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
 
 
 		if (!tokenBufferWithoutVarDecl.isNextTokenOfType(NativeTokenTypes.IDENTIFIER.toTokenType())) {
-			SemanticErrorException exception = new SemanticErrorException(identifier, message1);
+			SemanticErrorException exception = new SemanticErrorException(identifier, vdError);
 			return response(exception,
 					tokenBufferWithoutVarDecl);
 		}
 
 		TokenBuffer tokenBufferWithoutIdentifier = tokenBufferWithoutVarDecl.consumeToken();
 
-		String message = "was expecting type assignation operator";
+		String typeError = "was expecting type assignation operator";
 		if (!tokenBufferWithoutIdentifier.hasAnyTokensLeft()) {
-			SemanticErrorException exception = new SemanticErrorException(identifier, message);
+			SemanticErrorException exception = new SemanticErrorException(identifier, typeError);
 			return response(exception,
 					tokenBufferWithoutIdentifier);
 		}
@@ -67,7 +66,7 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
 		Token typeAssignationOp = tokenBufferWithoutIdentifier.getToken().get();
 
 		if (!tokenBufferWithoutIdentifier.isNextTokenOfType(NativeTokenTypes.COLON.toTokenType())) {
-			return response(new SemanticErrorException(typeAssignationOp, message),
+			return response(new SemanticErrorException(typeAssignationOp, typeError),
 					tokenBufferWithoutIdentifier);
 		}
 
