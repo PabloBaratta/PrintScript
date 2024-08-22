@@ -5,7 +5,7 @@ package org.example;
 import org.example.lexer.utils.Try;
 
 import org.example.nodeconstructors.BlockNodeConstructor;
-import org.example.nodeconstructors.NodeConstructionResponse;
+import org.example.nodeconstructors.NodeResponse;
 import org.example.nodeconstructors.NodeConstructor;
 
 import java.util.LinkedList;
@@ -49,7 +49,7 @@ public class Parser {
 	private Response getAstNodeExceptionTry() {
 		for (NodeConstructor nodeConstructor : nodeConstructors) {
 
-			NodeConstructionResponse build = nodeConstructor.build(tokens);
+			NodeResponse build = nodeConstructor.build(tokens);
 			Try<Optional<ASTNode>, Exception> possibleNodeOrError = build.possibleNode();
 
 			//if node construction sends exception return exception

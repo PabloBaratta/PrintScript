@@ -5,12 +5,11 @@ import org.example.ASTNode;
 import org.example.TokenBuffer;
 import org.example.VariableDeclaration;
 import org.example.lexer.token.NativeTokenTypes;
-import org.example.lexer.token.Position;
 import org.example.lexer.token.Token;
+import org.example.lexer.token.TokenType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,14 +24,15 @@ class VariableDeclarationNodeConstructorTest {
 	public void doesNotRecognizeOtherTokens() {
 		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
 
-		VariableDeclarationNodeConstructor builder = getVariableDeclarationNodeConstructor(collector);
+		VariableDeclarationNodeConstructor builder = getVDNodeConst(collector);
 
 		Arrays.stream(values())
 				.filter(type -> type != LET)
 				.forEach(type ->
 				{
-					TokenBuffer tokenBuffer = new TokenBuffer(List.of(getaTokenFromTokenType(type)));
-					NodeConstructionResponse build = builder.build(tokenBuffer);
+					List<Token> tokens = List.of(getaTokenFromTokenType(type));
+					TokenBuffer tokenBuffer = new TokenBuffer(tokens);
+					NodeResponse build = builder.build(tokenBuffer);
 					assertTrue(build.possibleNode().isSuccess());
 					assertTrue(build.possibleNode().getSuccess().get().isEmpty());
 				});
@@ -69,11 +69,11 @@ class VariableDeclarationNodeConstructorTest {
 		int originalSize = defaultCorrectSequence.size();
 		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
 
-		VariableDeclarationNodeConstructor builder = getVariableDeclarationNodeConstructor(collector);
+		VariableDeclarationNodeConstructor builder = getVDNodeConst(collector);
 		for (int i = 1; i < originalSize; i++) {
 			defaultCorrectSequence.removeLast();
 			TokenBuffer tokenBuffer = new TokenBuffer(defaultCorrectSequence);
-			NodeConstructionResponse build = builder.build(tokenBuffer);
+			NodeResponse build = builder.build(tokenBuffer);
 			assertTrue(build.possibleNode().isFail());
 			System.out.println(build.possibleNode().getFail().get().getMessage());
 		}
@@ -97,9 +97,9 @@ class VariableDeclarationNodeConstructorTest {
 		List<Token> defaultCorrectSequence = getTokens(nativeTokenTypes);
 		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
 
-		VariableDeclarationNodeConstructor builder = getVariableDeclarationNodeConstructor(collector);
+		VariableDeclarationNodeConstructor builder = getVDNodeConst(collector);
 
-		NodeConstructionResponse build = builder.build(new TokenBuffer(defaultCorrectSequence));
+		NodeResponse build = builder.build(new TokenBuffer(defaultCorrectSequence));
 
 		assertTrue(build.possibleNode().isFail());
 	}
@@ -109,9 +109,9 @@ class VariableDeclarationNodeConstructorTest {
 		List<Token> tokens = getDefaultCorrectSequenceForVarDecl();
 		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
 
-		NodeConstructor variableDeclarationNodeConstructor = getVariableDeclarationNodeConstructor(collector);
+		NodeConstructor variableDeclarationNodeConstructor = getVDNodeConst(collector);
 
-		NodeConstructionResponse build = variableDeclarationNodeConstructor.build(new TokenBuffer(tokens));
+		NodeResponse build = variableDeclarationNodeConstructor.build(new TokenBuffer(tokens));
 
 
 		assertTrue(build.possibleNode().isSuccess());
@@ -136,9 +136,9 @@ class VariableDeclarationNodeConstructorTest {
 
 
 		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
-		NodeConstructor variableDeclarationNodeConstructor = getVariableDeclarationNodeConstructor(collector);
+		NodeConstructor variableDeclarationNodeConstructor = getVDNodeConst(collector);
 
-		NodeConstructionResponse build = variableDeclarationNodeConstructor.build(new TokenBuffer(tokens));
+		NodeResponse build = variableDeclarationNodeConstructor.build(new TokenBuffer(tokens));
 
 
 		assertTrue(build.possibleNode().isSuccess());
@@ -175,9 +175,12 @@ class VariableDeclarationNodeConstructorTest {
 
 
 
-	private static VariableDeclarationNodeConstructor getVariableDeclarationNodeConstructor(NodeConstructor expressionNodeConstructor) {
-		return new VariableDeclarationNodeConstructor(expressionNodeConstructor,
-				List.of(LET.toTokenType()), List.of(STRING_TYPE.toTokenType(), NUMBER_TYPE.toTokenType()));
+	private static VariableDeclarationNodeConstructor getVDNodeConst(NodeConstructor exp) {
+		TokenType let = LET.toTokenType();
+		TokenType str = STRING_TYPE.toTokenType();
+		TokenType num = NUMBER_TYPE.toTokenType();
+		return new VariableDeclarationNodeConstructor(exp,
+				List.of(let), List.of(str, num));
 	}
 
 
