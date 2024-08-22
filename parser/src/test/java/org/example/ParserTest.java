@@ -36,7 +36,7 @@ public class ParserTest {
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
 		Try<ASTNode, Exception> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
-		Assertions.assertEquals("1.0+2.0", node.toString());
+		Assertions.assertEquals("1.0 + 2.0", node.toString());
 	}
 
 	@Test
@@ -62,7 +62,7 @@ public class ParserTest {
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
 		Try<ASTNode, Exception> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
-		Assertions.assertEquals("1.0+2.0*hola", node.toString());
+		Assertions.assertEquals("1.0 + 2.0 * hola", node.toString());
 	}
 
 	@Test
@@ -159,7 +159,7 @@ public class ParserTest {
 		ASTNode node = res.getSuccess().get();
 
 		// Verifica que la expresión se haya parseado correctamente
-		Assertions.assertEquals("((1.0)+2.0)", node.toString());
+		Assertions.assertEquals("((1.0) + 2.0)", node.toString());
 
 	}
 

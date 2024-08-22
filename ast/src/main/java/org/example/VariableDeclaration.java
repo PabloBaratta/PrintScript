@@ -10,10 +10,10 @@ public class VariableDeclaration implements ASTNode {
 	private final Type type;
 	private final Optional<Expression> expression;
 
-	public VariableDeclaration(Identifier identifier, Type type, Optional<Expression> expression) {
-		this.identifier = identifier;
+	public VariableDeclaration(Identifier id, Type type, Optional<Expression> ex) {
+		this.identifier = id;
 		this.type = type;
-		this.expression = expression;
+		this.expression = ex;
 	}
 
 	public Identifier getIdentifier() {
