@@ -2,6 +2,7 @@ package org.example.nodeconstructors;
 
 import org.example.TextLiteral;
 import org.example.TokenBuffer;
+import org.example.lexer.token.Position;
 import org.example.lexer.token.Token;
 import org.example.lexer.utils.Try;
 
@@ -11,21 +12,21 @@ import java.util.Optional;
 
 public class ExpressionCollectorNodeConstructor implements NodeConstructor{
 
-    List<Token> collectedTokens = new LinkedList<>();
-    @Override
-    public NodeConstructionResponse build(TokenBuffer tokenBuffer) {
-        while (tokenBuffer.hasAnyTokensLeft()) {
-            collectedTokens.add(tokenBuffer.getToken().get());
-            tokenBuffer = tokenBuffer.consumeToken();
-        }
+	List<Token> collectedTokens = new LinkedList<>();
+	@Override
+	public NodeConstructionResponse build(TokenBuffer tokenBuffer) {
+		while (tokenBuffer.hasAnyTokensLeft()) {
+			collectedTokens.add(tokenBuffer.getToken().get());
+			tokenBuffer = tokenBuffer.consumeToken();
+		}
 
-        return new NodeConstructionResponse(
-                new Try<>(Optional.of(new TextLiteral("default value"))),
-                tokenBuffer
-        );
-    }
+		return new NodeConstructionResponse(
+				new Try<>(Optional.of(new TextLiteral("default value", new Position(0,0,0)))),
+				tokenBuffer
+		);
+	}
 
-    public List<Token> getCollectedTokens() {
-        return collectedTokens;
-    }
+	public List<Token> getCollectedTokens() {
+		return collectedTokens;
+	}
 }

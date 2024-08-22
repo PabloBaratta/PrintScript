@@ -5,6 +5,8 @@
 plugins {
     // Apply the java Plugin to add support for Java.
     id 'java'
+    id 'jacoco'
+
 }
 
 repositories {
@@ -17,7 +19,6 @@ dependencies {
         // Define dependency versions as constraints
         implementation 'org.apache.commons:commons-text:1.11.0'
     }
-
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -30,7 +31,40 @@ java {
     }
 }
 
-tasks.named('test') {
+test {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
 }
+
+jacoco {
+    toolVersion = "0.8.12" // Specify the JaCoCo tool version
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+        html.outputLocation = file("${buildDir}/jacocoHtml")
+    }
+
+
+    doLast {
+        println("HTML report generated: + ${reports.html.entryPoint}")
+    }
+}
+
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                counter = 'LINE'
+                minimum = 0.80
+            }
+        }
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification

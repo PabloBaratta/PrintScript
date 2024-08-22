@@ -13,138 +13,138 @@ import static org.example.nodeconstructors.NodeConstructionResponse.*;
 
 public class CallExpressionNodeConstructor implements NodeConstructor{
 
-    //whether it has to check ";" --> Refactor
+	//whether it has to check ";" --> Refactor
 
-    private final boolean terminal;
-    private final NodeConstructor expressionNodeConstructor;
+	private final boolean terminal;
+	private final NodeConstructor expressionNodeConstructor;
 
-    public CallExpressionNodeConstructor(boolean terminal, NodeConstructor expressionNodeConstructor){
-        this.terminal = terminal;
-        this.expressionNodeConstructor = expressionNodeConstructor;
-    }
+	public CallExpressionNodeConstructor(boolean terminal, NodeConstructor expressionNodeConstructor){
+		this.terminal = terminal;
+		this.expressionNodeConstructor = expressionNodeConstructor;
+	}
 
 
 
-    @Override
-    public NodeConstructionResponse build(TokenBuffer tokenBuffer) {
+	@Override
+	public NodeConstructionResponse build(TokenBuffer tokenBuffer) {
 
-        if (!(tokenBuffer.isNextTokenOfType(NativeTokenTypes.IDENTIFIER.toTokenType())
-            || tokenBuffer.isNextTokenOfType(NativeTokenTypes.PRINTLN.toTokenType()))){
-            return emptyResponse(tokenBuffer);
-        }
+		if (!(tokenBuffer.isNextTokenOfType(NativeTokenTypes.IDENTIFIER.toTokenType())
+			|| tokenBuffer.isNextTokenOfType(NativeTokenTypes.PRINTLN.toTokenType()))){
+			return emptyResponse(tokenBuffer);
+		}
 
-        Token identifier = tokenBuffer.getToken().get();
-        TokenBuffer tokenBufferWithoutIdentifier = tokenBuffer.consumeToken();
+		Token identifier = tokenBuffer.getToken().get();
+		TokenBuffer tokenBufferWithoutIdentifier = tokenBuffer.consumeToken();
 
-        if (!tokenBufferWithoutIdentifier.isNextTokenOfType(NativeTokenTypes.LEFT_PARENTHESIS.toTokenType())) {
-            return emptyResponse(tokenBuffer);
-        }
+		if (!tokenBufferWithoutIdentifier.isNextTokenOfType(NativeTokenTypes.LEFT_PARENTHESIS.toTokenType())) {
+			return emptyResponse(tokenBuffer);
+		}
 
-        TokenBuffer tokenBufferWithoutLeft = tokenBufferWithoutIdentifier.consumeToken();
-        return handleCallExpression(identifier, tokenBufferWithoutLeft);
-    }
+		TokenBuffer tokenBufferWithoutLeft = tokenBufferWithoutIdentifier.consumeToken();
+		return handleCallExpression(identifier, tokenBufferWithoutLeft);
+	}
 
-    //TODO refactor
-    private NodeConstructionResponse handleCallExpression(Token identifier, TokenBuffer tokenBuffer) {
-        // ( --> +1 , ) --> -1
-        int parenthesisCount = 1;
-        Token lastToken = identifier; // it should be the left parenthesis
+	//TODO refactor
+	private NodeConstructionResponse handleCallExpression(Token identifier, TokenBuffer tokenBuffer) {
+		// ( --> +1 , ) --> -1
+		int parenthesisCount = 1;
+		Token lastToken = identifier; // it should be the left parenthesis
 
-        List<Expression> listOfArguments = new LinkedList<>();
-        List<Token> tokenAcc = new LinkedList<>();
-        while (parenthesisCount > 0) {
+		List<Expression> listOfArguments = new LinkedList<>();
+		List<Token> tokenAcc = new LinkedList<>();
+		while (parenthesisCount > 0) {
 
-            if (!tokenBuffer.hasAnyTokensLeft()) {
-                return response(new SemanticErrorException(lastToken, "expecting function closure"),
-                        tokenBuffer);
-            }
+			if (!tokenBuffer.hasAnyTokensLeft()) {
+				return response(new SemanticErrorException(lastToken, "expecting function closure"),
+						tokenBuffer);
+			}
 
-            if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.LEFT_PARENTHESIS.toTokenType())) {
-                parenthesisCount++;
-                lastToken = tokenBuffer.getToken().get();
-                tokenAcc.add(lastToken);
-                tokenBuffer = tokenBuffer.consumeToken(); //continue
+			if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.LEFT_PARENTHESIS.toTokenType())) {
+				parenthesisCount++;
+				lastToken = tokenBuffer.getToken().get();
+				tokenAcc.add(lastToken);
+				tokenBuffer = tokenBuffer.consumeToken(); //continue
 
-            }
-            else if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.RIGHT_PARENTHESES.toTokenType())) {
-                parenthesisCount--;
-                lastToken = tokenBuffer.getToken().get();
-                boolean partOfInsideExpression = parenthesisCount != 0;
-                if (partOfInsideExpression) {
-                    tokenAcc.add(lastToken);
-                }
-                tokenBuffer = tokenBuffer.consumeToken(); //continue
-            }
-            else if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.COMMA.toTokenType())) {
+			}
+			else if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.RIGHT_PARENTHESES.toTokenType())) {
+				parenthesisCount--;
+				lastToken = tokenBuffer.getToken().get();
+				boolean partOfInsideExpression = parenthesisCount != 0;
+				if (partOfInsideExpression) {
+					tokenAcc.add(lastToken);
+				}
+				tokenBuffer = tokenBuffer.consumeToken(); //continue
+			}
+			else if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.COMMA.toTokenType())) {
 
-                if (tokenAcc.isEmpty()) {
-                    return response(new SemanticErrorException(lastToken, "expected expression after comma"),
-                            tokenBuffer);
-                }
-                lastToken = tokenBuffer.getToken().get(); //check
-                tokenBuffer = tokenBuffer.consumeToken(); //continue
+				if (tokenAcc.isEmpty()) {
+					return response(new SemanticErrorException(lastToken, "expected expression after comma"),
+							tokenBuffer);
+				}
+				lastToken = tokenBuffer.getToken().get(); //check
+				tokenBuffer = tokenBuffer.consumeToken(); //continue
 
-                if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.RIGHT_PARENTHESES.toTokenType())) {
-                    return response(new SemanticErrorException(lastToken, "expected expression after comma"),
-                            tokenBuffer);
-                }
-                NodeConstructionResponse build = expressionNodeConstructor.build(new TokenBuffer(tokenAcc));
-            
-                if (build.possibleNode().isFail()){
-                    return build;
-                }
-                else if (build.possibleBuffer().hasAnyTokensLeft()){
-                    Token errorToken = build.possibleBuffer().getToken().get();
-                    return response(new SemanticErrorException(errorToken, "not part or the desired expression as argument"), tokenBuffer);
-                }
-                else if (build.possibleNode().getSuccess().isEmpty()) {
-                    Token errorToken = build.possibleBuffer().getToken().get();
-                    return response(new SemanticErrorException(errorToken, "not an expression"), tokenBuffer);
-                }
+				if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.RIGHT_PARENTHESES.toTokenType())) {
+					return response(new SemanticErrorException(lastToken, "expected expression after comma"),
+							tokenBuffer);
+				}
+				NodeConstructionResponse build = expressionNodeConstructor.build(new TokenBuffer(tokenAcc));
 
-                listOfArguments.add( (Expression) build.possibleNode().getSuccess().get().get());
-                tokenAcc.clear();
-            }
-            else {
-                lastToken = tokenBuffer.getToken().get();
-                tokenBuffer = tokenBuffer.consumeToken();
-                tokenAcc.add(lastToken);
-            }
-        }
+				if (build.possibleNode().isFail()){
+					return build;
+				}
+				else if (build.possibleBuffer().hasAnyTokensLeft()){
+					Token errorToken = build.possibleBuffer().getToken().get();
+					return response(new SemanticErrorException(errorToken, "not part or the desired expression as argument"), tokenBuffer);
+				}
+				else if (build.possibleNode().getSuccess().isEmpty()) {
+					Token errorToken = build.possibleBuffer().getToken().get();
+					return response(new SemanticErrorException(errorToken, "not an expression"), tokenBuffer);
+				}
 
-        // f(a,b) --> build the b
-        if (!tokenAcc.isEmpty()) {
+				listOfArguments.add( (Expression) build.possibleNode().getSuccess().get().get());
+				tokenAcc.clear();
+			}
+			else {
+				lastToken = tokenBuffer.getToken().get();
+				tokenBuffer = tokenBuffer.consumeToken();
+				tokenAcc.add(lastToken);
+			}
+		}
 
-            NodeConstructionResponse build = expressionNodeConstructor.build(new TokenBuffer(tokenAcc));
+		// f(a,b) --> build the b
+		if (!tokenAcc.isEmpty()) {
 
-            if (build.possibleNode().isFail()){
-                return build;
-            }
-            else if (build.possibleBuffer().hasAnyTokensLeft()){
-                Token errorToken = build.possibleBuffer().getToken().get();
-                return response(new SemanticErrorException(errorToken, "not part or the desired expression as argument"), tokenBuffer);
-            }
-            else if (build.possibleNode().getSuccess().isEmpty()) {
-                Token errorToken = build.possibleBuffer().getToken().get();
-                return response(new SemanticErrorException(errorToken, "not an expression"), tokenBuffer);
-            }
+			NodeConstructionResponse build = expressionNodeConstructor.build(new TokenBuffer(tokenAcc));
 
-            listOfArguments.add( (Expression) build.possibleNode().getSuccess().get().get());
-            tokenAcc.clear();
-        }
+			if (build.possibleNode().isFail()){
+				return build;
+			}
+			else if (build.possibleBuffer().hasAnyTokensLeft()){
+				Token errorToken = build.possibleBuffer().getToken().get();
+				return response(new SemanticErrorException(errorToken, "not part or the desired expression as argument"), tokenBuffer);
+			}
+			else if (build.possibleNode().getSuccess().isEmpty()) {
+				Token errorToken = build.possibleBuffer().getToken().get();
+				return response(new SemanticErrorException(errorToken, "not an expression"), tokenBuffer);
+			}
 
-        if (terminal) {
-            if (!tokenBuffer.isNextTokenOfType(NativeTokenTypes.SEMICOLON.toTokenType())) {
-                return response(new SemanticErrorException(lastToken, "expected end of statement"),
-                        tokenBuffer);
-            };
-            tokenBuffer = tokenBuffer.consumeToken();
-        }
+			listOfArguments.add( (Expression) build.possibleNode().getSuccess().get().get());
+			tokenAcc.clear();
+		}
 
-        return response(createMethodNode(identifier, listOfArguments), tokenBuffer);
-    }
+		if (terminal) {
+			if (!tokenBuffer.isNextTokenOfType(NativeTokenTypes.SEMICOLON.toTokenType())) {
+				return response(new SemanticErrorException(lastToken, "expected end of statement"),
+						tokenBuffer);
+			};
+			tokenBuffer = tokenBuffer.consumeToken();
+		}
 
-    private static Method createMethodNode(Token identifier, List<Expression> listOfArguments) {
-        return new Method(new Identifier(identifier.associatedString()), listOfArguments);
-    }
+		return response(createMethodNode(identifier, listOfArguments), tokenBuffer);
+	}
+
+	private static Method createMethodNode(Token identifier, List<Expression> listOfArguments) {
+		return new Method(new Identifier(identifier.associatedString(), identifier.position()), listOfArguments);
+	}
 }
