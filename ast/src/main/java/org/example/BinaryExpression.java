@@ -29,10 +29,10 @@ public class BinaryExpression implements Expression {
 		visitor.visit(this);
 	}
 
-    @Override
-    public String toString() {
-        return left.toString() + " " + operator + " " + right.toString();
-    }
+	@Override
+	public String toString() {
+		return left.toString() + " " + operator + " " + right.toString();
+	}
 
 	@Override
 	public Position getPosition() {

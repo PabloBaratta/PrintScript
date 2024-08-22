@@ -1,4 +1,5 @@
 import org.example.*;
+import org.example.lexer.token.Position;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -8,129 +9,131 @@ import java.util.Optional;
 
 public class FormatterTest {
 
-    String jsonRules = """
-                {
-                   "spaceBeforeColon": { "rule": true },
-                   "spaceAfterColon": { "rule": true },
-                   "spaceBeforeAssignation": { "rule": true },
-                   "spaceAfterAssignation": { "rule": true },
-                   "newLineBeforePrintln": { "rule": true, "qty": 2 }
-                 }
-        """;
+	String jsonRules = """
+				{
+				"spaceBeforeColon": { "rule": true },
+				"spaceAfterColon": { "rule": true },
+				"spaceBeforeAssignation": { "rule": true },
+				"spaceAfterAssignation": { "rule": true },
+				"newLineBeforePrintln": { "rule": true, "qty": 2 }
+				}
+		""";
 
-    @Test
-    public void testVariableDeclaration() throws Exception {
+	Position position = new Position(0, 0, 0);
 
-        Map<String, Rule> rules = JsonReader.readRulesFromJson(jsonRules);
-        Formatter formatter = new Formatter(rules);
+	@Test
+	public void testVariableDeclaration() throws Exception {
 
-        VariableDeclaration variableDeclaration = new VariableDeclaration(
-                new Identifier("x"),
-                new Type("number"),
-                Optional.of(new NumericLiteral(10.0))
-        );
+		Map<String, Rule> rules = JsonReader.readRulesFromJson(jsonRules);
+		Formatter formatter = new Formatter(rules);
 
-        Program program = new Program(List.of(variableDeclaration));
-        String result = formatter.format(program);
+		VariableDeclaration variableDeclaration = new VariableDeclaration(
+				new Identifier("x", position),
+				new Type("number", position),
+				Optional.of(new NumericLiteral(10.0, position))
+		);
 
-        String expected = "let x : number = 10.0;\n";
-        assertEquals(expected, result);
-    }
+		Program program = new Program(List.of(variableDeclaration));
+		String result = formatter.format(program);
 
-    @Test
-    public void testAssignation() throws Exception {
+		String expected = "let x : number = 10.0;\n";
+		assertEquals(expected, result);
+	}
 
-        Map<String, Rule> rules = JsonReader.readRulesFromJson(jsonRules);
-        Formatter formatter = new Formatter(rules);
+	@Test
+	public void testAssignation() throws Exception {
 
-        Assignation assignation = new Assignation(
-                new Identifier("x"),
-                (new NumericLiteral(20.0))
-        );
+		Map<String, Rule> rules = JsonReader.readRulesFromJson(jsonRules);
+		Formatter formatter = new Formatter(rules);
 
-        Program program = new Program(List.of(assignation));
-        String result = formatter.format(program);
+		Assignation assignation = new Assignation(
+				new Identifier("x", position),
+				(new NumericLiteral(20.0, position)), position
+		);
 
-        String expected = "x = 20.0;\n";
-        assertEquals(expected, result);
-    }
+		Program program = new Program(List.of(assignation));
+		String result = formatter.format(program);
 
-    @Test
-    public void testMethodPrintln() throws Exception {
+		String expected = "x = 20.0;\n";
+		assertEquals(expected, result);
+	}
 
-        Map<String, Rule> rules = JsonReader.readRulesFromJson(jsonRules);
-        Formatter formatter = new Formatter(rules);
+	@Test
+	public void testMethodPrintln() throws Exception {
 
-        Method method = new Method(
-                new Identifier("println"),
-                List.of(new TextLiteral("\"Hello, World!\""))
-        );
+		Map<String, Rule> rules = JsonReader.readRulesFromJson(jsonRules);
+		Formatter formatter = new Formatter(rules);
 
-        Program program = new Program(List.of(method));
-        String result = formatter.format(program);
+		Method method = new Method(
+				new Identifier("println", position),
+				List.of(new TextLiteral("\"Hello, World!\"", position))
+		);
 
-        String expected = "\n\nprintln(\"Hello, World!\");\n";
-        assertEquals(expected, result);
-    }
+		Program program = new Program(List.of(method));
+		String result = formatter.format(program);
 
-    @Test
-    public void testMultipleRules() throws Exception {
+		String expected = "\n\nprintln(\"Hello, World!\");\n";
+		assertEquals(expected, result);
+	}
 
-        Map<String, Rule> rules = JsonReader.readRulesFromJson(jsonRules);
-        Formatter formatter = new Formatter(rules);
+	@Test
+	public void testMultipleRules() throws Exception {
 
-        VariableDeclaration variableDeclaration = new VariableDeclaration(
-                new Identifier("x"),
-                new Type("number"),
-                Optional.of(new NumericLiteral(10.0))
-        );
+		Map<String, Rule> rules = JsonReader.readRulesFromJson(jsonRules);
+		Formatter formatter = new Formatter(rules);
 
-        Assignation assignation = new Assignation(
-                new Identifier("x"),
-                new NumericLiteral(20.0)
-        );
+		VariableDeclaration variableDeclaration = new VariableDeclaration(
+				new Identifier("x", position),
+				new Type("number", position),
+				Optional.of(new NumericLiteral(10.0, position))
+		);
 
-        Method method = new Method(
-                new Identifier("println"),
-                List.of(new TextLiteral("\"Test Complete\""))
-        );
+		Assignation assignation = new Assignation(
+				new Identifier("x", position),
+				new NumericLiteral(20.0, position), position
+		);
 
-        Program program = new Program(List.of(variableDeclaration, assignation, method));
-        String result = formatter.format(program);
+		Method method = new Method(
+				new Identifier("println", position),
+				List.of(new TextLiteral("\"Test Complete\"", position))
+		);
 
-        String expected = """
-        let x : number = 10.0;
-        x = 20.0;
+		Program program = new Program(List.of(variableDeclaration, assignation, method));
+		String result = formatter.format(program);
+
+		String expected = """
+		let x : number = 10.0;
+		x = 20.0;
 
 
-        println("Test Complete");
-        """;
+		println("Test Complete");
+		""";
 
-        assertEquals(expected, result);
-    }
+		assertEquals(expected, result);
+	}
 
-    @Test
-    public void testAssignationWithBinaryExpression() throws Exception {
+	@Test
+	public void testAssignationWithBinaryExpression() throws Exception {
 
-        Map<String, Rule> rules = JsonReader.readRulesFromJson(jsonRules);
-        Formatter formatter = new Formatter(rules);
+		Map<String, Rule> rules = JsonReader.readRulesFromJson(jsonRules);
+		Formatter formatter = new Formatter(rules);
 
-        BinaryExpression binaryExpression = new BinaryExpression(
-                new NumericLiteral(10.0),
-                "+",
-                new NumericLiteral(20.0)
-        );
+		BinaryExpression binaryExpression = new BinaryExpression(
+				new NumericLiteral(10.0, position),
+				"+",
+				new NumericLiteral(20.0, position)
+		);
 
-        Assignation assignation = new Assignation(
-                new Identifier("result"),
-                binaryExpression
-        );
+		Assignation assignation = new Assignation(
+				new Identifier("result", position),
+				binaryExpression, position
+		);
 
-        Program program = new Program(List.of(assignation));
-        String result = formatter.format(program);
+		Program program = new Program(List.of(assignation));
+		String result = formatter.format(program);
 
-        String expected = "result = 10.0 + 20.0;\n";
+		String expected = "result = 10.0 + 20.0;\n";
 
-        assertEquals(expected, result);
-    }
+		assertEquals(expected, result);
+	}
 }
