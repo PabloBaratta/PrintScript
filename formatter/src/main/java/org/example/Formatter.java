@@ -14,24 +14,26 @@ public class Formatter {
 
 	public String format(Program program) throws Exception {
 		StringBuilder result = new StringBuilder();
-		List<ASTNode> children = program.getChildren();
-
-		for (ASTNode child : children) {
-			formatNode(child, result);
-		}
+		formatNode(program, result);
 		return result.toString();
 	}
 
 	private void formatNode(ASTNode child, StringBuilder result) {
 		switch (child) {
+			case Program program:
+				List<ASTNode> children = program.getChildren();
+				for (ASTNode child1 : children) {
+					formatNode(child1, result);
+				}
+				break;
 			case VariableDeclaration variableDeclaration:
-				formatVarDec(variableDeclaration, result);
+				result.append(formatVarDec(variableDeclaration));
 				break;
 			case Assignation assignation:
-				formatAssignation(assignation, result);
+				result.append(formatAssignation(assignation));
 				break;
 			case Method method:
-				formatMethod(method, result);
+				result.append(formatMethod(method));
 				break;
 			default:
 				String s = "Unknown node type: ";
@@ -39,63 +41,71 @@ public class Formatter {
 		}
 	}
 
-	private void formatMethod(Method method, StringBuilder result) {
+	private StringBuilder formatMethod(Method method) {
 		Identifier identifier = method.getVariable();
 		List<Expression> arguments = method.getArguments();
+		StringBuilder result = new StringBuilder();
 		if (identifier.toString().equals("println")) {
-			if (rules.get("newLineBeforePrintln").getRule()) {
-				int qty = rules.get("newLineBeforePrintln").getQty().get();
-				result.append("\n".repeat(Math.max(0, qty)));
-			}
+			checkNewLines(result);
 			result.append(identifier.toString()).append("(");
-			for (int i = 0; i < arguments.size(); i++) {
-				result.append(arguments.get(i).toString());
-				if (i < arguments.size() - 1) {
-					result.append(", ");
-				}
-			}
+			addNewLines(arguments, result);
 			result.append(");\n");
 		}
+		return result;
 	}
 
-	private void formatAssignation(Assignation assignation, StringBuilder result) {
+	private static void addNewLines(List<Expression> arguments, StringBuilder result) {
+		for (int i = 0; i < arguments.size(); i++) {
+			result.append(arguments.get(i).toString());
+			if (i < arguments.size() - 1) {
+				result.append(", ");
+			}
+		}
+	}
+
+	private void checkNewLines(StringBuilder result) {
+		if (rules.get("newLineBeforePrintln").getRule()) {
+			int qty = rules.get("newLineBeforePrintln").getQty().get();
+			result.append("\n".repeat(Math.max(0, qty)));
+		}
+	}
+
+	private void checkRule(String rule, String append, StringBuilder result) {
+		if (rules.get(rule).getRule()) {
+			result.append(append);
+		}
+	}
+
+	private StringBuilder formatAssignation(Assignation assignation) {
 		Identifier identifier = assignation.getIdentifier();
 		Expression expression = assignation.getExpression();
+		StringBuilder result = new StringBuilder();
 		result.append(identifier.toString());
-		if (rules.get("spaceBeforeAssignation").getRule()) {
-			result.append(" ");
-		}
+		checkRule("spaceBeforeAssignation", " ", result);
 		result.append("=");
-		if (rules.get("spaceAfterAssignation").getRule()) {
-			result.append(" ");
-		}
+		checkRule("spaceAfterAssignation", " ", result);
 		result.append(expression.toString());
 		result.append(";\n");
+		return result;
 	}
 
-	private void formatVarDec(VariableDeclaration varDec, StringBuilder result) {
+	private StringBuilder formatVarDec(VariableDeclaration varDec) {
 		Identifier identifier = varDec.getIdentifier();
 		Type type = varDec.getType();
 		Optional<Expression> expression = varDec.getExpression();
+		StringBuilder result = new StringBuilder();
 		result.append("let ").append(identifier.toString());
-		if (rules.get("spaceBeforeColon").getRule()) {
-			result.append(" ");
-		}
+		checkRule("spaceBeforeColon", " ", result);
 		result.append(":");
-		if (rules.get("spaceAfterColon").getRule()) {
-			result.append(" ");
-		}
+		checkRule("spaceAfterColon", " ", result);
 		result.append(type.getTypeName());
 		if (expression.isPresent()) {
-			if (rules.get("spaceBeforeAssignation").getRule()) {
-				result.append(" ");
-			}
+			checkRule("spaceBeforeAssignation", " ", result);
 			result.append("=");
-			if (rules.get("spaceAfterAssignation").getRule()) {
-				result.append(" ");
-			}
+			checkRule("spaceAfterAssignation", " ", result);
 			result.append(expression.get().toString());
 		}
 		result.append(";\n");
+		return result;
 	}
 }
