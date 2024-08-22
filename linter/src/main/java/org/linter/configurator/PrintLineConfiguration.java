@@ -13,8 +13,11 @@ import java.util.Map;
 public class PrintLineConfiguration implements Configurator {
 
 	private final String ruleName = "printWithIdentifiers";
-	private final Map<String, Boolean> mapOptionCase = Map.of("true", true, "false", false);
-	private final RuleBasicConfig config = RuleBasicConfig.rule(mapOptionCase.keySet().toArray(new String[0]), "false");
+	private final Map<String, Boolean> mapOptionCase = Map.of(
+			"true", true,
+			"false", false);
+	private final RuleBasicConfig config = RuleBasicConfig.rule(
+			mapOptionCase.keySet().toArray(new String[0]), "false");
 
 	public PrintLineConfiguration() {
 	}
@@ -39,7 +42,8 @@ public class PrintLineConfiguration implements Configurator {
 	}
 
 	@Override
-	public ASTVisitor getLinterRule(Report report, String ruleOption) throws WrongConfigurationException {
+	public ASTVisitor getLinterRule(Report report, String ruleOption)
+			throws WrongConfigurationException {
 		if (!isValidRuleOption(ruleOption)) {
 			throw new WrongConfigurationException(ruleName, ruleOption, getOptions());
 		}

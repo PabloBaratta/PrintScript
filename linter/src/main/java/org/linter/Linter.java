@@ -13,7 +13,8 @@ public class Linter {
 		this.configurator = configurator;
 	}
 
-	public Report analyze (Program program, Map<String, String> conf) throws WrongConfigurationException, Exception {
+	public Report analyze (Program program, Map<String, String> conf)
+			throws WrongConfigurationException, Exception {
 
 		Report report = new Report();
 		LinterVisitor linterFromConfig = configurator.getLinterFromConfig(conf, report);

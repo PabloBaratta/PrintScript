@@ -12,8 +12,11 @@ import java.util.Map;
 public class IdentifierConfiguration implements Configurator {
 
 	private final String ruleName = "case";
-	private final Map<String, Case> mapOptionCase = Map.of("camel", Case.CAMEL_CASE, "snake", Case.SNAKE_CASE);
-	private final RuleBasicConfig config = RuleBasicConfig.rule(mapOptionCase.keySet().toArray(new String[0]), "camel");
+	private final Map<String, Case> mapOptionCase = Map.of(
+			"camel", Case.CAMEL_CASE,
+			"snake", Case.SNAKE_CASE);
+	private final RuleBasicConfig config = RuleBasicConfig.rule(
+			mapOptionCase.keySet().toArray(new String[0]), "camel");
 
 	public IdentifierConfiguration() {}
 
@@ -34,7 +37,8 @@ public class IdentifierConfiguration implements Configurator {
 		return config.options();
 	}
 
-	public ASTVisitor getLinterRule(Report report, String ruleOption) throws WrongConfigurationException {
+	public ASTVisitor getLinterRule(Report report, String ruleOption)
+			throws WrongConfigurationException {
 		if (!isValidRuleOption(ruleOption)) {
 			throw new WrongConfigurationException(ruleName, ruleOption, getOptions());
 		}

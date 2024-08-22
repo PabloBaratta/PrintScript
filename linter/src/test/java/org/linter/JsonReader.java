@@ -11,7 +11,8 @@ public class JsonReader {
 
 	public Map<String, String> readJsonToMap(String filePath) throws IOException {
 		ObjectMapper objectMapper = new ObjectMapper();
-		return objectMapper.readValue(new File(filePath), new TypeReference<Map<String, String>>() {});
+		TypeReference<Map<String, String>> valueTypeRef = new TypeReference<>() {};
+		return objectMapper.readValue(new File(filePath), valueTypeRef);
 	}
 
 }

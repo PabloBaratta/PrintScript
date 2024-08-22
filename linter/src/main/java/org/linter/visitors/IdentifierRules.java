@@ -14,7 +14,8 @@ public class IdentifierRules implements ASTVisitor {
 	public IdentifierRules(Case caseToCheck, Report report) {
 		this.caseToCheck = caseToCheck;
 		this.report = report;
-		this.message = "This identifier does not match the desired configuration" + caseToCheck;
+		this.message = "This identifier does not match the desired configuration"
+				+ caseToCheck;
 	}
 	@Override
 	public void visit(Assignation assignation) throws Exception {}

@@ -5,7 +5,8 @@ import org.linter.Report;
 
 public class PrintLineRules implements ASTVisitor {
 
-	public static final String ERROR_MESSAGE = "printLn should only be called with a identifier or a literal";
+	public static final String ERROR_MESSAGE =
+			"printLn should only be called with a identifier or a literal";
 	private final Report report;
 	private final boolean shouldCheck;
 

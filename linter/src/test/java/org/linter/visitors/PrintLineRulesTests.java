@@ -59,7 +59,9 @@ public class PrintLineRulesTests {
 
 	@Test
 	public void notPertinentStatements() throws Exception {
-		VariableDeclaration variableDeclaration = new VariableDeclaration(new Identifier("a", new Position(4, 1, 1)),
+		Position varPosition = new Position(4, 1, 1);
+		Identifier identifier = new Identifier("a", varPosition);
+		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier,
 				new Type("string", new Position(7, 6, 1)),
 				Optional.of(new BinaryExpression(
 						new TextLiteral("a", new Position(8, 1, 1)),

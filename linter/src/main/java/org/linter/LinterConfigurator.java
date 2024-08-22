@@ -16,7 +16,8 @@ public class LinterConfigurator {
 		this.propToConfigurators = getPropToConfigurators(configurators);
 	}
 
-	public LinterVisitor getLinterFromConfig(Map<String, String> config, Report report) throws WrongConfigurationException {
+	public LinterVisitor getLinterFromConfig(Map<String, String> config, Report report)
+			throws WrongConfigurationException {
 
 		List<ASTVisitor> linters = new LinkedList<>();
 

@@ -23,15 +23,15 @@ public class ConfiguratorTest {
 
 
 		assertDoesNotThrow(() -> {
-			ASTVisitor linterRule = identifierConfiguration.getLinterRule(report, "camel");
+			identifierConfiguration.getLinterRule(report, "camel");
 		});
 
 		assertDoesNotThrow(() -> {
-			ASTVisitor linterRule = identifierConfiguration.getLinterRule(report, "snake");
+			identifierConfiguration.getLinterRule(report, "snake");
 		});
 
 		assertThrows(WrongConfigurationException.class,() -> {
-			ASTVisitor linterRule = identifierConfiguration.getLinterRule(report, "pascal");
+			identifierConfiguration.getLinterRule(report, "pascal");
 		});
 
 	}
@@ -49,11 +49,11 @@ public class ConfiguratorTest {
 
 
 		assertDoesNotThrow(() -> {
-			ASTVisitor linterRule = printLineConfiguration.getLinterRule(report, "true");
+			printLineConfiguration.getLinterRule(report, "true");
 		});
 
 		assertThrows(WrongConfigurationException.class,() -> {
-			ASTVisitor linterRule = printLineConfiguration.getLinterRule(report, "True");
+			printLineConfiguration.getLinterRule(report, "True");
 		});
 
 	}

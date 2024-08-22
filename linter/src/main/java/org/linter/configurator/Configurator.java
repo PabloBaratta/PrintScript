@@ -11,7 +11,8 @@ public interface Configurator {
 
 	String getProp();
 
-	ASTVisitor getLinterRule(Report report, String ruleOption) throws WrongConfigurationException;
+	ASTVisitor getLinterRule(Report report, String ruleOption)
+			throws WrongConfigurationException;
 
 	ASTVisitor getLinterRule(Report report);
 }

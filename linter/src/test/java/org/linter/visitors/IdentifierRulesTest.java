@@ -110,14 +110,15 @@ class IdentifierRulesTest {
 
 	@Test
 	public void doesNotChangeWithOtherNodes() throws Exception {
-		Identifier identifier = new Identifier("hi", new Position(0, 0, 0));
-		Assignation assignation = new Assignation(identifier, identifier, new Position(0, 0, 0));
+		Position position = new Position(0, 0, 0);
+		Identifier identifier = new Identifier("hi", position);
+		Assignation assignation = new Assignation(identifier, identifier, position);
 		Method method = new Method(identifier, List.of(identifier));
-		TextLiteral lit = new TextLiteral("a", new Position(0,0,0));
-		NumericLiteral num = new NumericLiteral(1.0, new Position(0,0,0));
+		TextLiteral lit = new TextLiteral("a", position);
+		NumericLiteral num = new NumericLiteral(1.0, position);
 		BinaryExpression bin = new BinaryExpression(identifier, "+", identifier);
 		Parenthesis parenthesis = new Parenthesis(bin);
-		UnaryExpression un = new UnaryExpression(bin, "+", new Position(0,0,0));
+		UnaryExpression un = new UnaryExpression(bin, "+", position);
 
 		Report report = new Report();
 		IdentifierRules identifierRules = new IdentifierRules(Case.CAMEL_CASE, report);
@@ -135,7 +136,8 @@ class IdentifierRulesTest {
 		assertTrue(report.getReportLines().isEmpty());
 	}
 
-		private static void assertVarDeclCamelCase(String identifierString) throws Exception {
+		private static void assertVarDeclCamelCase(String identifierString)
+				throws Exception {
 			Report report = getReportFromVarDecl(identifierString, Case.CAMEL_CASE);
 
 			assertTrue(report.getReportLines().isEmpty());
@@ -160,12 +162,13 @@ class IdentifierRulesTest {
 		assertFalse(report.getReportLines().isEmpty());
 	}
 
-	private static Report getReportFromVarDecl(String identifierString, Case identifierCase) throws Exception {
+	private static Report getReportFromVarDecl(String identifierString, Case identifierCase)
+			throws Exception {
 		int length = identifierString.length();
 		VariableDeclaration variableDeclaration = new VariableDeclaration(
-				new Identifier(identifierString, new Position(4, length, 1)),
-				new Type("string", new Position(5 + length, 6, 1)),
-				Optional.of(new TextLiteral("america", new Position(14 + length, 7, 1))));
+			new Identifier(identifierString, new Position(4, length, 1)),
+			new Type("string", new Position(5 + length, 6, 1)),
+			Optional.of(new TextLiteral("america", new Position(14 + length, 7, 1))));
 
 		Report report = new Report();
 		IdentifierRules identifierRules = new IdentifierRules(identifierCase, report);

@@ -19,7 +19,8 @@ public class LinterConfiguratorTest {
 	@Test
 	public void camelCaseFromJson() throws IOException {
 		JsonReader jsonReader = new JsonReader();
-		Map<String, String> stringStringMap = jsonReader.readJsonToMap("src/test/resources/camel_case.json");
+		String path = "src/test/resources/camel_case.json";
+		Map<String, String> stringStringMap = jsonReader.readJsonToMap(path);
 
 		successfulCase(stringStringMap, "amparoBreak", getDefaultExpressionForTests());
 		unsuccessfulCase(stringStringMap, "hello_world", getDefaultExpressionForTests());
@@ -28,7 +29,8 @@ public class LinterConfiguratorTest {
 	@Test
 	public void snakeCaseFromJson() throws IOException {
 		JsonReader jsonReader = new JsonReader();
-		Map<String, String> stringStringMap = jsonReader.readJsonToMap("src/test/resources/snake_case.json");
+		String path = "src/test/resources/snake_case.json";
+		Map<String, String> stringStringMap = jsonReader.readJsonToMap(path);
 
 		successfulCase(stringStringMap, "amparo_break",  getDefaultExpressionForTests());
 		unsuccessfulCase(stringStringMap, "lionelMessi",  getDefaultExpressionForTests());
@@ -37,7 +39,8 @@ public class LinterConfiguratorTest {
 	@Test
 	public void printLnFromJson() throws IOException {
 		JsonReader jsonReader = new JsonReader();
-		Map<String, String> stringStringMap = jsonReader.readJsonToMap("src/test/resources/println.json");
+		String path = "src/test/resources/println.json";
+		Map<String, String> stringStringMap = jsonReader.readJsonToMap(path);
 
 		successfulCase(stringStringMap, "amparo_break",  getDefaultExpressionForTests());
 
@@ -54,7 +57,8 @@ public class LinterConfiguratorTest {
 	@Test
 	public void turnedOffPrintLnFromJson() throws IOException {
 		JsonReader jsonReader = new JsonReader();
-		Map<String, String> stringStringMap = jsonReader.readJsonToMap("src/test/resources/println2.json");
+		String path = "src/test/resources/println2.json";
+		Map<String, String> stringStringMap = jsonReader.readJsonToMap(path);
 
 		successfulCase(stringStringMap, "amparo_break",  getDefaultExpressionForTests());
 
@@ -68,19 +72,21 @@ public class LinterConfiguratorTest {
 		successfulCase(stringStringMap, "lionelMessi",  binaryExpression);
 	}
 
-	private static void successfulCase(Map<String, String> stringStringMap, String identifierString, Expression expression) {
-		LinterConfigurator linterConfigurator = new LinterConfigurator(List.of(new IdentifierConfiguration(),
-				new PrintLineConfiguration()));
+	private static void successfulCase(Map<String, String> conf, String var, Expression exp) {
+		LinterConfigurator config = new LinterConfigurator(
+				List.of(
+					new IdentifierConfiguration(),
+					new PrintLineConfiguration()));
 
 		Report report = new Report();
 
 		assertDoesNotThrow(() -> {
-		linterConfigurator.getLinterFromConfig(stringStringMap, report);
+		config.getLinterFromConfig(conf, report);
 		});
 
 		try {
-			LinterVisitor linterFromConfig = linterConfigurator.getLinterFromConfig(stringStringMap, report);
-			Program program = getProgram(identifierString, expression);
+			LinterVisitor linterFromConfig = config.getLinterFromConfig(conf, report);
+			Program program = getProgram(var, exp);
 
 			linterFromConfig.visit(program);
 			assertTrue(report.getReportLines().isEmpty());
@@ -89,19 +95,19 @@ public class LinterConfiguratorTest {
 		}
 	}
 
-	private static void unsuccessfulCase(Map<String, String> stringStringMap, String identifierString, Expression expression) {
-		LinterConfigurator linterConfigurator = new LinterConfigurator(List.of(new IdentifierConfiguration(),
-				new PrintLineConfiguration()));
+	private static void unsuccessfulCase(Map<String, String> conf, String var, Expression exp) {
+		LinterConfigurator config = new LinterConfigurator(
+				List.of(new IdentifierConfiguration(), new PrintLineConfiguration()));
 
 		Report report = new Report();
 
 		assertDoesNotThrow(() -> {
-			linterConfigurator.getLinterFromConfig(stringStringMap, report);
+			config.getLinterFromConfig(conf, report);
 		});
 
 		try {
-			LinterVisitor linterFromConfig = linterConfigurator.getLinterFromConfig(stringStringMap, report);
-			Program program = getProgram(identifierString, expression);
+			LinterVisitor linterFromConfig = config.getLinterFromConfig(conf, report);
+			Program program = getProgram(var, exp);
 
 			linterFromConfig.visit(program);
 			assertFalse(report.getReportLines().isEmpty());
@@ -114,12 +120,12 @@ public class LinterConfiguratorTest {
 		int length = identifierString.length();
 		Program program = new Program(
 				List.of(new VariableDeclaration(
-						new Identifier(identifierString, new Position(4, length, 1)),
-						new Type("string", new Position(5 + length, 6, 1)),
-						Optional.of(new TextLiteral("america", new Position(14 + length, 7, 1)))),
-						new Method(
-								new Identifier("println", new Position(23,7,2)),
-								List.of(expression))));
+					new Identifier(identifierString, new Position(4, length, 1)),
+					new Type("string", new Position(5 + length, 6, 1)),
+					Optional.of(new TextLiteral("america", new Position(14 + length, 7, 1)))),
+					new Method(
+						new Identifier("println", new Position(23,7,2)),
+						List.of(expression))));
 		return program;
 	}
 
