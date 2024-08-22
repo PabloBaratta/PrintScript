@@ -3,6 +3,7 @@ package org.example;
 import org.example.lexer.token.NativeTokenTypes;
 import org.example.lexer.token.Position;
 import org.example.lexer.token.Token;
+import org.example.lexer.token.TokenType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -70,7 +71,8 @@ public class TokenBufferTests {
 		Arrays.stream(NativeTokenTypes.values())
 				.forEach(type -> {
 					assertFalse(tokenBuffer.isNextTokenOfType(type.toTokenType()));
-					assertFalse(tokenBuffer.isNextTokenOfAnyOfThisTypes(List.of(type.toTokenType())));
+							List<TokenType> types = List.of(type.toTokenType());
+							assertFalse(tokenBuffer.isNextTokenOfAnyOfThisTypes(types));
 				}
 				);
 

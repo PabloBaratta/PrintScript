@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.example.nodeconstructors.NodeConstructionResponse.response;
+import static org.example.nodeconstructors.NodeResponse.response;
 
 //TODO refactor
 public class AssignationNodeConstructor implements NodeConstructor{
@@ -23,7 +23,7 @@ public class AssignationNodeConstructor implements NodeConstructor{
 		this.expressionNodeConstructor = expressionNodeConstructor;
 	}
 	@Override
-	public NodeConstructionResponse build(TokenBuffer tokenBuffer) {
+	public NodeResponse build(TokenBuffer tokenBuffer) {
 		boolean hasIdentifier = tokenBuffer.isNextTokenOfType(NativeTokenTypes.IDENTIFIER.toTokenType());
 
 		Token identifierToken = tokenBuffer.getToken().get();
@@ -32,7 +32,7 @@ public class AssignationNodeConstructor implements NodeConstructor{
 		if (!(hasIdentifier &&
 			tokenBufferWithoutIdentifier.hasAnyTokensLeft() &&
 			tokenBufferWithoutIdentifier.isNextTokenOfType(NativeTokenTypes.EQUALS.toTokenType()))) {
-			return new NodeConstructionResponse(new Try<>(Optional.empty()), tokenBufferWithoutIdentifier);
+			return new NodeResponse(new Try<>(Optional.empty()), tokenBufferWithoutIdentifier);
 		}
 
 
@@ -47,7 +47,7 @@ public class AssignationNodeConstructor implements NodeConstructor{
 		return handleEqualsToken(identifierToken, equals, tokenBufferWithoutEquals);
 	}
 
-	private NodeConstructionResponse handleEqualsToken(Token identifierToken, Token equalsToken, TokenBuffer tokenBuffer) {
+	private NodeResponse handleEqualsToken(Token identifierToken, Token equalsToken, TokenBuffer tokenBuffer) {
 		List<Token> tokens = new LinkedList<>();
 
 		Token currentToken = equalsToken;
@@ -72,7 +72,7 @@ public class AssignationNodeConstructor implements NodeConstructor{
 
 		TokenBuffer expressionTokenBuffer = new TokenBuffer(tokens);
 
-		NodeConstructionResponse buildResult = expressionNodeConstructor.build(expressionTokenBuffer);
+		NodeResponse buildResult = expressionNodeConstructor.build(expressionTokenBuffer);
 
 		if (buildResult.possibleNode().isFail()) {
 			return buildResult;

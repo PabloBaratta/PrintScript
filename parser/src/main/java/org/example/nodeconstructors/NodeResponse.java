@@ -6,27 +6,27 @@ import org.example.lexer.utils.Try;
 
 import java.util.Optional;
 
-public record NodeConstructionResponse(
+public record NodeResponse(
 		Try<Optional<ASTNode>, Exception> possibleNode,
 		TokenBuffer possibleBuffer
 ) {
 
-	static NodeConstructionResponse response(Exception exception, TokenBuffer buffer){
-		return new NodeConstructionResponse(
+	static NodeResponse response(Exception exception, TokenBuffer buffer){
+		return new NodeResponse(
 				new Try<>(exception),
 				buffer
 		);
 	}
 
-	static NodeConstructionResponse response(ASTNode node, TokenBuffer buffer){
-		return new NodeConstructionResponse(
+	static NodeResponse response(ASTNode node, TokenBuffer buffer){
+		return new NodeResponse(
 				new Try<>(Optional.of(node)),
 				buffer
 		);
 	}
 
-	static NodeConstructionResponse emptyResponse(TokenBuffer buffer){
-		return new NodeConstructionResponse(
+	static NodeResponse emptyResponse(TokenBuffer buffer){
+		return new NodeResponse(
 				new Try<>(Optional.empty()),
 				buffer
 		);
