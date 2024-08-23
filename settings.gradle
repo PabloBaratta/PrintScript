@@ -14,4 +14,5 @@ rootProject.name = 'printscript'
 include('lexer', 'parser', 'interpreter', 'linter')
 include 'ast'
 include 'cli'
+include 'formatter'
 

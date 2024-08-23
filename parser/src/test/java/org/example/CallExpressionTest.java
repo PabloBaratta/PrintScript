@@ -4,7 +4,7 @@ import org.example.lexer.token.NativeTokenTypes;
 import org.example.lexer.token.Token;
 import org.example.nodeconstructors.CallExpressionNodeConstructor;
 import org.example.nodeconstructors.ExpressionCollectorNodeConstructor;
-import org.example.nodeconstructors.NodeConstructionResponse;
+import org.example.nodeconstructors.NodeResponse;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -30,7 +30,7 @@ public class CallExpressionTest {
 				type -> !type.equals(IDENTIFIER)
 		).forEach(type ->
 				{TokenBuffer tokenBuffer = new TokenBuffer(List.of(getaTokenFromTokenType(type)));
-					NodeConstructionResponse build = builder.build(tokenBuffer);
+					NodeResponse build = builder.build(tokenBuffer);
 					assertTrue(build.possibleNode().isSuccess());
 					assertTrue(build.possibleNode().getSuccess().get().isEmpty());}
 		);
@@ -41,7 +41,7 @@ public class CallExpressionTest {
 				{TokenBuffer tokenBuffer = new TokenBuffer(List.of( getaTokenFromTokenType(IDENTIFIER),
 						getaTokenFromTokenType(type)
 						));
-					NodeConstructionResponse build = builder.build(tokenBuffer);
+					NodeResponse build = builder.build(tokenBuffer);
 					assertTrue(build.possibleNode().isSuccess());
 					assertTrue(build.possibleNode().getSuccess().get().isEmpty());}
 		);
@@ -92,7 +92,16 @@ public class CallExpressionTest {
 		boolean terminal = true;
 		Token functionCall = getaTokenFromTokenType(PRINTLN, "println");
 		NativeTokenTypes[] inParenthesisInput = new NativeTokenTypes[]{
-				LEFT_PARENTHESIS, LEFT_PARENTHESIS, NUMBER, PLUS, NUMBER, RIGHT_PARENTHESES, PLUS, NUMBER, RIGHT_PARENTHESES, SEMICOLON
+				LEFT_PARENTHESIS,
+				LEFT_PARENTHESIS,
+				NUMBER,
+				PLUS,
+				NUMBER,
+				RIGHT_PARENTHESES,
+				PLUS,
+				NUMBER,
+				RIGHT_PARENTHESES,
+				SEMICOLON
 		};
 		LinkedList<Token> tokens = new LinkedList<>(List.of(functionCall));
 		tokens.addAll(TokenTestUtil.getTokens(inParenthesisInput));
@@ -105,7 +114,15 @@ public class CallExpressionTest {
 		boolean terminal = false;
 		Token functionCall = getaTokenFromTokenType(PRINTLN, "println");
 		NativeTokenTypes[] inParenthesisInput = new NativeTokenTypes[]{
-				LEFT_PARENTHESIS, LEFT_PARENTHESIS, NUMBER, PLUS, NUMBER, RIGHT_PARENTHESES, PLUS, NUMBER, RIGHT_PARENTHESES
+				LEFT_PARENTHESIS,
+				LEFT_PARENTHESIS,
+				NUMBER,
+				PLUS,
+				NUMBER,
+				RIGHT_PARENTHESES,
+				PLUS,
+				NUMBER,
+				RIGHT_PARENTHESES
 		};
 		LinkedList<Token> tokens = new LinkedList<>(List.of(functionCall));
 		tokens.addAll(TokenTestUtil.getTokens(inParenthesisInput));
@@ -126,7 +143,15 @@ public class CallExpressionTest {
 		assertMissingLastArguments(terminal, tokens);
 
 		inParenthesisInput = new NativeTokenTypes[]{
-				LEFT_PARENTHESIS, LEFT_PARENTHESIS, NUMBER, PLUS, NUMBER, RIGHT_PARENTHESES, PLUS, NUMBER, RIGHT_PARENTHESES
+				LEFT_PARENTHESIS,
+				LEFT_PARENTHESIS,
+				NUMBER,
+				PLUS,
+				NUMBER,
+				RIGHT_PARENTHESES,
+				PLUS,
+				NUMBER,
+				RIGHT_PARENTHESES
 		};
 		tokens = new LinkedList<>(List.of(functionCall));
 		tokens.addAll(TokenTestUtil.getTokens(inParenthesisInput));
@@ -149,7 +174,7 @@ public class CallExpressionTest {
 		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
 		CallExpressionNodeConstructor builder = new CallExpressionNodeConstructor(terminal, collector);
 
-		NodeConstructionResponse build = builder.build(new TokenBuffer(tokens));
+		NodeResponse build = builder.build(new TokenBuffer(tokens));
 		assertTrue(build.possibleNode().isFail());
 	}
 
@@ -168,7 +193,7 @@ public class CallExpressionTest {
 		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
 		CallExpressionNodeConstructor builder = new CallExpressionNodeConstructor(terminal, collector);
 
-		NodeConstructionResponse build = builder.build(new TokenBuffer(tokens));
+		NodeResponse build = builder.build(new TokenBuffer(tokens));
 		assertTrue(build.possibleNode().isFail());
 	}
 
@@ -177,8 +202,17 @@ public class CallExpressionTest {
 		boolean terminal = true;
 		Token functionCall = getaTokenFromTokenType(PRINTLN, "println");
 		NativeTokenTypes[] inParenthesisInput = new NativeTokenTypes[]{
-				LEFT_PARENTHESIS, LEFT_PARENTHESIS, NUMBER, PLUS, NUMBER, RIGHT_PARENTHESES, PLUS, NUMBER, RIGHT_PARENTHESES,
-				IDENTIFIER, SEMICOLON
+				LEFT_PARENTHESIS,
+				LEFT_PARENTHESIS,
+				NUMBER,
+				PLUS,
+				NUMBER,
+				RIGHT_PARENTHESES,
+				PLUS,
+				NUMBER,
+				RIGHT_PARENTHESES,
+				IDENTIFIER,
+				SEMICOLON
 		};
 		LinkedList<Token> tokens = new LinkedList<>(List.of(functionCall));
 		tokens.addAll(TokenTestUtil.getTokens(inParenthesisInput));
@@ -187,7 +221,7 @@ public class CallExpressionTest {
 		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
 		CallExpressionNodeConstructor builder = new CallExpressionNodeConstructor(terminal, collector);
 
-		NodeConstructionResponse build = builder.build(new TokenBuffer(tokens));
+		NodeResponse build = builder.build(new TokenBuffer(tokens));
 		assertTrue(build.possibleNode().isFail());
 	}
 
@@ -198,18 +232,18 @@ public class CallExpressionTest {
 		int originalTokenListSize = tokens.size();
 		for (int i = 2; i < originalTokenListSize; i++) {
 			tokens.removeLast();
-			NodeConstructionResponse build = builder.build(new TokenBuffer(tokens));
+			NodeResponse build = builder.build(new TokenBuffer(tokens));
 			assertTrue(build.possibleNode().isFail());
 		}
 	}
 
 
 	private static void successfulAssertions(boolean terminal, LinkedList<Token> tokens,
-											int argumentsSize, int insideTokensWithoutCommas) {
+											int n, int withoutComma) {
 		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
 		CallExpressionNodeConstructor constructor = new CallExpressionNodeConstructor(terminal, collector);
 
-		NodeConstructionResponse build = constructor.build(new TokenBuffer(tokens));
+		NodeResponse build = constructor.build(new TokenBuffer(tokens));
 
 		assertFalse(build.possibleBuffer().hasAnyTokensLeft());
 		assertTrue(build.possibleNode().isSuccess());
@@ -226,8 +260,8 @@ public class CallExpressionTest {
 
 		List<Expression> arguments = method.getArguments();
 
-		assertEquals(argumentsSize, arguments.size());
+		assertEquals(n, arguments.size());
 		assertEquals("println", method.getVariable().getName());
-		assertEquals(insideTokensWithoutCommas, collector.getCollectedTokens().size());
+		assertEquals(withoutComma, collector.getCollectedTokens().size());
 	}
 }

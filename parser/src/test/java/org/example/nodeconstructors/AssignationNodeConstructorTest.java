@@ -26,7 +26,7 @@ public class AssignationNodeConstructorTest {
 				type -> !type.equals(NativeTokenTypes.IDENTIFIER)
 		).forEach(type ->
 				{TokenBuffer tokenBuffer = new TokenBuffer(List.of(getaTokenFromTokenType(type)));
-				NodeConstructionResponse build = builder.build(tokenBuffer);
+				NodeResponse build = builder.build(tokenBuffer);
 				assertTrue(build.possibleNode().isSuccess());
 				assertTrue(build.possibleNode().getSuccess().get().isEmpty());}
 		);
@@ -34,9 +34,11 @@ public class AssignationNodeConstructorTest {
 		Arrays.stream(NativeTokenTypes.values()).filter(
 				type -> !type.equals(NativeTokenTypes.EQUALS)).
 				forEach(type ->
-				{TokenBuffer tokenBuffer = new TokenBuffer(List.of(getaTokenFromTokenType(NativeTokenTypes.IDENTIFIER),
-						getaTokenFromTokenType(type)));
-					NodeConstructionResponse build = builder.build(tokenBuffer);
+				{
+					Token e1 = getaTokenFromTokenType(IDENTIFIER);
+					Token e2 = getaTokenFromTokenType(type);
+					TokenBuffer tokenBuffer = new TokenBuffer(List.of(e1, e2));
+					NodeResponse build = builder.build(tokenBuffer);
 					assertTrue(build.possibleNode().isSuccess());
 					assertTrue(build.possibleNode().getSuccess().get().isEmpty());});
 	}
@@ -78,7 +80,7 @@ public class AssignationNodeConstructorTest {
 		int originalTokenListSize = tokens.size();
 		for (int i = 2; i < originalTokenListSize; i++) {
 			tokens.removeLast();
-			NodeConstructionResponse build = builder.build(new TokenBuffer(tokens));
+			NodeResponse build = builder.build(new TokenBuffer(tokens));
 			assertTrue(build.possibleNode().isFail());
 		}
 
@@ -88,7 +90,7 @@ public class AssignationNodeConstructorTest {
 		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
 		NodeConstructor assignationNodeConstructor = new AssignationNodeConstructor(collector);
 
-		NodeConstructionResponse build = assignationNodeConstructor.build(new TokenBuffer(tokens));
+		NodeResponse build = assignationNodeConstructor.build(new TokenBuffer(tokens));
 
 		assertTrue(build.possibleNode().isSuccess());
 		assertFalse(build.possibleBuffer().hasAnyTokensLeft());

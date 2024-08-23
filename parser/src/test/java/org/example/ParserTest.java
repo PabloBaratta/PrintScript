@@ -36,7 +36,7 @@ public class ParserTest {
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
 		Try<ASTNode, Exception> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
-		Assertions.assertEquals("1.0+2.0", node.toString());
+		Assertions.assertEquals("1.0 + 2.0", node.toString());
 	}
 
 	@Test
@@ -62,7 +62,7 @@ public class ParserTest {
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
 		Try<ASTNode, Exception> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
-		Assertions.assertEquals("1.0+2.0*hola", node.toString());
+		Assertions.assertEquals("1.0 + 2.0 * hola", node.toString());
 	}
 
 	@Test
@@ -97,11 +97,13 @@ public class ParserTest {
 		operators.add(NativeTokenTypes.ASTERISK.toTokenType());
 		operators.add(NativeTokenTypes.SLASH.toTokenType());
 		expressions.add(NativeTokenTypes.NUMBER.toTokenType());
-		expressions.add(NativeTokenTypes.STRING.toTokenType());
+		TokenType str = NativeTokenTypes.STRING.toTokenType();
+		expressions.add(str);
 		expressions.add(NativeTokenTypes.IDENTIFIER.toTokenType());
 		list.add(new ExpressionNodeConstructor(operators, expressions));
 		List<Token> tokens = new ArrayList<>();
-		tokens.add(new Token(NativeTokenTypes.STRING.toTokenType(), "\"hola buenas tardes\"", new Position(1, 20, 1)));
+		Position pos = new Position(1, 20, 1);
+		tokens.add(new Token(str, "\"hola buenas tardes\"", pos));
 		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
 		Try<ASTNode, Exception> res = parser.parseExpression();
@@ -152,14 +154,15 @@ public class ParserTest {
 		tokens.add(new Token(NativeTokenTypes.RIGHT_PARENTHESES.toTokenType(), ")", new Position(10, 1, 17)));
 
 		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
-		Parser parser = new Parser(new LinkedList<>(List.of(new ExpressionNodeConstructor(operators, expressions))), new ArrayList<>(), tokenBuffer);
+		ExpressionNodeConstructor e1 = new ExpressionNodeConstructor(operators, expressions);
+		Parser parser = new Parser(new LinkedList<>(List.of(e1)), new ArrayList<>(), tokenBuffer);
 
 		// Parsear la expresión
 		Try<ASTNode, Exception> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
 
 		// Verifica que la expresión se haya parseado correctamente
-		Assertions.assertEquals("((1.0)+2.0)", node.toString());
+		Assertions.assertEquals("((1.0) + 2.0)", node.toString());
 
 	}
 
