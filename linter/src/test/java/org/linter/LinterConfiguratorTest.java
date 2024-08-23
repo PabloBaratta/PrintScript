@@ -116,7 +116,7 @@ public class LinterConfiguratorTest {
 		}
 	}
 
-	private static Program getProgram(String identifierString, Expression expression) {
+	public static Program getProgram(String identifierString, Expression expression) {
 		int length = identifierString.length();
 		Program program = new Program(
 				List.of(new VariableDeclaration(
