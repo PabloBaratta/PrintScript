@@ -1,0 +1,76 @@
+@startuml
+
+class Linter {
+- LinterConfigurator
++ Report analyze (Program program, Map<String, String> conf)
+}
+
+class LinterConfigurator {
+- Map<String, Configurator> propToConfigurators
++ LinterVisitor getLinterFromConfig(Map<String, String> config, Report report)
+}
+
+class Report {
+- List<ReportLine> lines;
++ List<ReportLine> getReportLines()
++ void addLine(Position position, String errorMessage)
++ String printReport();
+}
+
+class ReportLine {
+Position position
+String errorMessage
+}
+
+class LinterVisitor implements ASTVisitor {
+- List<ASTVisitor> visitors
+}
+
+class PrintLineRules implements ASTVisitor {
+}
+
+class IdentifierRules implements ASTVisitor {
+}
+
+interface Configurator {
++boolean isThisRule(String ruleName)
++boolean isValidRuleOption(String ruleOption)
++String getProp()
++ASTVisitor getLinterRule(Report report, String ruleOption)
++ASTVisitor getLinterRule(Report report)
+}
+
+class PrintLineConfiguration implements Configurator {
+- Map<String, Boolean> mapOptionCase
+-RuleBasicConfig config
+}
+
+class IdentifierConfiguration implements Configurator {
+- Map<String, Case> mapOptionCase
+-RuleBasicConfig config
+}
+
+
+enum Case {
+    CAMEL_CASE, SNAKE_CASE
+}
+
+
+class RuleBasicConfig {
+String[] options
+String defaultValue
+}
+
+
+Report *-- ReportLine
+Linter ..> Report
+Linter --> LinterConfigurator
+LinterConfigurator --> Configurator
+LinterConfigurator ..> Report
+LinterConfigurator ..> LinterVisitor
+LinterVisitor *-- ASTVisitor
+IdentifierRules --> Case
+Configurator --> ASTVisitor
+PrintLineConfiguration --> RuleBasicConfig
+IdentifierConfiguration --> RuleBasicConfig
+@enduml

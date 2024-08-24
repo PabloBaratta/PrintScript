@@ -3,30 +3,28 @@ package org.example.nodeconstructors;
 import org.example.*;
 import org.example.lexer.token.NativeTokenTypes;
 import org.example.lexer.token.Token;
-import org.example.lexer.utils.Try;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
-import static org.example.nodeconstructors.NodeConstructionResponse.*;
+import static org.example.nodeconstructors.NodeResponse.*;
 
 public class CallExpressionNodeConstructor implements NodeConstructor{
 
 	//whether it has to check ";" --> Refactor
 
 	private final boolean terminal;
-	private final NodeConstructor expressionNodeConstructor;
+	private final NodeConstructor expConst;
 
-	public CallExpressionNodeConstructor(boolean terminal, NodeConstructor expressionNodeConstructor){
+	public CallExpressionNodeConstructor(boolean terminal, NodeConstructor expConst){
 		this.terminal = terminal;
-		this.expressionNodeConstructor = expressionNodeConstructor;
+		this.expConst = expConst;
 	}
 
 
 
 	@Override
-	public NodeConstructionResponse build(TokenBuffer tokenBuffer) {
+	public NodeResponse build(TokenBuffer tokenBuffer) {
 
 		if (!(tokenBuffer.isNextTokenOfType(NativeTokenTypes.IDENTIFIER.toTokenType())
 			|| tokenBuffer.isNextTokenOfType(NativeTokenTypes.PRINTLN.toTokenType()))){
@@ -45,13 +43,15 @@ public class CallExpressionNodeConstructor implements NodeConstructor{
 	}
 
 	//TODO refactor
-	private NodeConstructionResponse handleCallExpression(Token identifier, TokenBuffer tokenBuffer) {
+	private NodeResponse handleCallExpression(Token identifier, TokenBuffer tokenBuffer) {
 		// ( --> +1 , ) --> -1
 		int parenthesisCount = 1;
 		Token lastToken = identifier; // it should be the left parenthesis
 
 		List<Expression> listOfArguments = new LinkedList<>();
 		List<Token> tokenAcc = new LinkedList<>();
+		String message1 = "not part or the desired expression as argument";
+		String mess = "not an expression";
 		while (parenthesisCount > 0) {
 
 			if (!tokenBuffer.hasAnyTokensLeft()) {
@@ -77,29 +77,33 @@ public class CallExpressionNodeConstructor implements NodeConstructor{
 			}
 			else if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.COMMA.toTokenType())) {
 
+				String message = "expected expression after comma";
+				SemanticErrorException error = new SemanticErrorException(lastToken, message);
 				if (tokenAcc.isEmpty()) {
-					return response(new SemanticErrorException(lastToken, "expected expression after comma"),
+					return response(error,
 							tokenBuffer);
 				}
 				lastToken = tokenBuffer.getToken().get(); //check
 				tokenBuffer = tokenBuffer.consumeToken(); //continue
 
 				if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.RIGHT_PARENTHESES.toTokenType())) {
-					return response(new SemanticErrorException(lastToken, "expected expression after comma"),
+					return response(error,
 							tokenBuffer);
 				}
-				NodeConstructionResponse build = expressionNodeConstructor.build(new TokenBuffer(tokenAcc));
+				NodeResponse build = expConst.build(new TokenBuffer(tokenAcc));
 
 				if (build.possibleNode().isFail()){
 					return build;
 				}
 				else if (build.possibleBuffer().hasAnyTokensLeft()){
-					Token errorToken = build.possibleBuffer().getToken().get();
-					return response(new SemanticErrorException(errorToken, "not part or the desired expression as argument"), tokenBuffer);
+					Token token = build.possibleBuffer().getToken().get();
+					SemanticErrorException exception = new SemanticErrorException(token, message1);
+					return response(exception, tokenBuffer);
 				}
 				else if (build.possibleNode().getSuccess().isEmpty()) {
 					Token errorToken = build.possibleBuffer().getToken().get();
-					return response(new SemanticErrorException(errorToken, "not an expression"), tokenBuffer);
+					SemanticErrorException ex = new SemanticErrorException(errorToken, mess);
+					return response(ex, tokenBuffer);
 				}
 
 				listOfArguments.add( (Expression) build.possibleNode().getSuccess().get().get());
@@ -115,18 +119,18 @@ public class CallExpressionNodeConstructor implements NodeConstructor{
 		// f(a,b) --> build the b
 		if (!tokenAcc.isEmpty()) {
 
-			NodeConstructionResponse build = expressionNodeConstructor.build(new TokenBuffer(tokenAcc));
+			NodeResponse build = expConst.build(new TokenBuffer(tokenAcc));
 
 			if (build.possibleNode().isFail()){
 				return build;
 			}
 			else if (build.possibleBuffer().hasAnyTokensLeft()){
 				Token errorToken = build.possibleBuffer().getToken().get();
-				return response(new SemanticErrorException(errorToken, "not part or the desired expression as argument"), tokenBuffer);
+				return response(new SemanticErrorException(errorToken, message1), tokenBuffer);
 			}
 			else if (build.possibleNode().getSuccess().isEmpty()) {
 				Token errorToken = build.possibleBuffer().getToken().get();
-				return response(new SemanticErrorException(errorToken, "not an expression"), tokenBuffer);
+				return response(new SemanticErrorException(errorToken, mess), tokenBuffer);
 			}
 
 			listOfArguments.add( (Expression) build.possibleNode().getSuccess().get().get());
@@ -145,6 +149,7 @@ public class CallExpressionNodeConstructor implements NodeConstructor{
 	}
 
 	private static Method createMethodNode(Token identifier, List<Expression> listOfArguments) {
-		return new Method(new Identifier(identifier.associatedString(), identifier.position()), listOfArguments);
+		Identifier identifier1 = new Identifier(identifier.associatedString(), identifier.position());
+		return new Method(identifier1, listOfArguments);
 	}
 }

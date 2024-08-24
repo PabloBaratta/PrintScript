@@ -14,13 +14,13 @@ public class ExpressionCollectorNodeConstructor implements NodeConstructor{
 
 	List<Token> collectedTokens = new LinkedList<>();
 	@Override
-	public NodeConstructionResponse build(TokenBuffer tokenBuffer) {
+	public NodeResponse build(TokenBuffer tokenBuffer) {
 		while (tokenBuffer.hasAnyTokensLeft()) {
 			collectedTokens.add(tokenBuffer.getToken().get());
 			tokenBuffer = tokenBuffer.consumeToken();
 		}
 
-		return new NodeConstructionResponse(
+		return new NodeResponse(
 				new Try<>(Optional.of(new TextLiteral("default value", new Position(0,0,0)))),
 				tokenBuffer
 		);
