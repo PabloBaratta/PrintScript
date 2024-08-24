@@ -53,18 +53,6 @@ spotless {
 }
 
 
-checkstyle {
-    toolVersion = '10.12.1' // You can specify the desired version
-    config = resources.text.fromFile('config/checkstyle/checkstyle.xml')
-}
-
-tasks.withType(Checkstyle) {
-    reports {
-        xml.required = false
-        html.required = true
-        html.destination = file("${buildDir}/reports/checkstyle.html")
-    }
-}
 tasks.register("addPreCommitGitHook") {
     println("Adding pre commit")
     doLast {
