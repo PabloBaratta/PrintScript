@@ -16,19 +16,19 @@ public class Validator implements ASTVisitor {
 		Identifier identifier = assignation.getIdentifier();
 		Expression expression = assignation.getExpression();
 
-        if (!environment.containsKey(identifier.toString())) {
-            throw new Exception("Variable not declared");
-        }
+		if (!environment.containsKey(identifier.toString())) {
+			throw new Exception("Variable not declared");
+		}
 
-        Expression astNodeResult = evaluateExpression(expression);
-        Variable variable = environment.get(identifier.toString());
+		Expression astNodeResult = evaluateExpression(expression);
+		Variable variable = environment.get(identifier.toString());
 
-        if (typesMatch(astNodeResult, variable)) {
-            variable.setExpression(astNodeResult);
-            environment.put(identifier.toString(), variable);
-        } else {
-            throw new Exception("Type mismatch");
-        }
+		if (typesMatch(astNodeResult, variable)) {
+			variable.setExpression(astNodeResult);
+			environment.put(identifier.toString(), variable);
+		} else {
+			throw new Exception("Type mismatch");
+		}
 	}
 
 	@Override
@@ -36,53 +36,53 @@ public class Validator implements ASTVisitor {
 		Identifier identifier = variableDeclaration.getIdentifier();
 		Type type = variableDeclaration.getType();
 
-        if (environment.containsKey(identifier.toString())) {
-            throw new Exception("Variable already declared");
-        }
+		if (environment.containsKey(identifier.toString())) {
+			throw new Exception("Variable already declared");
+		}
 
-        if (variableDeclaration.getExpression().isPresent()) {
-            Expression astNodeResult = evaluateExpression(variableDeclaration.getExpression().get());
-            if (typesMatch(astNodeResult, new Variable(type, Optional.empty()))) {
-                environment.put(identifier.toString(), new Variable(type, Optional.of(astNodeResult)));
-            } else {
-                throw new Exception("Type mismatch");
-            }
-        } else {
-            environment.put(identifier.toString(), new Variable(type, Optional.empty()));
-        }
+		if (variableDeclaration.getExpression().isPresent()) {
+			Expression astNodeResult = evaluateExpression(variableDeclaration.getExpression().get());
+			if (typesMatch(astNodeResult, new Variable(type, Optional.empty()))) {
+				environment.put(identifier.toString(), new Variable(type, Optional.of(astNodeResult)));
+			} else {
+				throw new Exception("Type mismatch");
+			}
+		} else {
+			environment.put(identifier.toString(), new Variable(type, Optional.empty()));
+		}
 	}
 
-    private static boolean typesMatch(Expression expression, Variable variable) {
-        String variableTypeName = variable.getType().getTypeName();
+	private static boolean typesMatch(Expression expression, Variable variable) {
+		String variableTypeName = variable.getType().getTypeName();
 
-        if (expression instanceof NumericLiteral && variableTypeName.equals("number")) {
-            return true;
-        } else if (expression instanceof TextLiteral && variableTypeName.equals("string")) {
-            return true;
-        }
-        return false;
-    }
+		if (expression instanceof NumericLiteral && variableTypeName.equals("number")) {
+			return true;
+		} else if (expression instanceof TextLiteral && variableTypeName.equals("string")) {
+			return true;
+		}
+		return false;
+	}
 
-    private Expression evaluateExpression(Expression expression) throws Exception {
-        evaluate(expression);
-        return stack.pop();
-    }
+	private Expression evaluateExpression(Expression expression) throws Exception {
+		evaluate(expression);
+		return stack.pop();
+	}
 
 	@Override
 	public void visit(Identifier identifier) throws Exception {
 		String identifierName = identifier.getName();
 
-        if (!environment.containsKey(identifierName)) {
-            throw new Exception("Undeclared variable");
-        }
+		if (!environment.containsKey(identifierName)) {
+			throw new Exception("Undeclared variable");
+		}
 
-        Variable variable = environment.get(identifierName);
-        Optional<Expression> optionalExpression = variable.getExpression();
+		Variable variable = environment.get(identifierName);
+		Optional<Expression> optionalExpression = variable.getExpression();
 
-        if (optionalExpression.isEmpty()) {
-            throw new Exception("Variable declared but not assigned");
-        }
-        stack.push(optionalExpression.get());
+		if (optionalExpression.isEmpty()) {
+			throw new Exception("Variable declared but not assigned");
+		}
+		stack.push(optionalExpression.get());
 	}
 
 	@Override
@@ -98,8 +98,8 @@ public class Validator implements ASTVisitor {
 	@Override
 	public void visit(Method method) throws Exception {
 
-        Expression arg = method.getArguments().getFirst();
-        if (arg instanceof Identifier && !environment.containsKey(arg.toString())) {
+		Expression arg = method.getArguments().getFirst();
+		if (arg instanceof Identifier && !environment.containsKey(arg.toString())) {
 			throw new Exception("undeclared variable");
 		}
 	}
@@ -116,28 +116,29 @@ public class Validator implements ASTVisitor {
 		Expression right = stack.pop();
 		Expression left = stack.pop();
 
-        Expression result = evaluateBinaryOperation(left, right, binaryExpression.getOperator());
-        stack.push(result);
+		Expression result = evaluateBinaryOperation(left, right, binaryExpression.getOperator());
+		stack.push(result);
 	}
 
-    private Expression evaluateBinaryOperation(Expression left, Expression right, String operator) throws Exception {
-        if (operator.equals("+")) {
-            if (left instanceof NumericLiteral && right instanceof NumericLiteral) {
-                return new NumericLiteral(0.0, left.getPosition());
-            } else {
-                return new TextLiteral("", left.getPosition());
-            }
-        } else if (left instanceof NumericLiteral && right instanceof NumericLiteral) {
-            return switch (operator) {
-                case "-" -> new NumericLiteral(0.0, left.getPosition());
-                case "/" -> new NumericLiteral(0.0, left.getPosition());
-                case "*" -> new NumericLiteral(0.0, left.getPosition());
-                default -> throw new Exception("Invalid operator");
-            };
-        } else {
-            throw new Exception("Type mismatch for operator");
-        }
-    }
+	private Expression evaluateBinaryOperation(Expression left, Expression right, String operator)
+			throws Exception {
+		if (operator.equals("+")) {
+			if (left instanceof NumericLiteral && right instanceof NumericLiteral) {
+				return new NumericLiteral(0.0, left.getPosition());
+			} else {
+				return new TextLiteral("", left.getPosition());
+			}
+		} else if (left instanceof NumericLiteral && right instanceof NumericLiteral) {
+			return switch (operator) {
+				case "-" -> new NumericLiteral(0.0, left.getPosition());
+				case "/" -> new NumericLiteral(0.0, left.getPosition());
+				case "*" -> new NumericLiteral(0.0, left.getPosition());
+				default -> throw new Exception("Invalid operator");
+			};
+		} else {
+			throw new Exception("Type mismatch for operator");
+		}
+	}
 
 	@Override
 	public void visit(Program program) throws Exception {

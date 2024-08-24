@@ -173,14 +173,14 @@ public class InterpreterTest {
 	void testAssignationWithStringAndNumberAddition() throws Exception {
 		Interpreter interpreter = new Interpreter();
 
-        Position pos = new Position(0, 0, 0);
-        Identifier stringIdentifier = new Identifier("a", pos);
+		Position pos = new Position(0, 0, 0);
+		Identifier stringIdentifier = new Identifier("a", pos);
 		Type stringType = new Type("string", pos);
 		VariableDeclaration stringDec = new VariableDeclaration(stringIdentifier, stringType, Optional.empty());
 		interpreter.visit(stringDec);
 
-        TextLiteral text = new TextLiteral("Hello ", pos);
-        Assignation stringAssignation = new Assignation(stringIdentifier, text, pos);
+		TextLiteral text = new TextLiteral("Hello ", pos);
+		Assignation stringAssignation = new Assignation(stringIdentifier, text, pos);
 		interpreter.visit(stringAssignation);
 
 		Identifier resId = new Identifier("result", pos);
@@ -203,8 +203,8 @@ public class InterpreterTest {
 
 		Identifier resId = new Identifier("result", new Position(0, 0,0));
 		Type numType = new Type("number", new Position(0, 0,0));
-        NumericLiteral num = new NumericLiteral(3.0, new Position(0, 0, 0));
-        Expression exp = new BinaryExpression(new NumericLiteral(2.0, new Position(0, 0,0)), "/", num);
+		NumericLiteral num = new NumericLiteral(3.0, new Position(0, 0, 0));
+		Expression exp = new BinaryExpression(new NumericLiteral(2.0, new Position(0, 0,0)), "/", num);
 		VariableDeclaration varDecl = new VariableDeclaration(resId, numType, Optional.of(exp));
 		interpreter.visit(varDecl);
 
@@ -223,10 +223,10 @@ public class InterpreterTest {
 		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
 		interpreter.visit(variableDeclaration);
 
-        NumericLiteral num = new NumericLiteral(2.0, new Position(0, 0, 0));
-        BinaryExpression firstPart = new BinaryExpression(num, "*", num);
-        NumericLiteral num2 = new NumericLiteral(3.0, new Position(0, 0, 0));
-        BinaryExpression secondPart = new BinaryExpression(num2, "*", num2);
+		NumericLiteral num = new NumericLiteral(2.0, new Position(0, 0, 0));
+		BinaryExpression firstPart = new BinaryExpression(num, "*", num);
+		NumericLiteral num2 = new NumericLiteral(3.0, new Position(0, 0, 0));
+		BinaryExpression secondPart = new BinaryExpression(num2, "*", num2);
 		BinaryExpression expression = new BinaryExpression(firstPart, "+", secondPart);
 		Assignation assignation = new Assignation(identifier, expression, new Position(0, 0,0));
 
@@ -254,8 +254,8 @@ public class InterpreterTest {
 	@Test
 	public void testPrintTextLiteral() throws Exception {
 		Interpreter interpreter = new Interpreter();
-        List<Expression> text = Collections.singletonList(new TextLiteral("hola", new Position(0, 0, 0)));
-        Method printMethod = new Method(new Identifier("println", new Position(0, 0,0)), text);
+		List<Expression> text = Collections.singletonList(new TextLiteral("hola", new Position(0, 0, 0)));
+		Method printMethod = new Method(new Identifier("println", new Position(0, 0,0)), text);
 
 		printMethod.accept(interpreter.getExecutionVisitor());
 
@@ -270,8 +270,8 @@ public class InterpreterTest {
 		NumericLiteral rightOperand = new NumericLiteral(2.0, new Position(0, 0, 0));
 		BinaryExpression expression = new BinaryExpression(leftOperand, "+", rightOperand);
 
-        List<Expression> arguments = Collections.singletonList(expression);
-        Method print = new Method(new Identifier("println", new Position(0, 0, 0)), arguments);
+		List<Expression> arguments = Collections.singletonList(expression);
+		Method print = new Method(new Identifier("println", new Position(0, 0, 0)), arguments);
 
 		print.accept(interpreter.getExecutionVisitor());
 
@@ -289,8 +289,8 @@ public class InterpreterTest {
 
 		declaration.accept(interpreter.getExecutionVisitor());
 
-        List<Expression> ident = Collections.singletonList(identifier);
-        Method printMethod = new Method(new Identifier("println", new Position(0, 0,0)), ident);
+		List<Expression> ident = Collections.singletonList(identifier);
+		Method printMethod = new Method(new Identifier("println", new Position(0, 0,0)), ident);
 
 		printMethod.accept(interpreter.getExecutionVisitor());
 
@@ -304,7 +304,7 @@ public class InterpreterTest {
 		Interpreter interpreter = new Interpreter();
 
 		// let a: number = 10;
-        Identifier identA  = new Identifier("a", new Position(0, 0, 0));
+		Identifier identA  = new Identifier("a", new Position(0, 0, 0));
 		Type typeNumber = new Type("number", new Position(1, 9, 0));
 		NumericLiteral value10 = new NumericLiteral(10.0, new Position(0, 0,0));
 		VariableDeclaration declA = new VariableDeclaration(identA, typeNumber, Optional.of(value10));
@@ -324,8 +324,8 @@ public class InterpreterTest {
 		Assignation assignationB = new Assignation(identifierB, helloText, new Position(0, 0,0));
 
 		// println(b);
-        List<Expression> ident = Collections.singletonList(new Identifier("b", new Position(0, 0, 0)));
-        Method printMethod = new Method(new Identifier("println", new Position(0, 0,0)), ident);
+		List<Expression> ident = Collections.singletonList(new Identifier("b", new Position(0, 0, 0)));
+		Method printMethod = new Method(new Identifier("println", new Position(0, 0,0)), ident);
 
 		// armo program
 		Program prog = new Program(Arrays.asList(declA, assignation, declarationB, assignationB, printMethod));
@@ -337,158 +337,158 @@ public class InterpreterTest {
 		tearDown();
 	}
 
-    @Test
-    void testVariableDeclarationWithAssignmentAndTypeMismatchValidation() {
-        Interpreter interpreter = new Interpreter();
+	@Test
+	void testVariableDeclarationWithAssignmentAndTypeMismatchValidation() {
+		Interpreter interpreter = new Interpreter();
 
-        Identifier identifier = new Identifier("a", new Position(0, 0,0));
-        Type type = new Type("string", new Position(0, 0,0));
-        Expression expression = new NumericLiteral(42.0, new Position(0, 0,0));
-        VariableDeclaration variableDecl = new VariableDeclaration(identifier, type, Optional.of(expression));
+		Identifier identifier = new Identifier("a", new Position(0, 0,0));
+		Type type = new Type("string", new Position(0, 0,0));
+		Expression expression = new NumericLiteral(42.0, new Position(0, 0,0));
+		VariableDeclaration variableDecl = new VariableDeclaration(identifier, type, Optional.of(expression));
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            interpreter.validate(variableDecl);
-        });
+		Exception exception = assertThrows(Exception.class, () -> {
+			interpreter.validate(variableDecl);
+		});
 
-        assertEquals("Type mismatch", exception.getMessage());
-    }
+		assertEquals("Type mismatch", exception.getMessage());
+	}
 
-    @Test
-    void testVariableRedeclarationValidation() throws Exception {
-        Interpreter interpreter = new Interpreter();
+	@Test
+	void testVariableRedeclarationValidation() throws Exception {
+		Interpreter interpreter = new Interpreter();
 
-        Identifier identifier = new Identifier("a", new Position(0, 0,0));
-        Type type = new Type("string", new Position(0, 0,0));
-        VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
+		Identifier identifier = new Identifier("a", new Position(0, 0,0));
+		Type type = new Type("string", new Position(0, 0,0));
+		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
 
-        interpreter.validate(variableDeclaration);
+		interpreter.validate(variableDeclaration);
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            interpreter.validate(new VariableDeclaration(identifier, type, Optional.empty()));
-        });
+		Exception exception = assertThrows(Exception.class, () -> {
+			interpreter.validate(new VariableDeclaration(identifier, type, Optional.empty()));
+		});
 
-        assertEquals("Variable already declared", exception.getMessage());
-    }
+		assertEquals("Variable already declared", exception.getMessage());
+	}
 
-    @Test
-    void testAssignationVariableNotDeclaredValidation() {
-        Interpreter interpreter = new Interpreter();
+	@Test
+	void testAssignationVariableNotDeclaredValidation() {
+		Interpreter interpreter = new Interpreter();
 
-        Identifier identifier = new Identifier("a", new Position(0, 0,0));
-        Expression expression = new TextLiteral("hola", new Position(0, 0,0));
-        Assignation assignation = new Assignation(identifier, expression, new Position(0, 0,0));
+		Identifier identifier = new Identifier("a", new Position(0, 0,0));
+		Expression expression = new TextLiteral("hola", new Position(0, 0,0));
+		Assignation assignation = new Assignation(identifier, expression, new Position(0, 0,0));
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            interpreter.validate(assignation);
-        });
+		Exception exception = assertThrows(Exception.class, () -> {
+			interpreter.validate(assignation);
+		});
 
-        assertEquals("Variable not declared", exception.getMessage());
-    }
+		assertEquals("Variable not declared", exception.getMessage());
+	}
 
-    @Test
-    void testAssignationWithTypeMismatchValidation() throws Exception {
-        Interpreter interpreter = new Interpreter();
+	@Test
+	void testAssignationWithTypeMismatchValidation() throws Exception {
+		Interpreter interpreter = new Interpreter();
 
-        Identifier identifier = new Identifier("a", new Position(0, 0,0));
-        Type type = new Type("string", new Position(0, 0,0));
-        VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
+		Identifier identifier = new Identifier("a", new Position(0, 0,0));
+		Type type = new Type("string", new Position(0, 0,0));
+		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
 
-        interpreter.validate(variableDeclaration);
+		interpreter.validate(variableDeclaration);
 
-        Expression expression = new NumericLiteral(42.0, new Position(0, 0,0));
-        Assignation assignation = new Assignation(identifier, expression, new Position(0, 0,0));
+		Expression expression = new NumericLiteral(42.0, new Position(0, 0,0));
+		Assignation assignation = new Assignation(identifier, expression, new Position(0, 0,0));
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            interpreter.validate(assignation);
-        });
+		Exception exception = assertThrows(Exception.class, () -> {
+			interpreter.validate(assignation);
+		});
 
-        assertEquals("Type mismatch", exception.getMessage());
-    }
+		assertEquals("Type mismatch", exception.getMessage());
+	}
 
-    @Test
-    void testVisitAssignationValid() throws Exception {
-        Validator validator = new Validator();
+	@Test
+	void testVisitAssignationValid() throws Exception {
+		Validator validator = new Validator();
 
-        Identifier identifier = new Identifier("x", null);
-        Type type = new Type("number", null);
-        validator.visit(new VariableDeclaration(identifier, type, Optional.of(new NumericLiteral(5.0, null))));
+		Identifier identifier = new Identifier("x", null);
+		Type type = new Type("number", null);
+		validator.visit(new VariableDeclaration(identifier, type, Optional.of(new NumericLiteral(5.0, null))));
 
-        Assignation assignation = new Assignation(identifier, new NumericLiteral(10.0, null), null);
-        validator.visit(assignation);
+		Assignation assignation = new Assignation(identifier, new NumericLiteral(10.0, null), null);
+		validator.visit(assignation);
 
-        assertEquals(10.0, validator.getEnvironment().get("x").getExpression().get().getValue());
-    }
+		assertEquals(10.0, validator.getEnvironment().get("x").getExpression().get().getValue());
+	}
 
-    @Test
-    void testVisitAssignationUndeclaredVariable() {
-        Validator validator = new Validator();
-        Identifier identifier = new Identifier("x", null);
-        Assignation assignation = new Assignation(identifier, new NumericLiteral(10.0, null), null);
+	@Test
+	void testVisitAssignationUndeclaredVariable() {
+		Validator validator = new Validator();
+		Identifier identifier = new Identifier("x", null);
+		Assignation assignation = new Assignation(identifier, new NumericLiteral(10.0, null), null);
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            validator.visit(assignation);
-        });
+		Exception exception = assertThrows(Exception.class, () -> {
+			validator.visit(assignation);
+		});
 
-        assertEquals("Variable not declared", exception.getMessage());
-    }
+		assertEquals("Variable not declared", exception.getMessage());
+	}
 
-    @Test
-    void testVisitAssignationTypeMismatch() throws Exception {
-        Validator validator = new Validator();
+	@Test
+	void testVisitAssignationTypeMismatch() throws Exception {
+		Validator validator = new Validator();
 
-        Identifier identifier = new Identifier("x", null);
-        Type type = new Type("number", null);
-        validator.visit(new VariableDeclaration(identifier, type, Optional.of(new NumericLiteral(5.0, null))));
+		Identifier identifier = new Identifier("x", null);
+		Type type = new Type("number", null);
+		validator.visit(new VariableDeclaration(identifier, type, Optional.of(new NumericLiteral(5.0, null))));
 
-        Assignation assignation = new Assignation(identifier, new TextLiteral("Hello", null), null);
+		Assignation assignation = new Assignation(identifier, new TextLiteral("Hello", null), null);
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            validator.visit(assignation);
-        });
+		Exception exception = assertThrows(Exception.class, () -> {
+			validator.visit(assignation);
+		});
 
-        assertEquals("Type mismatch", exception.getMessage());
-    }
+		assertEquals("Type mismatch", exception.getMessage());
+	}
 
-    @Test
-    void testVisitBinaryExpressionTypeMismatch() {
-        Validator validator = new Validator();
+	@Test
+	void testVisitBinaryExpressionTypeMismatch() {
+		Validator validator = new Validator();
 
-        BinaryExpression binaryExpression = new BinaryExpression(
-                new TextLiteral("Hello", null),
-                "-",
-                new NumericLiteral(10.0, null)
-        );
+		BinaryExpression binaryExpression = new BinaryExpression(
+				new TextLiteral("Hello", null),
+				"-",
+				new NumericLiteral(10.0, null)
+		);
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            validator.visit(binaryExpression);
-        });
+		Exception exception = assertThrows(Exception.class, () -> {
+			validator.visit(binaryExpression);
+		});
 
-        assertEquals("Type mismatch for operator", exception.getMessage());
-    }
+		assertEquals("Type mismatch for operator", exception.getMessage());
+	}
 
-    @Test
-    void testVisitMethodUndeclaredVariable() throws Exception {
-        Validator validator = new Validator();
+	@Test
+	void testVisitMethodUndeclaredVariable() throws Exception {
+		Validator validator = new Validator();
 
-        Method method = new Method(new Identifier("myMethod", null), List.of(new Identifier("x", null)));
+		Method method = new Method(new Identifier("myMethod", null), List.of(new Identifier("x", null)));
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            validator.visit(method);
-        });
+		Exception exception = assertThrows(Exception.class, () -> {
+			validator.visit(method);
+		});
 
-        assertEquals("undeclared variable", exception.getMessage());
-    }
+		assertEquals("undeclared variable", exception.getMessage());
+	}
 
-    @Test
-    void testVisitIdentifierDeclaredAndAssignedVariable() throws Exception {
-        Validator validator = new Validator();
+	@Test
+	void testVisitIdentifierDeclaredAndAssignedVariable() throws Exception {
+		Validator validator = new Validator();
 
-        Identifier identifier = new Identifier("x", null);
-        Type type = new Type("number", null);
-        validator.visit(new VariableDeclaration(identifier, type, Optional.of(new NumericLiteral(5.0, null))));
+		Identifier identifier = new Identifier("x", null);
+		Type type = new Type("number", null);
+		validator.visit(new VariableDeclaration(identifier, type, Optional.of(new NumericLiteral(5.0, null))));
 
-        validator.visit(identifier);
+		validator.visit(identifier);
 
-        assertEquals(5.0, validator.getStack().pop().getValue());
-    }
+		assertEquals(5.0, validator.getStack().pop().getValue());
+	}
 }
