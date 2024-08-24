@@ -11,7 +11,9 @@ public enum NativeTokenTypes {
 	EQUALS("="), PLUS("\\+"), MINUS("-"), ASTERISK("\\*"), SLASH("\\/"),
 
 	// Values
-	IDENTIFIER("[a-z_]+[a-zA-Z0-9_]*"),STRING("(\"[^\"]*\"|'[^']*')"), NUMBER("\\b\\d+(\\.\\d+)?\\b"),
+	IDENTIFIER("[a-z_]+[a-zA-Z0-9_]*"),
+	STRING("(\"[^\"]*\"|'[^']*')"),
+	NUMBER("\\b\\d+(\\.\\d+)?\\b"),
 
 	// KEYWORDS
 	// Variable declaration
