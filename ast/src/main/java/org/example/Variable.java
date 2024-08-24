@@ -7,9 +7,9 @@ public class Variable {
 	private Type type;
 	private Optional<Expression> expression;
 
-	public Variable(Type type, Expression expression){
+	public Variable(Type type, Optional<Expression> expression){
 		this.type = type;
-		this.expression = Optional.ofNullable(expression);
+		this.expression = expression;
 	}
 
 	public Type getType() {

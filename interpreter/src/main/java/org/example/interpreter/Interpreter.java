@@ -7,30 +7,30 @@ import java.util.Stack;
 
 public class Interpreter {
 
-    private final Validator validationVisitor = new Validator();
-    private final Executor executionVisitor = new Executor();
+	private final Validator validationVisitor = new Validator();
+	private final Executor executionVisitor = new Executor();
 
-    public void validate(ASTNode node) throws Exception {
-        node.accept(validationVisitor);
-    }
+	public void validate(ASTNode node) throws Exception {
+		node.accept(validationVisitor);
+	}
 
-    public void visit(ASTNode node) throws Exception {
-        node.accept(executionVisitor);
-    }
+	public void visit(ASTNode node) throws Exception {
+		node.accept(executionVisitor);
+	}
 
-    public Map<String, Variable> getEnvironment() {
-        return executionVisitor.getEnvironment();
-    }
+	public Map<String, Variable> getEnvironment() {
+		return executionVisitor.getEnvironment();
+	}
 
-    public Stack<Expression> getStack() {
-        return executionVisitor.getStack();
-    }
+	public Stack<Expression> getStack() {
+		return executionVisitor.getStack();
+	}
 
-    public Validator getValidationVisitor() {
-        return validationVisitor;
-    }
+	public Validator getValidationVisitor() {
+		return validationVisitor;
+	}
 
-    public Executor getExecutionVisitor() {
-        return executionVisitor;
-    }
+	public Executor getExecutionVisitor() {
+		return executionVisitor;
+	}
 }
