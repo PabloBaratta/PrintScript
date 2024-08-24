@@ -47,7 +47,7 @@ public class LinterTest {
 		String identifierString = "someIdentifier";
 		TextLiteral hi = new TextLiteral("hi", new Position(0, 0, 0));
 		assertThrows(WrongConfigurationException.class,
-				() -> linter.analyze(LinterConfiguratorTest.getProgram(identifierString, hi), configMap));
+			() -> linter.analyze(LinterConfiguratorTest.getProgram(identifierString, hi), configMap));
 	}
 
 

@@ -14,11 +14,11 @@ import org.example.nodeconstructors.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static org.example.lexer.token.NativeTokenTypes.*;
 
 public class Runner {
 
@@ -28,7 +28,8 @@ public class Runner {
 
 	private static Lexer createLexer(String code) {
 		List<Character> whiteSpaces = List.of(' ', '\t', '\n');
-		TokenConstructor keywordConstructor = new TokenConstructorImpl(PrintScriptTokenConfig.keywordTokenTypeMap());
+		Map<Pattern, TokenType> tokenConfig = PrintScriptTokenConfig.keywordTokenTypeMap();
+		TokenConstructor keywordConstructor = new TokenConstructorImpl(tokenConfig);
 		Collection<TokenConstructor> tokenConstructors = List.of(
 				new TokenConstructorImpl(PrintScriptTokenConfig.separatorTokenTypeMap()),
 				new TokenConstructorImpl(PrintScriptTokenConfig.operatorTokenTypeMap()),
@@ -45,26 +46,27 @@ public class Runner {
 	}
 
 	private static List<NodeConstructor> getNodeConstructors() {
-		ExpressionNodeConstructor expressionNodeConstructor = new ExpressionNodeConstructor(listOfOperators(), List.copyOf(PrintScriptTokenConfig.literalTokenTypeMap().values()));
-		AssignationNodeConstructor assignationNodeConstructor = new AssignationNodeConstructor(expressionNodeConstructor);
-		VariableDeclarationNodeConstructor variableDeclarationNodeConstructor =
-				new VariableDeclarationNodeConstructor(expressionNodeConstructor,
-						List.of(NativeTokenTypes.LET.toTokenType()),
-						List.of(NativeTokenTypes.NUMBER_TYPE.toTokenType(), NativeTokenTypes.STRING_TYPE.toTokenType()));
+		List<TokenType> expressions = List.copyOf(PrintScriptTokenConfig.literalTokenTypeMap().values());
+		ExpressionNodeConstructor expCons = new ExpressionNodeConstructor(listOfOperators(), expressions);
+		AssignationNodeConstructor assignationConstructor = new AssignationNodeConstructor(expCons);
+		VariableDeclarationNodeConstructor variableDeclarationConstructor =
+				new VariableDeclarationNodeConstructor(expCons,
+						List.of(LET.toTokenType()),
+						List.of(NUMBER_TYPE.toTokenType(), STRING_TYPE.toTokenType()));
 
-		CallExpressionNodeConstructor callExpressionNodeConstructor = new CallExpressionNodeConstructor(true, expressionNodeConstructor);
+		NodeConstructor callExpressionConstructor = new CallExpressionNodeConstructor(true, expCons);
 		return List.of(
-				callExpressionNodeConstructor,
-				assignationNodeConstructor,
-				variableDeclarationNodeConstructor
+				callExpressionConstructor,
+				assignationConstructor,
+				variableDeclarationConstructor
 		);
 	}
 
 	private static List<TokenType> listOfOperators() {
-		return List.of(NativeTokenTypes.PLUS.toTokenType(),
-				NativeTokenTypes.MINUS.toTokenType(),
-				NativeTokenTypes.ASTERISK.toTokenType(),
-				NativeTokenTypes.SLASH.toTokenType());
+		return List.of(PLUS.toTokenType(),
+				MINUS.toTokenType(),
+				ASTERISK.toTokenType(),
+				SLASH.toTokenType());
 	}
 
 
