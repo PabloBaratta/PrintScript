@@ -33,6 +33,9 @@ tasks.named('check') {
     dependsOn testCodeCoverageReport
 }
 
+tasks.named('build') {
+    dependsOn addPreCommitGitHook
+}
 
 
 test {
@@ -49,3 +52,19 @@ spotless {
 	}
 }
 
+
+tasks.register("addPreCommitGitHook") {
+    println("Adding pre commit")
+    doLast {
+        exec {
+            // Usar 'copy' en Windows
+            if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+                commandLine("cmd", "/c", "copy", ".\\git-hooks\\pre-commit", ".\\.git\\hooks\\")
+            } else {
+                // Usar 'cp' en sistemas Unix/Linux
+                commandLine("cp", "./git-hooks/pre-commit", "./.git/hooks")
+                commandLine("chmod", "+x", "./.git/hooks/pre-commit")
+            }
+        }.assertNormalExitValue().rethrowFailure()
+    }
+}
