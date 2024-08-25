@@ -1,18 +1,17 @@
-name: Java CI with Gradle
+name: Gradle Package
 
 on:
   push:
-    branches:
-      - '**'
+    branches: [ $default-branch ]
   pull_request:
     branches: [ $default-branch ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      packages: write
 
     steps:
       - uses: actions/checkout@v4
@@ -21,5 +20,12 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-      - name: Check with Gradle
-        run: ./gradlew check
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Publish to GitHub Packages
+        run: ./gradlew publish
+        env:
+          USERNAME: ${{ github.actor }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
