@@ -1,3 +1,3 @@
-let hola: number = 10;
-println(("hola" + hola) + ("chau" + "chau"));
+let hola: number = (((10 + 10)));
+println(("hola" + hola));
 hola = 20;

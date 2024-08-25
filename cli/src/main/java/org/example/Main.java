@@ -1,9 +1,11 @@
 package org.example;
 
+import picocli.CommandLine;
+
 public class Main {
 
-	public static void main(String[] args) throws Exception {
-		Runner.run("cli/src/main/java/org/example/file.txt");
+	public static void main(String[] args) {
+		int exitCode = new CommandLine(new FormatCommand()).execute(args);
+		System.exit(exitCode);
 	}
-
 }

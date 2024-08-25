@@ -53,7 +53,7 @@ public class Runner {
 	}
 
 	private static String readFileAsString(String filePath) throws IOException {
-        return Files.lines(Paths.get(filePath))
+		return Files.lines(Paths.get(filePath))
 				.collect(Collectors.joining("\n"));
 	}
 
