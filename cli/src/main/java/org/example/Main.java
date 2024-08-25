@@ -1,11 +1,9 @@
 package org.example;
 
-import picocli.CommandLine;
-
 public class Main {
 
-	public static void main(String[] args) {
-		int exitCode = new CommandLine(new FormatCommand()).execute(args);
-		System.exit(exitCode);
+	public static void main(String[] args) throws Exception {
+		Cli cli = new Cli("cli/src/main/java/org/example/terminal.txt");
+		cli.run();
 	}
 }
