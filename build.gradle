@@ -4,8 +4,6 @@ plugins {
     id 'jacoco-report-aggregation'
     id 'maven-publish'
 }
-group = 'org.example'
-version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -90,8 +88,11 @@ publishing {
         }
     }
     publications {
-        gpr(MavenPublication) {
-            from(components.java)
+        maven(MavenPublication) {
+            groupId = 'org.example'
+            artifactId = "${project.name}"
+            version = '1.0.0-SNAPSHOT'
+            from components.java
         }
     }
 }
