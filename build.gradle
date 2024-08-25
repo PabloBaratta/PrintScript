@@ -52,19 +52,27 @@ spotless {
 	}
 }
 
-
 tasks.register("addPreCommitGitHook") {
     println("Adding pre commit")
     doLast {
         exec {
-            // Usar 'copy' en Windows
             if (System.getProperty("os.name").toLowerCase().contains("windows")) {
                 commandLine("cmd", "/c", "copy", ".\\git-hooks\\pre-commit", ".\\.git\\hooks\\")
             } else {
-                // Usar 'cp' en sistemas Unix/Linux
                 commandLine("cp", "./git-hooks/pre-commit", "./.git/hooks")
-                commandLine("chmod", "+x", "./.git/hooks/pre-commit")
             }
         }.assertNormalExitValue().rethrowFailure()
+
+        if (!System.getProperty("os.name").toLowerCase().contains("windows")) {
+            // Check if the file exists before applying chmod
+            def preCommitFile = file("./.git/hooks/pre-commit")
+            if (preCommitFile.exists()) {
+                exec {
+                    commandLine("chmod", "+x", "./.git/hooks/pre-commit")
+                }.assertNormalExitValue().rethrowFailure()
+            } else {
+                throw new GradleException("File './.git/hooks/pre-commit' not found. cp command may have failed.")
+            }
+        }
     }
 }
