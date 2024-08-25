@@ -9,11 +9,9 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'checkstyle'
-    id 'maven-publish'
 }
 
-group = 'org.example'
-version = '1.0-SNAPSHOT'
+
 
 repositories {
     // Use Maven Central for resolving dependencies.
@@ -81,22 +79,4 @@ checkstyle {
     ignoreFailures = false
     maxWarnings = 0
     configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
-}
-
-publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/PabloBaratta/PrintScript")
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
-    publications {
-        gpr(MavenPublication) {
-            from(components.java)
-        }
-    }
 }
