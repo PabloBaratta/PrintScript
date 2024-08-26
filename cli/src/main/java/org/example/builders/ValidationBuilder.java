@@ -11,11 +11,14 @@ import java.util.stream.Collectors;
 
 import static org.example.Runner.lex;
 import static org.example.Runner.parse;
-import static org.example.Util.createInterpreter;
+import static org.example.resources.Util.createInterpreter;
 
 public class ValidationBuilder implements CommandBuilder{
     @Override
     public String buildAndRun(String[] parts) throws Exception {
+        if (parts.length != 2) {
+            throw new RuntimeException("Invalid number of arguments, should be two");
+        }
         String pathFile = parts[1];
         if (pathFile == null) {
             throw new RuntimeException("File path not found");
@@ -25,7 +28,7 @@ public class ValidationBuilder implements CommandBuilder{
         List<Token> tokens = lex(code);
         Program ast = parse(tokens);
         Interpreter interpreter = createInterpreter();
-        // Validation
+        interpreter.validate(ast);
         return "Validation completed";
     }
 }
