@@ -18,13 +18,13 @@ public class TokenConstructorImpl implements TokenConstructor {
 	}
 
 	@Override
-	public Optional<Token> constructToken(String code, int offset, int line) {
+	public Optional<Token> constructToken(String code, int offset, int line, int column) {
 		for(Map.Entry<Pattern, TokenType> entry : map.entrySet()){
 			Pattern key = entry.getKey();
 			Matcher matcher = key.matcher(code);
 			if (matcher.lookingAt()){
 				String chars = matcher.group();
-				Position position = new Position(offset, chars.length(), line);
+				Position position = new Position(offset, chars.length(), line, column);
 				Token token = new Token(entry.getValue(), chars, position);
 				return Optional.of(token);
 			}

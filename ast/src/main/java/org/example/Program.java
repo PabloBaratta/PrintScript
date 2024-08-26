@@ -32,7 +32,7 @@ public class Program implements ASTNode {
 
 	@Override
 	public Position getPosition() {
-		return new Position(0,0,0);
+		return new Position(0,0,0, 0);
 	}
 
 }

@@ -19,7 +19,7 @@ public class FormatterTest {
 				}
 		""";
 
-	Position position = new Position(0, 0, 0);
+	Position position = new Position(0, 0, 0, 0);
 
 	@Test
 	public void testVariableDeclaration() throws Exception {
