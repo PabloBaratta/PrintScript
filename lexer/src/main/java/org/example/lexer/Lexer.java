@@ -16,7 +16,7 @@ public class Lexer {
 	private final List<Character> whiteSpaces;
 	int pos = 0;
 	int line = 1;
-	int column = 0;
+	int column = 1;
 
 	public Lexer(String code,
 				Collection<TokenConstructor> tokConstr,

@@ -127,13 +127,13 @@ class LexerTest {
 
 		String var = "my_cool_variable";
 		List<Token> expectedTokens = Arrays.asList(
-				new Token(NativeTokenTypes.LET.toTokenType(), "let", new Position(0, 3, 1, 0)),
-				new Token(NativeTokenTypes.IDENTIFIER.toTokenType(), var, new Position(4, 16, 1, 4)),
-				new Token(NativeTokenTypes.COLON.toTokenType(), ":", new Position(20, 1, 1, 20)),
-				new Token(strType, "string", new Position(22, 6, 1, 22)),
-				new Token(NativeTokenTypes.EQUALS.toTokenType(), "=", new Position(29, 1, 1, 29)),
-				new Token(str, "\"ciclon\"", new Position(31, 8, 1, 31)),
-				new Token(NativeTokenTypes.SEMICOLON.toTokenType(), ";", new Position(39, 1, 1, 39))
+				new Token(NativeTokenTypes.LET.toTokenType(), "let", new Position(0, 3, 1, 1)),
+				new Token(NativeTokenTypes.IDENTIFIER.toTokenType(), var, new Position(4, 16, 1, 5)),
+				new Token(NativeTokenTypes.COLON.toTokenType(), ":", new Position(20, 1, 1, 21)),
+				new Token(strType, "string", new Position(22, 6, 1, 23)),
+				new Token(NativeTokenTypes.EQUALS.toTokenType(), "=", new Position(29, 1, 1, 30)),
+				new Token(str, "\"ciclon\"", new Position(31, 8, 1, 32)),
+				new Token(NativeTokenTypes.SEMICOLON.toTokenType(), ";", new Position(39, 1, 1, 40))
 		);
 
 		List<Token> actualTokens = new ArrayList<>();
@@ -182,11 +182,11 @@ class LexerTest {
 		Lexer lexer = new Lexer(code, tokenConst, keyConst, whiteSpaces);
 
 		List<Token> expectedTokens = Arrays.asList(
-				new Token(NativeTokenTypes.PRINTLN.toTokenType(), "println", new Position(0, 7, 1, 0)),
-				new Token(leftPar, "(", new Position(7, 1, 1, 7)),
-				new Token(tokenType, "my_cool_variable", new Position(8, 16, 1, 8)),
-				new Token(tokenType1, ")", new Position(24, 1, 1, 24)),
-				new Token(NativeTokenTypes.SEMICOLON.toTokenType(), ";", new Position(25, 1, 1, 25))
+				new Token(NativeTokenTypes.PRINTLN.toTokenType(), "println", new Position(0, 7, 1, 1)),
+				new Token(leftPar, "(", new Position(7, 1, 1, 8)),
+				new Token(tokenType, "my_cool_variable", new Position(8, 16, 1, 9)),
+				new Token(tokenType1, ")", new Position(24, 1, 1, 25)),
+				new Token(NativeTokenTypes.SEMICOLON.toTokenType(), ";", new Position(25, 1, 1, 26))
 		);
 
 		List<Token> actualTokens = new ArrayList<>();
