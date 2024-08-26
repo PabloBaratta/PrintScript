@@ -1,5 +1,7 @@
-package org.example;
+package org.example.resources;
 
+import org.example.Parser;
+import org.example.TokenBuffer;
 import org.example.interpreter.Interpreter;
 import org.example.lexer.Lexer;
 import org.example.lexer.PrintScriptTokenConfig;

@@ -1,1 +1,0 @@
-format cli/src/main/java/org/example/file.txt formatter/src/main/java/org/example/formattingRules.json

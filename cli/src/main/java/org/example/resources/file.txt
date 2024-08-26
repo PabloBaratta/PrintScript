@@ -1,0 +1,3 @@
+let holaSi: number = (((10 + 10)));
+println(("hola" + holaSi));
+holaSi = 20;

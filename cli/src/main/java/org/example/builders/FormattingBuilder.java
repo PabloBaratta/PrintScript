@@ -18,6 +18,9 @@ import static org.example.Runner.parse;
 public class FormattingBuilder implements CommandBuilder{
     @Override
     public String buildAndRun(String[] parts) throws Exception {
+        if (parts.length != 3) {
+            throw new RuntimeException("Invalid number of arguments, should be three");
+        }
         String pathFile = parts[1];
         String pathConfig = parts[2];
         if (pathFile == null) {
