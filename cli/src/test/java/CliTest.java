@@ -16,27 +16,27 @@ public class CliTest {
 	}
 
 	@Test
-    public void testThrow1() throws IOException {
-        String filePath = Paths.get("").toAbsolutePath() + "/src/test/resources/terminalTest1.txt";
+	public void testThrow1() throws IOException {
+		String filePath = Paths.get("").toAbsolutePath() + "/src/test/resources/terminalTest1.txt";
 
-        writeToFile(filePath, "analyze");
-        Cli cli1 = new Cli(filePath);
-        assertThrows(RuntimeException.class, cli1::run);
+		writeToFile(filePath, "analyze");
+		Cli cli1 = new Cli(filePath);
+		assertThrows(RuntimeException.class, cli1::run);
 
-        writeToFile(filePath, "format");
-        Cli cli2 = new Cli(filePath);
-        assertThrows(RuntimeException.class, cli2::run);
+		writeToFile(filePath, "format");
+		Cli cli2 = new Cli(filePath);
+		assertThrows(RuntimeException.class, cli2::run);
 
-        writeToFile(filePath, "execute");
-        Cli cli3 = new Cli(filePath);
-        assertThrows(RuntimeException.class, cli3::run);
+		writeToFile(filePath, "execute");
+		Cli cli3 = new Cli(filePath);
+		assertThrows(RuntimeException.class, cli3::run);
 
-        writeToFile(filePath, "validate");
-        Cli cli4 = new Cli(filePath);
-        assertThrows(RuntimeException.class, cli4::run);
-    }
+		writeToFile(filePath, "validate");
+		Cli cli4 = new Cli(filePath);
+		assertThrows(RuntimeException.class, cli4::run);
+	}
 
-    private void writeToFile(String path, String content) throws IOException {
-        Files.write(Paths.get(path), content.getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
-    }
+	private void writeToFile(String path, String content) throws IOException {
+		Files.write(Paths.get(path), content.getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+	}
 }
