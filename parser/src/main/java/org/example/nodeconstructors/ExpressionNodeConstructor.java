@@ -7,10 +7,10 @@ import org.example.lexer.token.Token;
 import org.example.lexer.token.TokenType;
 import org.example.lexer.utils.Try;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.example.nodeconstructors.NodeResponse.emptyResponse;
 import static org.example.nodeconstructors.NodeResponse.response;
@@ -19,10 +19,31 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 
 	private final List<TokenType> operators;
 	private final List<TokenType> expressions;
+	private final List<Function<TokenBuffer, NodeResponse>> functions;
 
-	public ExpressionNodeConstructor(List<TokenType> operators, List<TokenType> expressions) {
-		this.operators = operators;
-		this.expressions = expressions;
+	public ExpressionNodeConstructor(Map<TokenType, Integer> mapOperatorsToPrecedence, List<TokenType> operands) {
+		this.operators = mapOperatorsToPrecedence.keySet().stream().toList();
+		this.expressions = operands;
+		this.functions = getFunctions(mapOperatorsToPrecedence);
+	}
+
+	private List<Function<TokenBuffer, NodeResponse>> getFunctions(Map<TokenType, Integer> opsPrecedence) {
+		Map<Integer, List<TokenType>> groupedByPrecedence = opsPrecedence.entrySet().stream()
+				.collect(Collectors.groupingBy(
+						Map.Entry::getValue,
+						() -> new TreeMap<>(Collections.reverseOrder()),
+						Collectors.mapping(Map.Entry::getKey, Collectors.toList())
+				));
+		List<Function<TokenBuffer, NodeResponse>> functions = new ArrayList<>(groupedByPrecedence.size());
+
+		Function<TokenBuffer, NodeResponse> func = this::unary;
+		Collection<List<TokenType>> values = groupedByPrecedence.values();
+		for (List<TokenType> value : values) {
+			Function<TokenBuffer, NodeResponse> finalFunc = func; //cannot pass a global variable
+			functions.addLast((tokenBuffer -> parseBE(tokenBuffer, finalFunc, value)));
+			func = functions.getLast();
+		}
+		return functions;
 	}
 
 
@@ -33,7 +54,7 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 		if (!isThisExpression(tokenBuffer)) {
 			return emptyResponse(tokenBuffer);
 		}
-		return term(tokenBuffer);
+		return getLeastPrecedenceFun().apply(tokenBuffer);
 	}
 
 	private boolean isThisExpression(TokenBuffer tokenBuffer) {
@@ -109,7 +130,9 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 	private NodeResponse parseParenthesisExpression(TokenBuffer tokenBuffer) {
 		Token leftParToken = tokenBuffer.getToken().get();
 		tokenBuffer = tokenBuffer.consumeToken();
-		NodeResponse possibleExpression = term(tokenBuffer);
+
+		Function<TokenBuffer, NodeResponse> fun = getLeastPrecedenceFun();
+		NodeResponse possibleExpression = fun.apply(tokenBuffer);
 
 		if (possibleExpression.possibleNode().isFail()) {
 			return possibleExpression;
@@ -129,14 +152,8 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 		return response(new Parenthesis(expression), tokenBuffer);
 	}
 
-	private NodeResponse term(TokenBuffer tokenBuffer) {
-		return parseBE(tokenBuffer, this::factor, List.of(NativeTokenTypes.PLUS.toTokenType(),
-				NativeTokenTypes.MINUS.toTokenType()));
-	}
-
-	private NodeResponse factor(TokenBuffer tokenBuffer) {
-		return parseBE(tokenBuffer, this::unary, List.of(NativeTokenTypes.SLASH.toTokenType(),
-				NativeTokenTypes.ASTERISK.toTokenType()));
+	private Function<TokenBuffer, NodeResponse> getLeastPrecedenceFun() {
+		return this.functions.getLast();
 	}
 
 	private NodeResponse unary(TokenBuffer tokenBuffer) {

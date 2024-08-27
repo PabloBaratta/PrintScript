@@ -47,7 +47,7 @@ public class Runner {
 
 	private static List<NodeConstructor> getNodeConstructors() {
 		List<TokenType> expressions = List.copyOf(PrintScriptTokenConfig.literalTokenTypeMap().values());
-		ExpressionNodeConstructor expCons = new ExpressionNodeConstructor(listOfOperators(), expressions);
+		ExpressionNodeConstructor expCons = new ExpressionNodeConstructor(mapOperatorPrecedence(), expressions);
 		AssignationNodeConstructor assignationConstructor = new AssignationNodeConstructor(expCons);
 		VariableDeclarationNodeConstructor variableDeclarationConstructor =
 				new VariableDeclarationNodeConstructor(expCons,
@@ -62,11 +62,11 @@ public class Runner {
 		);
 	}
 
-	private static List<TokenType> listOfOperators() {
-		return List.of(PLUS.toTokenType(),
-				MINUS.toTokenType(),
-				ASTERISK.toTokenType(),
-				SLASH.toTokenType());
+	private static Map<TokenType, Integer> mapOperatorPrecedence() {
+		return Map.of(NativeTokenTypes.PLUS.toTokenType(), 1,
+				NativeTokenTypes.MINUS.toTokenType(), 1,
+				NativeTokenTypes.ASTERISK.toTokenType(), 2,
+				NativeTokenTypes.SLASH.toTokenType(), 2);
 	}
 
 
