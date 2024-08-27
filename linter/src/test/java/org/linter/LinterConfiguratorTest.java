@@ -46,9 +46,9 @@ public class LinterConfiguratorTest {
 
 
 		BinaryExpression binaryExpression = new BinaryExpression(
-				new TextLiteral("a", new Position(8, 1, 1)),
+				new TextLiteral("a", new Position(8, 1, 1, 8)),
 				"+",
-				new TextLiteral("a", new Position(10, 1, 1))
+				new TextLiteral("a", new Position(10, 1, 1, 10))
 		);
 
 		unsuccessfulCase(stringStringMap, "lionelMessi",  binaryExpression);
@@ -64,9 +64,9 @@ public class LinterConfiguratorTest {
 
 
 		BinaryExpression binaryExpression = new BinaryExpression(
-				new TextLiteral("a", new Position(8, 1, 1)),
+				new TextLiteral("a", new Position(8, 1, 1, 8)),
 				"+",
-				new TextLiteral("a", new Position(10, 1, 1))
+				new TextLiteral("a", new Position(10, 1, 1, 10))
 		);
 
 		successfulCase(stringStringMap, "lionelMessi",  binaryExpression);
@@ -118,19 +118,20 @@ public class LinterConfiguratorTest {
 
 	public static Program getProgram(String identifierString, Expression expression) {
 		int length = identifierString.length();
+		Position position = new Position(14 + length, 7, 1, 14 + length);
 		Program program = new Program(
 				List.of(new VariableDeclaration(
-					new Identifier(identifierString, new Position(4, length, 1)),
-					new Type("string", new Position(5 + length, 6, 1)),
-					Optional.of(new TextLiteral("america", new Position(14 + length, 7, 1)))),
+					new Identifier(identifierString, new Position(4, length, 1, 4)),
+					new Type("string", new Position(5 + length, 6, 1, 5 + length)),
+					Optional.of(new TextLiteral("america", position))),
 					new Method(
-						new Identifier("println", new Position(23,7,2)),
+						new Identifier("println", new Position(23,7,2, 23)),
 						List.of(expression))));
 		return program;
 	}
 
 	private static Expression getDefaultExpressionForTests() {
-		return new Identifier("a", new Position(31, 1,2));
+		return new Identifier("a", new Position(31, 1,2, 31));
 	}
 
 

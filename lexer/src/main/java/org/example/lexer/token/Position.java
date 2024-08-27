@@ -3,7 +3,8 @@ package org.example.lexer.token;
 public record Position (
 		int offset,
 		int length,
-		int line
+		int line,
+		int column
 
 ){
 
@@ -18,4 +19,6 @@ public record Position (
 	public int getLine() {
 		return line;
 	}
+
+	public int getColumn() { return column; }
 }

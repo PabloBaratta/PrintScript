@@ -16,14 +16,15 @@ class LinterVisitorTests {
 	@Test
 	public void successfulProgramVisitor() throws Exception {
 
+		Position position = new Position(14, 7, 1, 14);
 		Program program = new Program(
 				List.of(new VariableDeclaration(
-							new Identifier("a", new Position(4,1,1)),
-							new Type("string", new Position(6,6,1)),
-							Optional.of(new TextLiteral("america", new Position(14, 7,1)))),
+							new Identifier("a", new Position(4,1,1, 4)),
+							new Type("string", new Position(6,6,1, 6)),
+							Optional.of(new TextLiteral("america", position))),
 						new Method(
-							new Identifier("println", new Position(23,7,2)),
-							List.of(new Identifier("a", new Position(31, 1,2))))));
+							new Identifier("println", new Position(23,7,2, 23)),
+							List.of(new Identifier("a", new Position(31, 1,2, 31))))));
 
 		Report report = new Report();
 		PrintLineRules printLineRules = new PrintLineRules(true, report);
@@ -39,7 +40,7 @@ class LinterVisitorTests {
 
 	@Test
 	public void doesNotChangeWithOtherNodes() throws Exception {
-		Position position = new Position(0, 0, 0);
+		Position position = new Position(0, 0, 0,0 );
 		Identifier identifier = new Identifier("hi", position);
 		Assignation assignation = new Assignation(identifier, identifier, position);
 		TextLiteral lit = new TextLiteral("a", position);

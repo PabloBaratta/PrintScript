@@ -21,7 +21,7 @@ public class ExpressionCollectorNodeConstructor implements NodeConstructor{
 		}
 
 		return new NodeResponse(
-				new Try<>(Optional.of(new TextLiteral("default value", new Position(0,0,0)))),
+				new Try<>(Optional.of(new TextLiteral("default value", new Position(0,0,0, 0)))),
 				tokenBuffer
 		);
 	}
