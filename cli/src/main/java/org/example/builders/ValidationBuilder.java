@@ -19,10 +19,7 @@ public class ValidationBuilder implements CommandBuilder{
         if (parts.length != 2) {
             throw new RuntimeException("Invalid number of arguments, should be two");
         }
-        String pathFile = parts[1];
-        if (pathFile == null) {
-            throw new RuntimeException("File path not found");
-        }
+        String pathFile = Paths.get("").toAbsolutePath().getParent() + parts[1];
         String code = Files.lines(Paths.get(pathFile))
                 .collect(Collectors.joining("\n"));
         List<Token> tokens = lex(code);
