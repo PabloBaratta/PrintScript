@@ -1,3 +1,0 @@
-let hola: number = 10;
-println(("hola" + hola) + ("chau" + "chau"));
-hola = 20;

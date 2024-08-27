@@ -1,0 +1,4 @@
+analyze cli/src/main/java/org/example/resources/file.txt cli/src/main/java/org/example/resources/configurationRules.json
+execute cli/src/main/java/org/example/resources/file.txt
+format cli/src/main/java/org/example/resources/file.txt formatter/src/main/java/org/example/formattingRules.json
+validate cli/src/main/java/org/example/resources/file.txt
