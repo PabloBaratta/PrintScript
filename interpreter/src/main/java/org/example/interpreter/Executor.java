@@ -16,7 +16,9 @@ public class Executor implements ASTVisitor {
 		Expression expression = assignation.getExpression();
 
 		if (!environment.containsKey(identifier.toString())) {
-			throw new Exception("Variable not declared");
+			int line = identifier.getPosition().getLine();
+			int column = identifier.getPosition().getColumn();
+			throw new InterpreterException("Variable not declared", line, column);
 		}
 
 		Expression astNodeResult = evaluateExpression(expression);
@@ -26,7 +28,9 @@ public class Executor implements ASTVisitor {
 			variable.setExpression(astNodeResult);
 			environment.put(identifier.toString(), variable);
 		} else {
-			throw new Exception("Type mismatch");
+			int line = expression.getPosition().getLine();
+			int column = expression.getPosition().getColumn();
+			throw new InterpreterException("Type mismatch", line, column);
 		}
 	}
 
@@ -37,7 +41,9 @@ public class Executor implements ASTVisitor {
 		Type type = variableDeclaration.getType();
 
 		if (environment.containsKey(identifier.toString())) {
-			throw new Exception("Variable already declared");
+			int line = identifier.getPosition().getLine();
+			int column = identifier.getPosition().getColumn();
+			throw new InterpreterException("Variable already declared", line, column);
 		}
 
 		if (variableDeclaration.getExpression().isPresent()) {
@@ -45,7 +51,9 @@ public class Executor implements ASTVisitor {
 			if (typesMatch(astNodeResult, new Variable(type, Optional.empty()))) {
 				environment.put(identifier.toString(), new Variable(type, Optional.of(astNodeResult)));
 			} else {
-				throw new Exception("Type mismatch");
+				int line = variableDeclaration.getExpression().get().getPosition().getLine();
+				int column = variableDeclaration.getExpression().get().getPosition().getColumn();
+				throw new InterpreterException("Type mismatch", line, column);
 			}
 		} else {
 			environment.put(identifier.toString(), new Variable(type, Optional.empty()));
@@ -56,15 +64,17 @@ public class Executor implements ASTVisitor {
 	public void visit(Identifier identifier) throws Exception {
 		String identifierName = identifier.getName();
 
+		int line = identifier.getPosition().getLine();
+		int column = identifier.getPosition().getColumn();
 		if (!environment.containsKey(identifierName)) {
-			throw new Exception("Undeclared variable");
+			throw new InterpreterException("Undeclared variable", line, column);
 		}
 
 		Variable variable = environment.get(identifierName);
 		Optional<Expression> optionalExpression = variable.getExpression();
 
 		if (optionalExpression.isEmpty()) {
-			throw new Exception("Variable declared but not assigned");
+			throw new InterpreterException("Variable declared but not assigned", line, column);
 		}
 		stack.push(optionalExpression.get());
 	}
@@ -87,7 +97,31 @@ public class Executor implements ASTVisitor {
 
 	@Override
 	public void visit(UnaryExpression unaryExpression) throws Exception {
-		// Execute unary expression if needed
+		evaluate(unaryExpression.getArgument());
+		Expression argument = stack.pop();
+		String operator = unaryExpression.getOperator();
+
+		Expression result = evaluateUnaryOperation(argument, operator);
+		stack.push(result);
+	}
+
+	private Expression evaluateUnaryOperation(Expression argument, String operator) throws Exception {
+		int line = argument.getPosition().getLine();
+		int column = argument.getPosition().getColumn();
+		if (argument instanceof NumericLiteral) {
+			Double value = (Double) argument.getValue();
+			return switch (operator) {
+				case "-" -> new NumericLiteral(-value, argument.getPosition());
+/*                case "++" -> new NumericLiteral(value + 1, argument.getPosition());
+				case "--" -> new NumericLiteral(value - 1, argument.getPosition()); */
+				default -> {
+					String error = "Invalid operator for numeric literal";
+					throw new InterpreterException(error, line, column);
+				}
+			};
+		} else {
+			throw new InterpreterException("Unsupported unary expression argument type", line, column);
+		}
 	}
 
 	@Override
@@ -113,17 +147,21 @@ public class Executor implements ASTVisitor {
 				String value = left.getValue().toString() + right.getValue().toString();
 				return new TextLiteral(value, left.getPosition());
 			}
-		} else if (left instanceof NumericLiteral && right instanceof NumericLiteral) {
-			Double leftVal = (Double) left.getValue();
-			Double rightVal = (Double) right.getValue();
-			return switch (operator) {
-				case "-" -> new NumericLiteral(leftVal - rightVal, left.getPosition());
-				case "/" -> new NumericLiteral(leftVal / rightVal, left.getPosition());
-				case "*" -> new NumericLiteral(leftVal * rightVal, left.getPosition());
-				default -> throw new Exception("Invalid operator");
-			};
 		} else {
-			throw new Exception("Type mismatch for operator");
+			int line = left.getPosition().getLine();
+			int column = left.getPosition().getColumn();
+			if (left instanceof NumericLiteral && right instanceof NumericLiteral) {
+				Double leftVal = (Double) left.getValue();
+				Double rightVal = (Double) right.getValue();
+				return switch (operator) {
+					case "-" -> new NumericLiteral(leftVal - rightVal, left.getPosition());
+					case "/" -> new NumericLiteral(leftVal / rightVal, left.getPosition());
+					case "*" -> new NumericLiteral(leftVal * rightVal, left.getPosition());
+					default -> throw new InterpreterException("Invalid operator", line, column);
+				};
+			} else {
+				throw new InterpreterException("Type mismatch for operator", line, column);
+			}
 		}
 	}
 
@@ -156,10 +194,7 @@ public class Executor implements ASTVisitor {
 
 		if (expression instanceof NumericLiteral && variableTypeName.equals("number")) {
 			return true;
-		} else if (expression instanceof TextLiteral && variableTypeName.equals("string")) {
-			return true;
-		}
-		return false;
+		} else return expression instanceof TextLiteral && variableTypeName.equals("string");
 	}
 
 	private Expression evaluateExpression(Expression expression) throws Exception {
