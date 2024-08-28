@@ -2,10 +2,8 @@ plugins {
     id 'java'
     id 'com.diffplug.spotless' version '6.18.0'
     id 'jacoco-report-aggregation'
-}
 
-group = 'org.example'
-version = '1.0-SNAPSHOT'
+}
 
 repositories {
     mavenCentral()
@@ -33,6 +31,9 @@ tasks.named('check') {
     dependsOn testCodeCoverageReport
 }
 
+tasks.named('build') {
+    dependsOn addPreCommitGitHook
+}
 
 
 test {
@@ -49,3 +50,27 @@ spotless {
 	}
 }
 
+tasks.register("addPreCommitGitHook") {
+    println("Adding pre commit")
+    doLast {
+        exec {
+            if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+                commandLine("cmd", "/c", "copy", ".\\git-hooks\\pre-commit", ".\\.git\\hooks\\")
+            } else {
+                commandLine("cp", "./git-hooks/pre-commit", "./.git/hooks")
+            }
+        }.assertNormalExitValue().rethrowFailure()
+
+        if (!System.getProperty("os.name").toLowerCase().contains("windows")) {
+            // Check if the file exists before applying chmod
+            def preCommitFile = file("./.git/hooks/pre-commit")
+            if (preCommitFile.exists()) {
+                exec {
+                    commandLine("chmod", "+x", "./.git/hooks/pre-commit")
+                }.assertNormalExitValue().rethrowFailure()
+            } else {
+                throw new GradleException("File './.git/hooks/pre-commit' not found. cp command may have failed.")
+            }
+        }
+    }
+}

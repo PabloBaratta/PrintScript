@@ -16,6 +16,7 @@ public class Lexer {
 	private final List<Character> whiteSpaces;
 	int pos = 0;
 	int line = 1;
+	int column = 1;
 
 	public Lexer(String code,
 				Collection<TokenConstructor> tokConstr,
@@ -41,9 +42,9 @@ public class Lexer {
 
 		skipCharactersFromList(currentCharacter, whiteSpaces);
 
-		Optional<Token> op = keyConstr.constructToken(code.substring(pos), pos, line)
+		Optional<Token> op = keyConstr.constructToken(code.substring(pos), pos, line, column)
 				.or(() -> tokConstr.stream()
-						.map(c -> c.constructToken(code.substring(pos), pos, line))
+						.map(c -> c.constructToken(code.substring(pos), pos, line, column))
 						.filter(Optional::isPresent)
 						.map(Optional::get)
 						.max(Comparator.comparingInt(Token::length)));
@@ -59,20 +60,6 @@ public class Lexer {
 		return new Try<>(l);
 
 	}
-
-/*    private void skipCharactersFromList(char currentCharacter, List<Character> characters) {
-
-		while (characters.contains(currentCharacter) && hasNext()) {
-			setCurrentPosition(currentPosition + 1);
-			if (hasNext()) {
-				currentCharacter = code.charAt(currentPosition);
-			}
-		}
-	}*/
-
-/*    private void setCurrentPosition(int newPosition){
-		currentPosition = newPosition;
-	}*/
 
 	private void skipCharactersFromList(char currentCharacter, List<Character> characters) {
 
@@ -90,8 +77,13 @@ public class Lexer {
 			char currentChar = code.charAt(pos);
 			if (currentChar == '\n') {
 				line++;
+				column = 0;
+			}
+			else {
+				column++;
 			}
 			pos++;
+
 		}
 	}
 

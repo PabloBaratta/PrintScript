@@ -29,9 +29,9 @@ public class ParserTest {
 		expressions.add(NativeTokenTypes.IDENTIFIER.toTokenType());
 		list.add(new ExpressionNodeConstructor(operators, expressions));
 		List<Token> tokens = new ArrayList<>();
-		tokens.add(new Token(NativeTokenTypes.NUMBER.toTokenType(), "1", new Position(1, 1, 1)));
-		tokens.add(new Token(NativeTokenTypes.PLUS.toTokenType(), "+", new Position(2, 1, 1)));
-		tokens.add(new Token(NativeTokenTypes.NUMBER.toTokenType(), "2", new Position(3, 1, 1)));
+		tokens.add(new Token(NativeTokenTypes.NUMBER.toTokenType(), "1", new Position(1, 1, 1, 1)));
+		tokens.add(new Token(NativeTokenTypes.PLUS.toTokenType(), "+", new Position(2, 1, 1, 2)));
+		tokens.add(new Token(NativeTokenTypes.NUMBER.toTokenType(), "2", new Position(3, 1, 1, 3)));
 		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
 		Try<ASTNode, Exception> res = parser.parseExpression();
@@ -53,11 +53,11 @@ public class ParserTest {
 		expressions.add(NativeTokenTypes.IDENTIFIER.toTokenType());
 		list.add(new ExpressionNodeConstructor(operators, expressions));
 		List<Token> tokens = new ArrayList<>();
-		tokens.add(new Token(NativeTokenTypes.NUMBER.toTokenType(), "1", new Position(1, 1, 1)));
-		tokens.add(new Token(NativeTokenTypes.PLUS.toTokenType(), "+", new Position(2, 1, 1)));
-		tokens.add(new Token(NativeTokenTypes.NUMBER.toTokenType(), "2", new Position(3, 1, 1)));
-		tokens.add(new Token(NativeTokenTypes.ASTERISK.toTokenType(), "*", new Position(4, 1, 1)));
-		tokens.add(new Token(NativeTokenTypes.STRING.toTokenType(), "\"hola\"", new Position(5, 6, 1)));
+		tokens.add(new Token(NativeTokenTypes.NUMBER.toTokenType(), "1", new Position(1, 1, 1, 1)));
+		tokens.add(new Token(NativeTokenTypes.PLUS.toTokenType(), "+", new Position(2, 1, 1, 2)));
+		tokens.add(new Token(NativeTokenTypes.NUMBER.toTokenType(), "2", new Position(3, 1, 1, 3)));
+		tokens.add(new Token(NativeTokenTypes.ASTERISK.toTokenType(), "*", new Position(4, 1, 1, 4)));
+		tokens.add(new Token(NativeTokenTypes.STRING.toTokenType(), "\"hola\"", new Position(5, 6, 1, 5)));
 		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
 		Try<ASTNode, Exception> res = parser.parseExpression();
@@ -79,7 +79,7 @@ public class ParserTest {
 		expressions.add(NativeTokenTypes.IDENTIFIER.toTokenType());
 		list.add(new ExpressionNodeConstructor(operators, expressions));
 		List<Token> tokens = new ArrayList<>();
-		tokens.add(new Token(NativeTokenTypes.NUMBER.toTokenType(), "1", new Position(1, 1, 1)));
+		tokens.add(new Token(NativeTokenTypes.NUMBER.toTokenType(), "1", new Position(1, 1, 1, 1)));
 		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
 		Try<ASTNode, Exception> res = parser.parseExpression();
@@ -102,7 +102,7 @@ public class ParserTest {
 		expressions.add(NativeTokenTypes.IDENTIFIER.toTokenType());
 		list.add(new ExpressionNodeConstructor(operators, expressions));
 		List<Token> tokens = new ArrayList<>();
-		Position pos = new Position(1, 20, 1);
+		Position pos = new Position(1, 20, 1, 1);
 		tokens.add(new Token(str, "\"hola buenas tardes\"", pos));
 		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
@@ -125,7 +125,7 @@ public class ParserTest {
 		expressions.add(NativeTokenTypes.IDENTIFIER.toTokenType());
 		list.add(new ExpressionNodeConstructor(operators, expressions));
 		List<Token> tokens = new ArrayList<>();
-		tokens.add(new Token(NativeTokenTypes.IDENTIFIER.toTokenType(), "si", new Position(1, 2, 1)));
+		tokens.add(new Token(NativeTokenTypes.IDENTIFIER.toTokenType(), "si", new Position(1, 2, 1, 1)));
 		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
 		Try<ASTNode, Exception> res = parser.parseExpression();
@@ -144,14 +144,15 @@ public class ParserTest {
 		expressions.add(NativeTokenTypes.IDENTIFIER.toTokenType());
 
 		List<Token> tokens = new ArrayList<>();
-		tokens.add(new Token(NativeTokenTypes.LEFT_PARENTHESIS.toTokenType(), "(", new Position(6, 1, 17)));
-		tokens.add(new Token(NativeTokenTypes.LEFT_PARENTHESIS.toTokenType(), "(", new Position(6, 1, 17)));
-		tokens.add(new Token(NativeTokenTypes.NUMBER.toTokenType(), "1", new Position(7, 1, 17)));
-		tokens.add(new Token(NativeTokenTypes.RIGHT_PARENTHESES.toTokenType(), ")", new Position(10, 1, 17)));
+		tokens.add(new Token(NativeTokenTypes.LEFT_PARENTHESIS.toTokenType(), "(", new Position(6, 1, 17, 6)));
+		tokens.add(new Token(NativeTokenTypes.LEFT_PARENTHESIS.toTokenType(), "(", new Position(6, 1, 17, 6)));
+		tokens.add(new Token(NativeTokenTypes.NUMBER.toTokenType(), "1", new Position(7, 1, 17, 7)));
+		TokenType rightPar = NativeTokenTypes.RIGHT_PARENTHESES.toTokenType();
+		tokens.add(new Token(rightPar, ")", new Position(10, 1, 17, 10)));
 
-		tokens.add(new Token(NativeTokenTypes.PLUS.toTokenType(), "+", new Position(8, 1, 17)));
-		tokens.add(new Token(NativeTokenTypes.NUMBER.toTokenType(), "2", new Position(9, 1, 17)));
-		tokens.add(new Token(NativeTokenTypes.RIGHT_PARENTHESES.toTokenType(), ")", new Position(10, 1, 17)));
+		tokens.add(new Token(NativeTokenTypes.PLUS.toTokenType(), "+", new Position(8, 1, 17, 8)));
+		tokens.add(new Token(NativeTokenTypes.NUMBER.toTokenType(), "2", new Position(9, 1, 17, 9)));
+		tokens.add(new Token(rightPar, ")", new Position(10, 1, 17, 10)));
 
 		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
 		ExpressionNodeConstructor e1 = new ExpressionNodeConstructor(operators, expressions);

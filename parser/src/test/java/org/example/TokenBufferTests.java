@@ -88,6 +88,6 @@ public class TokenBufferTests {
 	}
 
 	private static Token getaTokenFromTokenType(NativeTokenTypes tokenType) {
-		return new Token(tokenType.toTokenType(), "", new Position(0, 0, 0));
+		return new Token(tokenType.toTokenType(), "", new Position(0, 0, 0, 0));
 	}
 }

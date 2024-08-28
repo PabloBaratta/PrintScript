@@ -21,7 +21,7 @@ public class LinterTest {
 		Linter linter = new Linter(linterConfigurator);
 		Map<String, String> configMap = Map.of("case", "camel", "printWithIdentifiers", "true");
 		String identifierString = "camel";
-		TextLiteral hi = new TextLiteral("hi", new Position(0, 0, 0));
+		TextLiteral hi = new TextLiteral("hi", new Position(0, 0, 0, 0));
 		Report analyze = linter.analyze(LinterConfiguratorTest.getProgram(identifierString, hi), configMap);
 		assertTrue(analyze.getReportLines().isEmpty());
 	}
@@ -33,7 +33,7 @@ public class LinterTest {
 		Linter linter = new Linter(linterConfigurator);
 		Map<String, String> configMap = Map.of("case", "camel", "printWithIdentifiers", "true");
 		String identifierString = "snake__";
-		TextLiteral hi = new TextLiteral("hi", new Position(0, 0, 0));
+		TextLiteral hi = new TextLiteral("hi", new Position(0, 0, 0, 0));
 		Report analyze = linter.analyze(LinterConfiguratorTest.getProgram(identifierString, hi), configMap);
 		assertFalse(analyze.getReportLines().isEmpty());
 	}
@@ -45,9 +45,9 @@ public class LinterTest {
 		Linter linter = new Linter(linterConfigurator);
 		Map<String, String> configMap = Map.of("case", "camel", "growPotatoes", "true");
 		String identifierString = "someIdentifier";
-		TextLiteral hi = new TextLiteral("hi", new Position(0, 0, 0));
+		TextLiteral hi = new TextLiteral("hi", new Position(0, 0, 0, 0));
 		assertThrows(WrongConfigurationException.class,
-				() -> linter.analyze(LinterConfiguratorTest.getProgram(identifierString, hi), configMap));
+			() -> linter.analyze(LinterConfiguratorTest.getProgram(identifierString, hi), configMap));
 	}
 
 

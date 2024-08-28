@@ -110,7 +110,7 @@ class IdentifierRulesTest {
 
 	@Test
 	public void doesNotChangeWithOtherNodes() throws Exception {
-		Position position = new Position(0, 0, 0);
+		Position position = new Position(0, 0, 0, 0);
 		Identifier identifier = new Identifier("hi", position);
 		Assignation assignation = new Assignation(identifier, identifier, position);
 		Method method = new Method(identifier, List.of(identifier));
@@ -166,9 +166,9 @@ class IdentifierRulesTest {
 			throws Exception {
 		int length = identifierString.length();
 		VariableDeclaration variableDeclaration = new VariableDeclaration(
-			new Identifier(identifierString, new Position(4, length, 1)),
-			new Type("string", new Position(5 + length, 6, 1)),
-			Optional.of(new TextLiteral("america", new Position(14 + length, 7, 1))));
+			new Identifier(identifierString, new Position(4, length, 1, 4)),
+			new Type("string", new Position(5 + length, 6, 1, 5 + length)),
+			Optional.of(new TextLiteral("america", new Position(14 + length, 7, 1, 14 + length))));
 
 		Report report = new Report();
 		IdentifierRules identifierRules = new IdentifierRules(identifierCase, report);

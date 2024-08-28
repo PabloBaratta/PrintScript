@@ -18,10 +18,10 @@ public class TokenTestUtil {
 	}
 
 	public static Token getaTokenFromTokenType(NativeTokenTypes tokenType) {
-		return new Token(tokenType.toTokenType(), "", new Position(0, 0, 0));
+		return new Token(tokenType.toTokenType(), "", new Position(0, 0, 0, 0));
 	}
 
 	public static Token getaTokenFromTokenType(NativeTokenTypes tokenType, String associatedString) {
-		return new Token(tokenType.toTokenType(), associatedString, new Position(0, 0, 0));
+		return new Token(tokenType.toTokenType(), associatedString, new Position(0, 0, 0, 0));
 	}
 }
