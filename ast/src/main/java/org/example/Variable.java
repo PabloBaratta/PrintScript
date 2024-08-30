@@ -5,11 +5,11 @@ import java.util.Optional;
 public class Variable {
 
 	private Type type;
-	private Optional<Expression> expression;
+	private Optional<Literal> literal;
 
-	public Variable(Type type, Optional<Expression> expression){
+	public Variable(Type type, Optional<Literal> expression){
 		this.type = type;
-		this.expression = expression;
+		this.literal = expression;
 	}
 
 	public Type getType() {
@@ -20,11 +20,11 @@ public class Variable {
 		this.type = type;
 	}
 
-	public Optional<Expression> getExpression() {
-		return expression;
+	public Optional<Literal> getLiteral() {
+		return literal;
 	}
 
-	public void setExpression(Expression expression) {
-		this.expression = Optional.ofNullable(expression);
+	public void setLiteral(Literal literal) {
+		this.literal = Optional.ofNullable(literal);
 	}
 }

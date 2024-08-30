@@ -12,6 +12,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.example.lexer.token.NativeTokenTypes.*;
 import static org.example.nodeconstructors.NodeResponse.emptyResponse;
 import static org.example.nodeconstructors.NodeResponse.response;
 
@@ -20,11 +21,14 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 	private final List<TokenType> operators;
 	private final List<TokenType> expressions;
 	private final List<Function<TokenBuffer, NodeResponse>> functions;
+	private final CallExpressionNodeConstructor callExpressionConstructor;
 
-	public ExpressionNodeConstructor(Map<TokenType, Integer> mapOperatorsToPrecedence, List<TokenType> operands) {
+	public ExpressionNodeConstructor(Map<TokenType, Integer> mapOperatorsToPrecedence, List<TokenType> operands,
+									CallExpressionNodeConstructor callConstructor) {
 		this.operators = mapOperatorsToPrecedence.keySet().stream().toList();
 		this.expressions = operands;
 		this.functions = getFunctions(mapOperatorsToPrecedence);
+		this.callExpressionConstructor = callConstructor.setExpressionParser(this);
 	}
 
 	private List<Function<TokenBuffer, NodeResponse>> getFunctions(Map<TokenType, Integer> opsPrecedence) {
@@ -60,7 +64,7 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 	private boolean isThisExpression(TokenBuffer tokenBuffer) {
 		return tokenBuffer.isNextTokenOfAnyOfThisTypes(operators)
 				|| tokenBuffer.isNextTokenOfAnyOfThisTypes(expressions)
-				|| tokenBuffer.isNextTokenOfType(NativeTokenTypes.LEFT_PARENTHESIS.toTokenType());
+				|| tokenBuffer.isNextTokenOfType(LEFT_PARENTHESIS.toTokenType());
 	}
 
 	private NodeResponse parseBE(TokenBuffer tb,
@@ -141,7 +145,7 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 		tokenBuffer = possibleExpression.possibleBuffer();
 		Expression expression = (Expression) possibleExpression.possibleNode().getSuccess().get().get();
 
-		if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.RIGHT_PARENTHESES.toTokenType())) {
+		if (tokenBuffer.isNextTokenOfType(RIGHT_PARENTHESES.toTokenType())) {
 			tokenBuffer = tokenBuffer.consumeToken();
 		} else {
 			String message = "expecting closing of this parenthesis";
@@ -157,7 +161,7 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 	}
 
 	private NodeResponse unary(TokenBuffer tokenBuffer) {
-		if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.MINUS.toTokenType())) {
+		if (tokenBuffer.isNextTokenOfType(MINUS.toTokenType())) {
 			return parseUnaryExpression(tokenBuffer);
 		}
 		return primary(tokenBuffer);
@@ -165,19 +169,26 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 
 	// number, string, identifier and left parenthesis
 	private NodeResponse primary(TokenBuffer tokenBuffer) {
-		if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.NUMBER.toTokenType())) {
+		if (tokenBuffer.isNextTokenOfType(NUMBER.toTokenType())) {
 			return parseLiteral(tokenBuffer, (s, position) -> {
 				NumericLiteral numericLiteral = new NumericLiteral(Double.parseDouble(s), position);
 				return numericLiteral;
 			});
-		} else if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.STRING.toTokenType())) {
+		} else if (tokenBuffer.isNextTokenOfType(STRING.toTokenType())) {
 			return parseLiteral(tokenBuffer, (s, position) -> {
 				TextLiteral textLiteral = new TextLiteral(s.substring(1, s.length() - 1), position);
 				return textLiteral;
 			});
-		} else if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.IDENTIFIER.toTokenType())) {
+		} else if (tokenBuffer.isNextTokenOfType(IDENTIFIER.toTokenType())) {
+
+			TokenBuffer tokenBufferWithoutId = tokenBuffer.consumeToken();
+
+			if (tokenBufferWithoutId.isNextTokenOfType(LEFT_PARENTHESIS.toTokenType())) {
+				return callExpressionConstructor.build(tokenBuffer);
+			}
+
 			return parseLiteral(tokenBuffer, Identifier::new);
-		} else if (tokenBuffer.isNextTokenOfType(NativeTokenTypes.LEFT_PARENTHESIS.toTokenType())) {
+		} else if (tokenBuffer.isNextTokenOfType(LEFT_PARENTHESIS.toTokenType())) {
 			return parseParenthesisExpression(tokenBuffer);
 		}
 		return response(new SemanticErrorException(tokenBuffer.getToken().get(),

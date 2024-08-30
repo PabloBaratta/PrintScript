@@ -46,15 +46,20 @@ public class Runner {
 	}
 
 	private static List<NodeConstructor> getNodeConstructors() {
-		List<TokenType> expressions = List.copyOf(PrintScriptTokenConfig.literalTokenTypeMap().values());
-		ExpressionNodeConstructor expCons = new ExpressionNodeConstructor(mapOperatorPrecedence(), expressions);
+		List<TokenType> operands = List.copyOf(PrintScriptTokenConfig.literalTokenTypeMap().values());
+
+		CallExpressionNodeConstructor innerCall = new CallExpressionNodeConstructor(false, null);
+		NodeConstructor expCons = new ExpressionNodeConstructor(mapOperatorPrecedence(), operands, innerCall);
+
 		AssignationNodeConstructor assignationConstructor = new AssignationNodeConstructor(expCons);
+
 		VariableDeclarationNodeConstructor variableDeclarationConstructor =
 				new VariableDeclarationNodeConstructor(expCons,
 						List.of(LET.toTokenType()),
 						List.of(NUMBER_TYPE.toTokenType(), STRING_TYPE.toTokenType()));
 
 		NodeConstructor callExpressionConstructor = new CallExpressionNodeConstructor(true, expCons);
+
 		return List.of(
 				callExpressionConstructor,
 				assignationConstructor,

@@ -4,6 +4,7 @@ import org.example.lexer.token.Position;
 import org.example.lexer.token.Token;
 import org.example.lexer.token.TokenType;
 import org.example.lexer.utils.Try;
+import org.example.nodeconstructors.CallExpressionNodeConstructor;
 import org.example.nodeconstructors.ExpressionNodeConstructor;
 import org.example.nodeconstructors.NodeConstructor;
 import org.junit.jupiter.api.Assertions;
@@ -23,7 +24,7 @@ public class ParserTest {
 		expressions.add(NativeTokenTypes.NUMBER.toTokenType());
 		expressions.add(NativeTokenTypes.STRING.toTokenType());
 		expressions.add(NativeTokenTypes.IDENTIFIER.toTokenType());
-		list.add(new ExpressionNodeConstructor(mapOperatorPrecedence(), expressions));
+		list.add(getExpressionNodeConstructor(expressions));
 		List<Token> tokens = new ArrayList<>();
 		tokens.add(new Token(NativeTokenTypes.NUMBER.toTokenType(), "1", new Position(1, 1, 1, 1)));
 		tokens.add(new Token(NativeTokenTypes.PLUS.toTokenType(), "+", new Position(2, 1, 1, 2)));
@@ -42,7 +43,7 @@ public class ParserTest {
 		expressions.add(NativeTokenTypes.NUMBER.toTokenType());
 		expressions.add(NativeTokenTypes.STRING.toTokenType());
 		expressions.add(NativeTokenTypes.IDENTIFIER.toTokenType());
-		list.add(new ExpressionNodeConstructor(mapOperatorPrecedence(), expressions));
+		list.add(getExpressionNodeConstructor(expressions));
 		List<Token> tokens = new ArrayList<>();
 		tokens.add(new Token(NativeTokenTypes.NUMBER.toTokenType(), "1", new Position(1, 1, 1, 1)));
 		tokens.add(new Token(NativeTokenTypes.PLUS.toTokenType(), "+", new Position(2, 1, 1, 2)));
@@ -63,7 +64,7 @@ public class ParserTest {
 		expressions.add(NativeTokenTypes.NUMBER.toTokenType());
 		expressions.add(NativeTokenTypes.STRING.toTokenType());
 		expressions.add(NativeTokenTypes.IDENTIFIER.toTokenType());
-		list.add(new ExpressionNodeConstructor(mapOperatorPrecedence(), expressions));
+		list.add(getExpressionNodeConstructor(expressions));
 		List<Token> tokens = new ArrayList<>();
 		tokens.add(new Token(NativeTokenTypes.NUMBER.toTokenType(), "1", new Position(1, 1, 1, 1)));
 		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
@@ -81,7 +82,7 @@ public class ParserTest {
 		TokenType str = NativeTokenTypes.STRING.toTokenType();
 		expressions.add(str);
 		expressions.add(NativeTokenTypes.IDENTIFIER.toTokenType());
-		list.add(new ExpressionNodeConstructor(mapOperatorPrecedence(), expressions));
+		list.add(getExpressionNodeConstructor(expressions));
 		List<Token> tokens = new ArrayList<>();
 		Position pos = new Position(1, 20, 1, 1);
 		tokens.add(new Token(str, "\"hola buenas tardes\"", pos));
@@ -92,6 +93,11 @@ public class ParserTest {
 		Assertions.assertEquals("hola buenas tardes", node.toString());
 	}
 
+	private static ExpressionNodeConstructor getExpressionNodeConstructor(List<TokenType> expressions) {
+		CallExpressionNodeConstructor callExpression = new CallExpressionNodeConstructor(false, null);
+		return new ExpressionNodeConstructor(mapOperatorPrecedence(), expressions, callExpression);
+	}
+
 	@Test
 	public void testOnlyIdentifier(){
 		List<NodeConstructor> list = new ArrayList<>();
@@ -99,7 +105,7 @@ public class ParserTest {
 		expressions.add(NativeTokenTypes.NUMBER.toTokenType());
 		expressions.add(NativeTokenTypes.STRING.toTokenType());
 		expressions.add(NativeTokenTypes.IDENTIFIER.toTokenType());
-		list.add(new ExpressionNodeConstructor(mapOperatorPrecedence(), expressions));
+		list.add(getExpressionNodeConstructor(expressions));
 		List<Token> tokens = new ArrayList<>();
 		tokens.add(new Token(NativeTokenTypes.IDENTIFIER.toTokenType(), "si", new Position(1, 2, 1, 1)));
 		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
@@ -130,7 +136,7 @@ public class ParserTest {
 		tokens.add(new Token(rightPar, ")", new Position(10, 1, 17, 10)));
 
 		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
-		ExpressionNodeConstructor e1 = new ExpressionNodeConstructor(mapOperatorPrecedence(), expressions);
+		ExpressionNodeConstructor e1 = getExpressionNodeConstructor(expressions);
 		Parser parser = new Parser(new LinkedList<>(List.of(e1)), new ArrayList<>(), tokenBuffer);
 
 		// Parsear la expresión
@@ -142,12 +148,6 @@ public class ParserTest {
 
 	}
 
-	private static List<TokenType> listOfOperators() {
-		return List.of(NativeTokenTypes.PLUS.toTokenType(),
-				NativeTokenTypes.MINUS.toTokenType(),
-				NativeTokenTypes.ASTERISK.toTokenType(),
-				NativeTokenTypes.SLASH.toTokenType());
-	}
 
 	private static Map<TokenType, Integer> mapOperatorPrecedence() {
 		return Map.of(NativeTokenTypes.PLUS.toTokenType(), 1,
