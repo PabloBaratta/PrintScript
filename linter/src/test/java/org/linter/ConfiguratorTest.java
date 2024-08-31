@@ -1,10 +1,9 @@
 package org.linter;
 
-import org.example.ASTVisitor;
 import org.junit.jupiter.api.Test;
 import org.linter.configurator.Configurator;
 import org.linter.configurator.IdentifierConfiguration;
-import org.linter.configurator.PrintLineConfiguration;
+import org.linter.configurator.OneArgFunctionConfiguration;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,21 +38,23 @@ public class ConfiguratorTest {
 	@Test
 	public void printLineConfiguration() {
 
-		PrintLineConfiguration printLineConfiguration = new PrintLineConfiguration();
+		String printOptions = "printWithIdentifiers";
+		String method = "println";
+		Configurator oneArgFunctionConfiguration = new OneArgFunctionConfiguration(printOptions, method);
 		Report report = new Report();
 
-		assertEquals("printWithIdentifiers", printLineConfiguration.getProp());
-		assertTrue(printLineConfiguration.isThisRule("printWithIdentifiers"));
-		assertTrue(printLineConfiguration.isValidRuleOption("true"));
-		assertTrue(printLineConfiguration.isValidRuleOption("false"));
+		assertEquals("printWithIdentifiers", oneArgFunctionConfiguration.getProp());
+		assertTrue(oneArgFunctionConfiguration.isThisRule("printWithIdentifiers"));
+		assertTrue(oneArgFunctionConfiguration.isValidRuleOption("true"));
+		assertTrue(oneArgFunctionConfiguration.isValidRuleOption("false"));
 
 
 		assertDoesNotThrow(() -> {
-			printLineConfiguration.getLinterRule(report, "true");
+			oneArgFunctionConfiguration.getLinterRule(report, "true");
 		});
 
 		assertThrows(WrongConfigurationException.class,() -> {
-			printLineConfiguration.getLinterRule(report, "True");
+			oneArgFunctionConfiguration.getLinterRule(report, "True");
 		});
 
 	}
