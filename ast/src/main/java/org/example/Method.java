@@ -4,7 +4,7 @@ import org.example.lexer.token.Position;
 
 import java.util.List;
 
-public class Method implements ASTNode{
+public class Method implements Expression{
 
 	private Identifier identifier;
 	private List<Expression> arguments;

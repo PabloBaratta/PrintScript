@@ -31,8 +31,5 @@ public class Identifier implements Expression {
 		return position;
 	}
 
-	@Override
-	public Object getValue() {
-		return null;
-	}
+
 }

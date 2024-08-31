@@ -15,6 +15,7 @@ import org.example.nodeconstructors.*;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class Util {
 	public static Lexer createLexer(String code) {
@@ -41,19 +42,21 @@ public class Util {
 	}
 
 	private static List<NodeConstructor> getNodeConstructors() {
-		ExpressionNodeConstructor expressionNodeConstructor =
-				new ExpressionNodeConstructor(listOfOperators(),
-						List.copyOf(PrintScriptTokenConfig.literalTokenTypeMap().values()));
+		List<TokenType> operands = List.copyOf(PrintScriptTokenConfig.literalTokenTypeMap().values());
+
+		CallExpressionNodeConstructor innerCall = new CallExpressionNodeConstructor(false, null);
+		NodeConstructor expCons = new ExpressionNodeConstructor(mapOperatorPrecedence(), operands, innerCall);
+
 		AssignationNodeConstructor assignationNodeConstructor =
-				new AssignationNodeConstructor(expressionNodeConstructor);
+				new AssignationNodeConstructor(expCons);
 		VariableDeclarationNodeConstructor variableDeclarationNodeConstructor =
-				new VariableDeclarationNodeConstructor(expressionNodeConstructor,
+				new VariableDeclarationNodeConstructor(expCons,
 						List.of(NativeTokenTypes.LET.toTokenType()),
 						List.of(NativeTokenTypes.NUMBER_TYPE.toTokenType(),
 								NativeTokenTypes.STRING_TYPE.toTokenType()));
 
 		CallExpressionNodeConstructor callExpressionNodeConstructor =
-				new CallExpressionNodeConstructor(true, expressionNodeConstructor);
+				new CallExpressionNodeConstructor(true, expCons);
 		return List.of(
 				callExpressionNodeConstructor,
 				assignationNodeConstructor,
@@ -61,10 +64,11 @@ public class Util {
 		);
 	}
 
-	private static List<TokenType> listOfOperators() {
-		return List.of(NativeTokenTypes.PLUS.toTokenType(),
-				NativeTokenTypes.MINUS.toTokenType(),
-				NativeTokenTypes.ASTERISK.toTokenType(),
-				NativeTokenTypes.SLASH.toTokenType());
+	private static Map<TokenType, Integer> mapOperatorPrecedence() {
+		return Map.of(NativeTokenTypes.PLUS.toTokenType(), 1,
+				NativeTokenTypes.MINUS.toTokenType(), 1,
+				NativeTokenTypes.ASTERISK.toTokenType(), 2,
+				NativeTokenTypes.SLASH.toTokenType(), 2);
 	}
+
 }

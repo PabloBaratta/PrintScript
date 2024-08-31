@@ -9,7 +9,7 @@ import java.util.Stack;
 public class Validator implements ASTVisitor {
 
 	private final Map<String, Variable> environment = new HashMap<>();
-	private final Stack<Expression> stack = new Stack<>();
+	private final Stack<Literal> stack = new Stack<>();
 
 	@Override
 	public void visit(Assignation assignation) throws Exception {
@@ -20,11 +20,11 @@ public class Validator implements ASTVisitor {
 			throw new Exception("Variable not declared");
 		}
 
-		Expression astNodeResult = evaluateExpression(expression);
+		Literal astNodeResult = evaluateExpression(expression);
 		Variable variable = environment.get(identifier.toString());
 
 		if (typesMatch(astNodeResult, variable)) {
-			variable.setExpression(astNodeResult);
+			variable.setLiteral(astNodeResult);
 			environment.put(identifier.toString(), variable);
 		} else {
 			throw new Exception("Type mismatch");
@@ -41,7 +41,7 @@ public class Validator implements ASTVisitor {
 		}
 
 		if (variableDeclaration.getExpression().isPresent()) {
-			Expression astNodeResult = evaluateExpression(variableDeclaration.getExpression().get());
+			Literal astNodeResult = evaluateExpression(variableDeclaration.getExpression().get());
 			if (typesMatch(astNodeResult, new Variable(type, Optional.empty()))) {
 				environment.put(identifier.toString(), new Variable(type, Optional.of(astNodeResult)));
 			} else {
@@ -63,7 +63,7 @@ public class Validator implements ASTVisitor {
 		return false;
 	}
 
-	private Expression evaluateExpression(Expression expression) throws Exception {
+	private Literal evaluateExpression(Expression expression) throws Exception {
 		evaluate(expression);
 		return stack.pop();
 	}
@@ -77,7 +77,7 @@ public class Validator implements ASTVisitor {
 		}
 
 		Variable variable = environment.get(identifierName);
-		Optional<Expression> optionalExpression = variable.getExpression();
+		Optional<Literal> optionalExpression = variable.getLiteral();
 
 		if (optionalExpression.isEmpty()) {
 			throw new Exception("Variable declared but not assigned");
@@ -113,14 +113,14 @@ public class Validator implements ASTVisitor {
 	public void visit(BinaryExpression binaryExpression) throws Exception {
 		evaluate(binaryExpression.getLeft());
 		evaluate(binaryExpression.getRight());
-		Expression right = stack.pop();
-		Expression left = stack.pop();
+		Literal right = stack.pop();
+		Literal left = stack.pop();
 
-		Expression result = evaluateBinaryOperation(left, right, binaryExpression.getOperator());
+		Literal result = evaluateBinaryOperation(left, right, binaryExpression.getOperator());
 		stack.push(result);
 	}
 
-	private Expression evaluateBinaryOperation(Expression left, Expression right, String operator)
+	private Literal evaluateBinaryOperation(Expression left, Expression right, String operator)
 			throws Exception {
 		if (operator.equals("+")) {
 			if (left instanceof NumericLiteral && right instanceof NumericLiteral) {
@@ -160,7 +160,7 @@ public class Validator implements ASTVisitor {
 		return environment;
 	}
 
-	public Stack<Expression> getStack() {
+	public Stack<Literal> getStack() {
 		return stack;
 	}
 }

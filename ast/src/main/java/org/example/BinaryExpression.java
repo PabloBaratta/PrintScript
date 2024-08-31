@@ -39,8 +39,5 @@ public class BinaryExpression implements Expression {
 		return left.getPosition();
 	}
 
-	@Override
-	public Object getValue() {
-		return null;
-	}
+
 }
