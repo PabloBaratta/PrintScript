@@ -3,6 +3,8 @@ package org.linter.visitors;
 import org.example.*;
 import org.linter.Report;
 
+import java.util.Optional;
+
 public class OneArgFunRules implements ASTVisitor {
 
 	public final String ERROR_MESSAGE =
@@ -27,7 +29,13 @@ public class OneArgFunRules implements ASTVisitor {
 
 	@Override
 	public void visit(VariableDeclaration variableDeclaration) throws Exception {
+		Optional<Expression> optionalExpression = variableDeclaration.getExpression();
 
+		if (optionalExpression.isEmpty()) {
+			return;
+		}
+
+		optionalExpression.get().accept(this);
 	}
 
 	@Override
@@ -54,23 +62,31 @@ public class OneArgFunRules implements ASTVisitor {
 			return;
 		}
 		Expression first = method.getArguments().getFirst();
-		first.accept(this);
+
+		switch (first) {
+			case UnaryExpression u -> processCompoundExpression(u);
+			case BinaryExpression be -> processCompoundExpression(be);
+			case Parenthesis p -> processCompoundExpression(p);
+			default -> {}
+		}
 	}
 
 	@Override
 	public void visit(UnaryExpression unaryExpression) throws Exception {
+		unaryExpression.getArgument().accept(this);
+	}
+
+	private void processCompoundExpression(Expression expression) {
 		if (!shouldCheck) {
 			return;
 		}
-		report.addLine(unaryExpression.getPosition(), error);
+		report.addLine(expression.getPosition(), error);
 	}
 
 	@Override
 	public void visit(BinaryExpression binaryExpression) throws Exception {
-		if (!shouldCheck) {
-			return;
-		}
-		report.addLine(binaryExpression.getPosition(), error);
+		binaryExpression.getLeft().accept(this);
+		binaryExpression.getRight().accept(this);
 	}
 
 	@Override
@@ -80,9 +96,6 @@ public class OneArgFunRules implements ASTVisitor {
 
 	@Override
 	public void visit(Parenthesis parenthesis) throws Exception {
-		if (!shouldCheck) {
-			return;
-		}
-		report.addLine(parenthesis.getPosition(), error);
+		parenthesis.getExpression().accept(this);
 	}
 }
