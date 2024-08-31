@@ -9,7 +9,7 @@ import java.util.List;
 
 import static org.example.nodeconstructors.NodeResponse.*;
 
-public class CallExpressionNodeConstructor implements NodeConstructor{
+public class CallExpressionNodeConstructor implements NodeConstructor {
 
 	//whether it has to check ";" --> Refactor
 
@@ -141,7 +141,7 @@ public class CallExpressionNodeConstructor implements NodeConstructor{
 			if (!tokenBuffer.isNextTokenOfType(NativeTokenTypes.SEMICOLON.toTokenType())) {
 				return response(new SemanticErrorException(lastToken, "expected end of statement"),
 						tokenBuffer);
-			};
+			}
 			tokenBuffer = tokenBuffer.consumeToken();
 		}
 
@@ -151,5 +151,9 @@ public class CallExpressionNodeConstructor implements NodeConstructor{
 	private static Method createMethodNode(Token identifier, List<Expression> listOfArguments) {
 		Identifier identifier1 = new Identifier(identifier.associatedString(), identifier.position());
 		return new Method(identifier1, listOfArguments);
+	}
+
+	public CallExpressionNodeConstructor setExpressionParser(ExpressionNodeConstructor cons) {
+		return new CallExpressionNodeConstructor(this.terminal, cons);
 	}
 }
