@@ -493,4 +493,93 @@ public class InterpreterTest {
 
 		assertEquals(5.0, validator.getStack().pop().getValue());
 	}
+
+	// UNARY EXPRESSIONS ------------------------------------------
+
+//	@Test
+//	public void testUnaryExpressionAssignment() throws Exception {
+//
+//		Interpreter interpreter = new Interpreter();
+//
+//		Identifier identifier = new Identifier("i", new Position(0,0, 0, 0));
+//		Type type = new Type("number", new Position(0,0, 0, 0));
+//		NumericLiteral initialValue = new NumericLiteral(1.0, new Position(0,0, 0, 0));
+//		VariableDeclaration var = new VariableDeclaration(identifier, type, Optional.of(initialValue));
+//		interpreter.visit(variableDeclaration);
+//
+//		UnaryExpression unaryExpression = new UnaryExpression(identifier, "++", new Position(0,0,0,0));
+//
+//		Assignation assignation = new Assignation(identifier, unaryExpression, new Position(0,0, 0, 0 ));
+//
+//		interpreter.visit(assignation);
+//
+//		Optional<Expression> optionalExpression = interpreter.getEnvironment().get("i").getExpression();
+//		assertTrue(optionalExpression.isPresent());
+//		assertEquals(2.0, optionalExpression.get().getValue());
+//	}
+
+	@Test
+	public void testUnaryExpressionAssignNegativeNumber() throws Exception {
+		Interpreter interpreter = new Interpreter();
+
+		Position pos = new Position(0, 0, 0, 0);
+		Identifier identifier = new Identifier("i", pos);
+		Type type = new Type("number", pos);
+		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
+		interpreter.visit(variableDeclaration);
+
+		NumericLiteral positiveFive = new NumericLiteral(5.0, pos);
+
+		UnaryExpression negativeFiveExpression = new UnaryExpression(positiveFive, "-", pos);
+
+		Assignation assignation = new Assignation(identifier, negativeFiveExpression, pos);
+		interpreter.visit(assignation);
+
+		Optional<Expression> resultExpression = interpreter.getEnvironment().get("i").getExpression();
+		assertTrue(resultExpression.isPresent());
+		assertEquals(-5.0, resultExpression.get().getValue());
+	}
+
+	@Test
+	public void testBinaryExpressionWithNegativeNumber() throws Exception {
+
+		Interpreter interpreter = new Interpreter();
+
+		Identifier identifier = new Identifier("result", new Position(0,0, 0, 0));
+		Type type = new Type("number", new Position(0,0, 0, 0));
+		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
+		interpreter.visit(variableDeclaration);
+
+		NumericLiteral positiveTwo = new NumericLiteral(2.0, new Position(0,0, 0, 0));
+
+		NumericLiteral positiveFive = new NumericLiteral(5.0, new Position(0,0, 0, 0));
+		UnaryExpression negativeFive = new UnaryExpression(positiveFive, "-", new Position(0,0, 0, 0));
+
+		BinaryExpression binaryExpression = new BinaryExpression(positiveTwo, "+", negativeFive);
+
+		Assignation assignation = new Assignation(identifier, binaryExpression, new Position(0,0, 0, 0));
+		interpreter.visit(assignation);
+
+		Optional<Expression> resultExpression = interpreter.getEnvironment().get("result").getExpression();
+		assertTrue(resultExpression.isPresent());
+		assertEquals(-3.0, resultExpression.get().getValue());
+	}
+
+//    @Test
+//    public void testBooleanLiteralAssignation() throws Exception {
+//        Interpreter interpreter = new Interpreter();
+//
+//        Identifier identifier = new Identifier("flag", new Position(0,0, 0, 0));
+//        Type type = new Type("boolean", new Position(0,0, 0, 0));
+//        VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
+//        interpreter.visit(variableDeclaration);
+//
+//        BooleanLiteral booleanLiteral = new BooleanLiteral(true, new Position(0,0, 0, 0));
+//        Assignation assignation = new Assignation(identifier, booleanLiteral, new Position(0,0, 0, 0));
+//        interpreter.visit(assignation);
+//
+//        Optional<Expression> resultExpression = interpreter.getEnvironment().get("flag").getExpression();
+//        assertTrue(resultExpression.isPresent());
+//        assertEquals(true, resultExpression.get().getValue());
+//    }
 }
