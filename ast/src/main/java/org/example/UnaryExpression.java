@@ -38,8 +38,4 @@ public class UnaryExpression implements Expression{
 		return position;
 	}
 
-	@Override
-	public Object getValue() {
-		return null;
-	}
 }

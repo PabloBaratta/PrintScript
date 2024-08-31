@@ -225,6 +225,106 @@ public class CallExpressionTest {
 		assertTrue(build.possibleNode().isFail());
 	}
 
+	@Test
+	public void methodWithIdentifier() {
+		boolean terminal = true;
+		Token functionCall = getaTokenFromTokenType(IDENTIFIER, "readEnv");
+		NativeTokenTypes[] inParenthesisInput = new NativeTokenTypes[]{
+				LEFT_PARENTHESIS,
+				LEFT_PARENTHESIS,
+				NUMBER,
+				PLUS,
+				NUMBER,
+				RIGHT_PARENTHESES,
+				PLUS,
+				NUMBER,
+				RIGHT_PARENTHESES,
+				IDENTIFIER,
+				SEMICOLON
+		};
+		LinkedList<Token> tokens = new LinkedList<>(List.of(functionCall));
+		tokens.addAll(TokenTestUtil.getTokens(inParenthesisInput));
+
+		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
+		CallExpressionNodeConstructor builder = new CallExpressionNodeConstructor(terminal, collector);
+
+		NodeResponse build = builder.build(new TokenBuffer(tokens));
+		assertTrue(build.possibleNode().isFail());
+	}
+
+	@Test
+	public void methodWithMethods(){
+		boolean terminal = true;
+		Token functionCall = getaTokenFromTokenType(IDENTIFIER, "readInput");
+		NativeTokenTypes[] inParenthesisInput = new NativeTokenTypes[]{
+				LEFT_PARENTHESIS,
+				IDENTIFIER,
+				LEFT_PARENTHESIS,
+				NUMBER,
+				RIGHT_PARENTHESES,
+				RIGHT_PARENTHESES,
+				SEMICOLON
+		};
+		LinkedList<Token> tokens = new LinkedList<>(List.of(functionCall));
+		tokens.addAll(TokenTestUtil.getTokens(inParenthesisInput));
+
+		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
+		CallExpressionNodeConstructor builder = new CallExpressionNodeConstructor(terminal, collector);
+
+		NodeResponse build = builder.build(new TokenBuffer(tokens));
+		assertTrue(build.possibleNode().isSuccess());
+	}
+
+	@Test
+	public void methodWithOperations(){
+		boolean terminal = true;
+		Token functionCall = getaTokenFromTokenType(IDENTIFIER, "readInput");
+		NativeTokenTypes[] inParenthesisInput = new NativeTokenTypes[]{
+				LEFT_PARENTHESIS,
+				NUMBER,
+				PLUS,
+				IDENTIFIER,
+				LEFT_PARENTHESIS,
+				NUMBER,
+				RIGHT_PARENTHESES,
+				RIGHT_PARENTHESES,
+				SEMICOLON
+		};
+		LinkedList<Token> tokens = new LinkedList<>(List.of(functionCall));
+		tokens.addAll(TokenTestUtil.getTokens(inParenthesisInput));
+
+		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
+		CallExpressionNodeConstructor builder = new CallExpressionNodeConstructor(terminal, collector);
+
+		NodeResponse build = builder.build(new TokenBuffer(tokens));
+		assertTrue(build.possibleNode().isSuccess());
+	}
+
+	@Test
+	public void methodWithOperations2(){
+		boolean terminal = true;
+		Token functionCall = getaTokenFromTokenType(IDENTIFIER, "readInput");
+		NativeTokenTypes[] inParenthesisInput = new NativeTokenTypes[]{
+				LEFT_PARENTHESIS,
+				STRING,
+				PLUS,
+				IDENTIFIER,
+				LEFT_PARENTHESIS,
+				STRING,
+				RIGHT_PARENTHESES,
+				RIGHT_PARENTHESES,
+				SEMICOLON
+		};
+		LinkedList<Token> tokens = new LinkedList<>(List.of(functionCall));
+		tokens.addAll(TokenTestUtil.getTokens(inParenthesisInput));
+
+		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
+		CallExpressionNodeConstructor builder = new CallExpressionNodeConstructor(terminal, collector);
+
+		NodeResponse build = builder.build(new TokenBuffer(tokens));
+		assertTrue(build.possibleNode().isSuccess());
+	}
+
 		private static void assertMissingLastArguments(boolean terminal, LinkedList<Token> tokens) {
 		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
 		CallExpressionNodeConstructor builder = new CallExpressionNodeConstructor(terminal, collector);

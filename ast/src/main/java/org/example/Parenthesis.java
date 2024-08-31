@@ -29,8 +29,5 @@ public class Parenthesis implements Expression{
 		return expression.getPosition();
 	}
 
-	@Override
-	public Object getValue() {
-		return null;
-	}
+
 }

@@ -22,7 +22,7 @@ public class Interpreter {
 		return executionVisitor.getEnvironment();
 	}
 
-	public Stack<Expression> getStack() {
+	public Stack<Literal> getStack() {
 		return executionVisitor.getStack();
 	}
 
