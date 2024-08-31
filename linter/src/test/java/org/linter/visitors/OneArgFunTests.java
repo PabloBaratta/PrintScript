@@ -11,19 +11,19 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PrintLnTests {
+public class OneArgFunTests {
 
 	@Test
 	public void unsuccessfulPrintLn() throws Exception {
-		function("println");
+		unsuccessfulScenarios("println");
 	}
 
 	@Test
 	public void unsuccessfulReadInput() throws Exception {
-		function("readInput");
+		unsuccessfulScenarios("readInput");
 	}
 
-	private static void function(String methodName) throws Exception {
+	private static void unsuccessfulScenarios(String methodName) throws Exception {
 		//println(a+a)
 		Expression arguments = new BinaryExpression(
 				new TextLiteral("a", new Position(8, 1, 1, 8)),
@@ -59,7 +59,8 @@ public class PrintLnTests {
 	public void readInputSuccessful() throws Exception {
 
 		successfulScenarios("readInput");
-
+		Expression arguments = new TextLiteral("a", new Position(8, 1, 1, 8));
+		assertSuccessfulScenarioInVarDecl("readInput", arguments);
 	}
 
 
@@ -100,10 +101,7 @@ public class PrintLnTests {
 
 
 	private static void assertUnsuccessfulScenario(Expression arguments, String methodName) throws Exception {
-		Method program = new Method(
-				new Identifier(methodName, new Position(0,7,1, 0)),
-				List.of(
-						arguments));
+		Method program = getMethod(arguments, methodName);
 
 		Report report = new Report();
 		OneArgFunRules printLnRule = new OneArgFunRules(true, report, methodName);
@@ -113,15 +111,33 @@ public class PrintLnTests {
 	}
 
 	private static void assertSuccessfulScenario(Expression arguments, String methodName) throws Exception {
-		Method program = new Method(
-				new Identifier(methodName, new Position(0,7,1, 0)),
+		Method program = getMethod(arguments, methodName);
+		visitProgram(methodName, program);
+	}
+
+	private static void visitProgram(String methodName, ASTNode program) throws Exception {
+		Report report = new Report();
+		OneArgFunRules funRule = new OneArgFunRules(true, report, methodName);
+
+		program.accept(funRule);
+		assertTrue(report.getReportLines().isEmpty());
+	}
+
+	private static Method getMethod(Expression arguments, String methodName) {
+		return new Method(
+				new Identifier(methodName, new Position(0, 7, 1, 0)),
 				List.of(
 						arguments));
+	}
 
-		Report report = new Report();
-		OneArgFunRules printLnRule = new OneArgFunRules(true, report, methodName);
+	private static void assertSuccessfulScenarioInVarDecl(String methodName, Expression arguments)
+			throws Exception {
+		VariableDeclaration variableDeclaration = new VariableDeclaration(
+				new Identifier("", new Position(0,0,0,0)),
+				new Type("", new Position(0,0,0,0)),
+				Optional.of(getMethod(arguments, methodName))
+		);
 
-		printLnRule.visit(program);
-		assertTrue(report.getReportLines().isEmpty());
+		visitProgram(methodName, variableDeclaration);
 	}
 }

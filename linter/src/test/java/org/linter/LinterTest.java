@@ -44,5 +44,15 @@ public class LinterTest {
 			() -> linter.analyze(LinterConfiguratorTest.getProgram(identifierString, hi), configMap));
 	}
 
+	@Test
+	public void analyzeCorrectTestV11() throws Exception {
+		Linter linter = LinterProvider.getLinterV11();
+		Map<String, String> configMap = Map.of("case", "camel", "printWithIdentifiers", "true");
+		String identifierString = "camel";
+		TextLiteral hi = new TextLiteral("hi", new Position(0, 0, 0, 0));
+		Report analyze = linter.analyze(LinterConfiguratorTest.getProgram(identifierString, hi), configMap);
+		assertTrue(analyze.getReportLines().isEmpty());
+	}
+
 
 }
