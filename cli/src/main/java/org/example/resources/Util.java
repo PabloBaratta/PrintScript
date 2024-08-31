@@ -18,17 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 public class Util {
-	public static Lexer createLexer(String code) {
-		List<Character> whiteSpaces = List.of(' ', '\t', '\n');
-		TokenConstructor keywordConstructor =
-				new TokenConstructorImpl(PrintScriptTokenConfig.keywordTokenTypeMap());
-		Collection<TokenConstructor> tokenConstructors = List.of(
-				new TokenConstructorImpl(PrintScriptTokenConfig.separatorTokenTypeMap()),
-				new TokenConstructorImpl(PrintScriptTokenConfig.operatorTokenTypeMap()),
-				new TokenConstructorImpl(PrintScriptTokenConfig.literalTokenTypeMap())
-		);
-		return new Lexer(code, tokenConstructors, keywordConstructor, whiteSpaces);
-	}
 
 	public static Parser createParser(List<Token> tokens) {
 		List<NodeConstructor> nodeConstructors = getNodeConstructors();
@@ -42,7 +31,7 @@ public class Util {
 	}
 
 	private static List<NodeConstructor> getNodeConstructors() {
-		List<TokenType> operands = List.copyOf(PrintScriptTokenConfig.literalTokenTypeMap().values());
+		List<TokenType> operands = List.copyOf(PrintScriptTokenConfig.literalTokenTypeMapV10().values());
 
 		CallExpressionNodeConstructor innerCall = new CallExpressionNodeConstructor(false, null);
 		NodeConstructor expCons = new ExpressionNodeConstructor(mapOperatorPrecedence(), operands, innerCall);
