@@ -1,4 +1,4 @@
-execute /cli/src/test/resources/fileTest.txt
-validate /cli/src/test/resources/fileTest.txt
-analyze /cli/src/test/resources/fileTest.txt /cli/src/test/resources/configurationRules.json
-format /cli/src/test/resources/fileTest.txt /cli/src/test/resources/formattingRules.json
+execute /src/test/resources/fileTest.txt
+validate /src/test/resources/fileTest.txt
+analyze /src/test/resources/fileTest.txt /src/test/resources/configurationRules.json
+format /src/test/resources/fileTest.txt /src/test/resources/formattingRules.json

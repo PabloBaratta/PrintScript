@@ -21,8 +21,8 @@ public class FormattingBuilder implements CommandBuilder{
         if (parts.length != 3) {
             throw new RuntimeException("Invalid number of arguments, should be three");
         }
-        String pathFile = Paths.get("").toAbsolutePath().getParent() + parts[1];
-        String pathConfig = Paths.get("").toAbsolutePath().getParent() + parts[2];
+        String pathFile = Paths.get("").toAbsolutePath() + parts[1];
+        String pathConfig = Paths.get("").toAbsolutePath() + parts[2];
         String code = Files.lines(Paths.get(pathFile))
                 .collect(Collectors.joining("\n"));
         List<Token> tokens = lex(code);

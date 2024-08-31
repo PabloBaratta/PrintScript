@@ -10,7 +10,7 @@ public class ExecutionBuilder implements CommandBuilder{
         if (parts.length != 2) {
             throw new RuntimeException("Invalid number of arguments, should be two");
         }
-        String filePath = Paths.get("").toAbsolutePath().getParent() + parts[1];
+        String filePath = Paths.get("").toAbsolutePath() + parts[1];
         Runner.run(filePath);
         return "Execution completed";
     }
