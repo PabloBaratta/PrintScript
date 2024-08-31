@@ -4,22 +4,23 @@ import org.example.ASTVisitor;
 import org.linter.Report;
 import org.linter.RuleBasicConfig;
 import org.linter.WrongConfigurationException;
-import org.linter.visitors.Case;
-import org.linter.visitors.IdentifierRules;
-import org.linter.visitors.PrintLineRules;
+import org.linter.visitors.OneArgFunRules;
 
 import java.util.Map;
 
-public class PrintLineConfiguration implements Configurator {
+public class OneArgFunctionConfiguration implements Configurator {
 
-	private final String ruleName = "printWithIdentifiers";
+	private final String ruleName;
 	private final Map<String, Boolean> mapOptionCase = Map.of(
 			"true", true,
 			"false", false);
 	private final RuleBasicConfig config = RuleBasicConfig.rule(
 			mapOptionCase.keySet().toArray(new String[0]), "false");
+	private final String methodName;
 
-	public PrintLineConfiguration() {
+	public OneArgFunctionConfiguration(String ruleName, String methodName) {
+		this.ruleName = ruleName;
+		this.methodName = methodName;
 	}
 
 	@Override
@@ -47,11 +48,11 @@ public class PrintLineConfiguration implements Configurator {
 		if (!isValidRuleOption(ruleOption)) {
 			throw new WrongConfigurationException(ruleName, ruleOption, getOptions());
 		}
-		return new PrintLineRules(mapOptionCase.get(ruleOption), report);
+		return new OneArgFunRules(mapOptionCase.get(ruleOption), report, methodName);
 	}
 
 	@Override
 	public ASTVisitor getLinterRule(Report report) {
-		return new PrintLineRules(mapOptionCase.get(config.defaultValue()), report);
+		return new OneArgFunRules(mapOptionCase.get(config.defaultValue()), report, methodName);
 	}
 }

@@ -5,7 +5,7 @@ import org.example.lexer.token.Position;
 import org.junit.jupiter.api.Test;
 import org.linter.configurator.Configurator;
 import org.linter.configurator.IdentifierConfiguration;
-import org.linter.configurator.PrintLineConfiguration;
+import org.linter.configurator.OneArgFunctionConfiguration;
 
 import java.util.List;
 import java.util.Map;
@@ -16,9 +16,7 @@ public class LinterTest {
 
 	@Test
 	public void analyzeCorrectTest() throws Exception {
-		List<Configurator> configurators = List.of(new IdentifierConfiguration(), new PrintLineConfiguration());
-		LinterConfigurator linterConfigurator = new LinterConfigurator(configurators);
-		Linter linter = new Linter(linterConfigurator);
+		Linter linter = LinterProvider.getLinterV10();
 		Map<String, String> configMap = Map.of("case", "camel", "printWithIdentifiers", "true");
 		String identifierString = "camel";
 		TextLiteral hi = new TextLiteral("hi", new Position(0, 0, 0, 0));
@@ -28,9 +26,7 @@ public class LinterTest {
 
 	@Test
 	public void analyzeIncorrectCase() throws Exception {
-		List<Configurator> configurators = List.of(new IdentifierConfiguration(), new PrintLineConfiguration());
-		LinterConfigurator linterConfigurator = new LinterConfigurator(configurators);
-		Linter linter = new Linter(linterConfigurator);
+		Linter linter = LinterProvider.getLinterV10();
 		Map<String, String> configMap = Map.of("case", "camel", "printWithIdentifiers", "true");
 		String identifierString = "snake__";
 		TextLiteral hi = new TextLiteral("hi", new Position(0, 0, 0, 0));
@@ -40,9 +36,7 @@ public class LinterTest {
 
 	@Test
 	public void analyzeNotKnownProperty() {
-		List<Configurator> configurators = List.of(new IdentifierConfiguration(), new PrintLineConfiguration());
-		LinterConfigurator linterConfigurator = new LinterConfigurator(configurators);
-		Linter linter = new Linter(linterConfigurator);
+		Linter linter = LinterProvider.getLinterV10();
 		Map<String, String> configMap = Map.of("case", "camel", "growPotatoes", "true");
 		String identifierString = "someIdentifier";
 		TextLiteral hi = new TextLiteral("hi", new Position(0, 0, 0, 0));

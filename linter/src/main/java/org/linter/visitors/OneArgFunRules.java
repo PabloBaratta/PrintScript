@@ -3,16 +3,20 @@ package org.linter.visitors;
 import org.example.*;
 import org.linter.Report;
 
-public class PrintLineRules implements ASTVisitor {
+public class OneArgFunRules implements ASTVisitor {
 
-	public static final String ERROR_MESSAGE =
-			"printLn should only be called with a identifier or a literal";
+	public final String ERROR_MESSAGE =
+			" should only be called with a identifier or a literal";
 	private final Report report;
 	private final boolean shouldCheck;
+	private final String error;
+	private final String methodName;
 
-	public PrintLineRules(boolean shouldCheck, Report report) {
+	public OneArgFunRules(boolean shouldCheck, Report report, String methodName) {
 		this.report = report;
 		this.shouldCheck = shouldCheck;
+		this.methodName = methodName;
+		this.error = methodName + ERROR_MESSAGE;
 	}
 
 
@@ -46,7 +50,7 @@ public class PrintLineRules implements ASTVisitor {
 		if (!shouldCheck) {
 			return;
 		}
-		if (!method.getVariable().getName().equals("println")) {
+		if (!method.getVariable().getName().equals(this.methodName)) {
 			return;
 		}
 		Expression first = method.getArguments().getFirst();
@@ -58,7 +62,7 @@ public class PrintLineRules implements ASTVisitor {
 		if (!shouldCheck) {
 			return;
 		}
-		report.addLine(unaryExpression.getPosition(), ERROR_MESSAGE);
+		report.addLine(unaryExpression.getPosition(), error);
 	}
 
 	@Override
@@ -66,7 +70,7 @@ public class PrintLineRules implements ASTVisitor {
 		if (!shouldCheck) {
 			return;
 		}
-		report.addLine(binaryExpression.getPosition(), ERROR_MESSAGE);
+		report.addLine(binaryExpression.getPosition(), error);
 	}
 
 	@Override
@@ -79,6 +83,6 @@ public class PrintLineRules implements ASTVisitor {
 		if (!shouldCheck) {
 			return;
 		}
-		report.addLine(parenthesis.getPosition(), ERROR_MESSAGE);
+		report.addLine(parenthesis.getPosition(), error);
 	}
 }

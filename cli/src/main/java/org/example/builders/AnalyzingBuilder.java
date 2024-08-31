@@ -4,13 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.Program;
 import org.example.lexer.token.Token;
-import org.linter.Linter;
-import org.linter.LinterConfigurator;
-import org.linter.Report;
-import org.linter.ReportLine;
-import org.linter.configurator.Configurator;
-import org.linter.configurator.IdentifierConfiguration;
-import org.linter.configurator.PrintLineConfiguration;
+import org.linter.*;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -34,8 +29,7 @@ public class AnalyzingBuilder implements CommandBuilder{
                 .collect(Collectors.joining("\n"));
         List<Token> tokens = lex(code);
         Program program = parse(tokens);
-        List<Configurator> configurators = List.of(new IdentifierConfiguration(), new PrintLineConfiguration());
-        Linter linter = new Linter(new LinterConfigurator(configurators));
+        Linter linter = LinterProvider.getLinterV10();
         Report report = linter.analyze(program, getConfigurators(pathConfig));
         for (ReportLine reportLine : report.getReportLines()) {
             System.out.println(reportLine.errorMessage() + " on " + reportLine.position().toString());

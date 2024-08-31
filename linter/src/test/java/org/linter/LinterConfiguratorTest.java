@@ -4,7 +4,7 @@ import org.example.*;
 import org.example.lexer.token.Position;
 import org.junit.jupiter.api.Test;
 import org.linter.configurator.IdentifierConfiguration;
-import org.linter.configurator.PrintLineConfiguration;
+import org.linter.configurator.OneArgFunctionConfiguration;
 import org.linter.visitors.LinterVisitor;
 
 import java.io.IOException;
@@ -73,10 +73,11 @@ public class LinterConfiguratorTest {
 	}
 
 	private static void successfulCase(Map<String, String> conf, String var, Expression exp) {
+		String printLnOption = "printWithIdentifiers";
+		String printName = "println";
 		LinterConfigurator config = new LinterConfigurator(
-				List.of(
-					new IdentifierConfiguration(),
-					new PrintLineConfiguration()));
+				List.of(new IdentifierConfiguration(),
+						new OneArgFunctionConfiguration(printLnOption, printName)));
 
 		Report report = new Report();
 
@@ -96,8 +97,11 @@ public class LinterConfiguratorTest {
 	}
 
 	private static void unsuccessfulCase(Map<String, String> conf, String var, Expression exp) {
+		String printLnOption = "printWithIdentifiers";
+		String printName = "println";
 		LinterConfigurator config = new LinterConfigurator(
-				List.of(new IdentifierConfiguration(), new PrintLineConfiguration()));
+				List.of(new IdentifierConfiguration(),
+						new OneArgFunctionConfiguration(printLnOption, printName)));
 
 		Report report = new Report();
 
@@ -129,6 +133,8 @@ public class LinterConfiguratorTest {
 						List.of(expression))));
 		return program;
 	}
+
+
 
 	private static Expression getDefaultExpressionForTests() {
 		return new Identifier("a", new Position(31, 1,2, 31));

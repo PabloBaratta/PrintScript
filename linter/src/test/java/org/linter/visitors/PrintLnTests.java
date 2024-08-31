@@ -11,11 +11,19 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PrintLineRulesTests {
+public class PrintLnTests {
 
 	@Test
 	public void unsuccessfulPrintLn() throws Exception {
+		function("println");
+	}
 
+	@Test
+	public void unsuccessfulReadInput() throws Exception {
+		function("readInput");
+	}
+
+	private static void function(String methodName) throws Exception {
 		//println(a+a)
 		Expression arguments = new BinaryExpression(
 				new TextLiteral("a", new Position(8, 1, 1, 8)),
@@ -23,7 +31,7 @@ public class PrintLineRulesTests {
 				new TextLiteral("a", new Position(10, 1, 1, 10))
 		);
 
-		assertUnsuccessfulScenario(arguments);
+		assertUnsuccessfulScenario(arguments, methodName);
 
 		//println(+a)
 		arguments = new UnaryExpression(
@@ -31,30 +39,42 @@ public class PrintLineRulesTests {
 				"+",
 				new Position(7, 1, 1, 7));
 
-		assertUnsuccessfulScenario(arguments);
+		assertUnsuccessfulScenario(arguments, methodName);
 
 		//println((a))
 		arguments = new Parenthesis(
 				new TextLiteral("a", new Position(8, 1, 1, 8)));
 
-		assertUnsuccessfulScenario(arguments);
+		assertUnsuccessfulScenario(arguments, methodName);
 	}
 
 	@Test
-	public void successfulScenarios() throws Exception {
+	public void printLineSuccessful() throws Exception {
 
+		successfulScenarios("println");
+
+	}
+
+	@Test
+	public void readInputSuccessful() throws Exception {
+
+		successfulScenarios("readInput");
+
+	}
+
+
+	private static void successfulScenarios(String methodName) throws Exception {
 		Expression arguments = new TextLiteral("a", new Position(8, 1, 1, 8));
 
-		assertSuccessfulScenario(arguments);
+		assertSuccessfulScenario(arguments, methodName);
 
 		arguments = new NumericLiteral(5.0, new Position(8, 1, 1, 8));
 
-		assertSuccessfulScenario(arguments);
+		assertSuccessfulScenario(arguments, methodName);
 
 		arguments = new Identifier("a", new Position(8, 1, 1, 8));
 
-		assertSuccessfulScenario(arguments);
-
+		assertSuccessfulScenario(arguments, methodName);
 	}
 
 	@Test
@@ -70,38 +90,38 @@ public class PrintLineRulesTests {
 				)));
 
 		Report report = new Report();
-		PrintLineRules printLineRules = new PrintLineRules(true, report);
+		OneArgFunRules printLnRules = new OneArgFunRules(true, report, "println");
 
-		printLineRules.visit(variableDeclaration);
+		printLnRules.visit(variableDeclaration);
 
 		assertTrue(report.getReportLines().isEmpty());
 	}
 
 
 
-	private static void assertUnsuccessfulScenario(Expression arguments) throws Exception {
+	private static void assertUnsuccessfulScenario(Expression arguments, String methodName) throws Exception {
 		Method program = new Method(
-				new Identifier("println", new Position(0,7,1, 0)),
+				new Identifier(methodName, new Position(0,7,1, 0)),
 				List.of(
 						arguments));
 
 		Report report = new Report();
-		PrintLineRules printLineRules = new PrintLineRules(true, report);
+		OneArgFunRules printLnRule = new OneArgFunRules(true, report, methodName);
 
-		printLineRules.visit(program);
+		printLnRule.visit(program);
 		assertFalse(report.getReportLines().isEmpty());
 	}
 
-	private static void assertSuccessfulScenario(Expression arguments) throws Exception {
+	private static void assertSuccessfulScenario(Expression arguments, String methodName) throws Exception {
 		Method program = new Method(
-				new Identifier("println", new Position(0,7,1, 0)),
+				new Identifier(methodName, new Position(0,7,1, 0)),
 				List.of(
 						arguments));
 
 		Report report = new Report();
-		PrintLineRules printLineRules = new PrintLineRules(true, report);
+		OneArgFunRules printLnRule = new OneArgFunRules(true, report, methodName);
 
-		printLineRules.visit(program);
+		printLnRule.visit(program);
 		assertTrue(report.getReportLines().isEmpty());
 	}
 }
