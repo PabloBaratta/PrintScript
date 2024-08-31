@@ -97,14 +97,14 @@ public class Executor implements ASTVisitor {
 	@Override
 	public void visit(UnaryExpression unaryExpression) throws Exception {
 		evaluate(unaryExpression.getArgument());
-		Expression argument = stack.pop();
+		Literal argument = stack.pop();
 		String operator = unaryExpression.getOperator();
 
-		Expression result = evaluateUnaryOperation(argument, operator);
+		Literal result = evaluateUnaryOperation(argument, operator);
 		stack.push(result);
 	}
 
-	private Expression evaluateUnaryOperation(Expression argument, String operator) throws Exception {
+	private Literal evaluateUnaryOperation(Literal argument, String operator) throws Exception {
 		int line = argument.getPosition().getLine();
 		int column = argument.getPosition().getColumn();
 		if (argument instanceof NumericLiteral) {

@@ -535,7 +535,7 @@ public class InterpreterTest {
 		Assignation assignation = new Assignation(identifier, negativeFiveExpression, pos);
 		interpreter.visit(assignation);
 
-		Optional<Expression> resultExpression = interpreter.getEnvironment().get("i").getExpression();
+		Optional<Literal> resultExpression = interpreter.getEnvironment().get("i").getLiteral();
 		assertTrue(resultExpression.isPresent());
 		assertEquals(-5.0, resultExpression.get().getValue());
 	}
@@ -560,7 +560,7 @@ public class InterpreterTest {
 		Assignation assignation = new Assignation(identifier, binaryExpression, new Position(0,0, 0, 0));
 		interpreter.visit(assignation);
 
-		Optional<Expression> resultExpression = interpreter.getEnvironment().get("result").getExpression();
+		Optional<Literal> resultExpression = interpreter.getEnvironment().get("result").getLiteral();
 		assertTrue(resultExpression.isPresent());
 		assertEquals(-3.0, resultExpression.get().getValue());
 	}
