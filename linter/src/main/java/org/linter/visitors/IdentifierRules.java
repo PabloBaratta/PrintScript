@@ -52,4 +52,14 @@ public class IdentifierRules implements ASTVisitor {
 
 	@Override
 	public void visit(Parenthesis parenthesis) throws Exception {}
+
+	@Override
+	public void visit(BooleanLiteral booleanLiteral) throws Exception {
+
+	}
+
+	@Override
+	public void visit(IfStatement ifStatement) throws Exception {
+
+	}
 }

@@ -98,4 +98,14 @@ public class OneArgFunRules implements ASTVisitor {
 	public void visit(Parenthesis parenthesis) throws Exception {
 		parenthesis.getExpression().accept(this);
 	}
+
+	@Override
+	public void visit(BooleanLiteral booleanLiteral) throws Exception {
+
+	}
+
+	@Override
+	public void visit(IfStatement ifStatement) throws Exception {
+
+	}
 }

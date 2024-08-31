@@ -58,6 +58,16 @@ public class CollectorVisitor implements ASTVisitor {
 		visitedNodes.add(parenthesis);
 	}
 
+	@Override
+	public void visit(BooleanLiteral booleanLiteral) throws Exception {
+
+	}
+
+	@Override
+	public void visit(IfStatement ifStatement) throws Exception {
+
+	}
+
 	public List<ASTNode> getVisitedNodes() {
 		return visitedNodes;
 	}
