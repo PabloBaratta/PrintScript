@@ -24,7 +24,7 @@ public class OneArgFunRules implements ASTVisitor {
 
 	@Override
 	public void visit(Assignation assignation) throws Exception {
-
+		assignation.getExpression().accept(this);
 	}
 
 	@Override
