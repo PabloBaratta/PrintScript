@@ -23,4 +23,8 @@ public interface ASTVisitor {
 	void visit(Program program) throws Exception;
 
 	void visit(Parenthesis parenthesis) throws Exception;
+
+	void visit(BooleanLiteral booleanLiteral) throws Exception;
+
+	void visit(IfStatement ifStatement) throws Exception;
 }
