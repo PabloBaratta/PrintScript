@@ -1,9 +1,6 @@
 package org.example;
 
-import org.example.lexer.Lexer;
-import org.example.lexer.NoMoreTokensAvailableException;
-import org.example.lexer.TokenConstructor;
-import org.example.lexer.TokenConstructorImpl;
+import org.example.lexer.*;
 import org.example.lexer.token.NativeTokenTypes;
 import org.example.lexer.token.Position;
 import org.example.lexer.token.Token;
@@ -136,19 +133,7 @@ class LexerTest {
 				new Token(NativeTokenTypes.SEMICOLON.toTokenType(), ";", new Position(39, 1, 1, 40))
 		);
 
-		List<Token> actualTokens = new ArrayList<>();
-		Try<Token, Exception> result;
-
-		while (lexer.hasNext()) {
-			result = lexer.getNext();
-			if (result.isSuccess()) {
-				actualTokens.add(result.getSuccess().orElseThrow());
-			} else {
-				result.getFail().orElseThrow();
-			}
-		}
-
-		assertEquals(expectedTokens, actualTokens, "Token lists do not match");
+		assertTest(lexer, expectedTokens);
 	}
 
 	@Test
@@ -189,6 +174,126 @@ class LexerTest {
 				new Token(NativeTokenTypes.SEMICOLON.toTokenType(), ";", new Position(25, 1, 1, 26))
 		);
 
+		assertTest(lexer, expectedTokens);
+	}
+
+	@Test
+	public void testConst(){
+		Lexer lexer = LexerProvider.provideV11("const a: number = 5;");
+		TokenType num = NativeTokenTypes.NUMBER_TYPE.toTokenType();
+		List<Token> expectedTokens = Arrays.asList(
+				new Token(NativeTokenTypes.CONST.toTokenType(), "const", new Position(0, 5, 1, 1)),
+				new Token(NativeTokenTypes.IDENTIFIER.toTokenType(), "a", new Position(6, 1, 1, 7)),
+				new Token(NativeTokenTypes.COLON.toTokenType(), ":", new Position(7, 1, 1, 8)),
+				new Token(num, "number", new Position(9, 6, 1, 10)),
+				new Token(NativeTokenTypes.EQUALS.toTokenType(), "=", new Position(16, 1, 1, 17)),
+				new Token(NativeTokenTypes.NUMBER.toTokenType(), "5", new Position(18, 1, 1, 19)),
+				new Token(NativeTokenTypes.SEMICOLON.toTokenType(), ";", new Position(19, 1, 1, 20))
+		);
+
+		assertTest(lexer, expectedTokens);
+	}
+
+
+
+	@Test
+	public void testBooleans(){
+		Lexer lexer = LexerProvider.provideV11("let a: boolean = true;");
+		TokenType bool = NativeTokenTypes.BOOLEAN_TYPE.toTokenType();
+		List<Token> expectedTokens = Arrays.asList(
+				new Token(NativeTokenTypes.LET.toTokenType(), "let", new Position(0, 3, 1, 1)),
+				new Token(NativeTokenTypes.IDENTIFIER.toTokenType(), "a", new Position(4, 1, 1, 5)),
+				new Token(NativeTokenTypes.COLON.toTokenType(), ":", new Position(5, 1, 1, 6)),
+				new Token(bool, "boolean", new Position(7, 7, 1, 8)),
+				new Token(NativeTokenTypes.EQUALS.toTokenType(), "=", new Position(15, 1, 1, 16)),
+				new Token(NativeTokenTypes.BOOLEAN.toTokenType(), "true", new Position(17, 4, 1, 18)),
+				new Token(NativeTokenTypes.SEMICOLON.toTokenType(), ";", new Position(21, 1, 1, 22))
+		);
+
+		assertTest(lexer, expectedTokens);
+	}
+
+	@Test
+	public void testIfElse(){
+
+		String code = "if (a) { let b: string = \"hello\"; } else { let b: string = \"world\"; }";
+		Lexer lexer = LexerProvider.provideV11(code);
+		TokenType leftPar = NativeTokenTypes.LEFT_PARENTHESIS.toTokenType();
+		TokenType rightPar = NativeTokenTypes.RIGHT_PARENTHESES.toTokenType();
+		TokenType str = NativeTokenTypes.STRING_TYPE.toTokenType();
+		TokenType rigthBr = NativeTokenTypes.RIGHT_BRACE.toTokenType();
+		TokenType string = NativeTokenTypes.STRING.toTokenType();
+		List<Token> expectedTokens = Arrays.asList(
+				new Token(NativeTokenTypes.IF.toTokenType(), "if", new Position(0, 2, 1, 1)),
+				new Token(leftPar, "(", new Position(3, 1, 1, 4)),
+				new Token(NativeTokenTypes.IDENTIFIER.toTokenType(), "a", new Position(4, 1, 1, 5)),
+				new Token(rightPar, ")", new Position(5, 1, 1, 6)),
+				new Token(NativeTokenTypes.LEFT_BRACE.toTokenType(), "{", new Position(7, 1, 1, 8)),
+				new Token(NativeTokenTypes.LET.toTokenType(), "let", new Position(9, 3, 1, 10)),
+				new Token(NativeTokenTypes.IDENTIFIER.toTokenType(), "b", new Position(13, 1, 1, 14)),
+				new Token(NativeTokenTypes.COLON.toTokenType(), ":", new Position(14, 1, 1, 15)),
+				new Token(str, "string", new Position(16, 6, 1, 17)),
+				new Token(NativeTokenTypes.EQUALS.toTokenType(), "=", new Position(23, 1, 1, 24)),
+				new Token(string, "\"hello\"", new Position(25, 7, 1, 26)),
+				new Token(NativeTokenTypes.SEMICOLON.toTokenType(), ";", new Position(32, 1, 1, 33)),
+				new Token(rigthBr, "}", new Position(34, 1, 1, 35)),
+				new Token(NativeTokenTypes.ELSE.toTokenType(), "else", new Position(36, 4, 1, 37)),
+				new Token(NativeTokenTypes.LEFT_BRACE.toTokenType(), "{", new Position(41, 1, 1, 42)),
+				new Token(NativeTokenTypes.LET.toTokenType(), "let", new Position(43, 3, 1, 44)),
+				new Token(NativeTokenTypes.IDENTIFIER.toTokenType(), "b", new Position(47, 1, 1, 48)),
+				new Token(NativeTokenTypes.COLON.toTokenType(), ":", new Position(48, 1, 1, 49)),
+				new Token(str, "string", new Position(50, 6, 1, 51)),
+				new Token(NativeTokenTypes.EQUALS.toTokenType(), "=", new Position(57, 1, 1, 58)),
+				new Token(string, "\"world\"", new Position(59, 7, 1, 60)),
+				new Token(NativeTokenTypes.SEMICOLON.toTokenType(), ";", new Position(66, 1, 1, 67)),
+				new Token(rigthBr, "}", new Position(68, 1, 1, 69))
+		);
+		assertTest(lexer, expectedTokens);
+	}
+
+	@Test
+	public void testReadInput(){
+		Lexer lexer = LexerProvider.provideV11("let a: string = readInput();");
+		TokenType str = NativeTokenTypes.STRING_TYPE.toTokenType();
+		TokenType read = NativeTokenTypes.READINPUT.toTokenType();
+		TokenType leftPar = NativeTokenTypes.LEFT_PARENTHESIS.toTokenType();
+		TokenType rightPar = NativeTokenTypes.RIGHT_PARENTHESES.toTokenType();
+		List<Token> expectedTokens = Arrays.asList(
+				new Token(NativeTokenTypes.LET.toTokenType(), "let", new Position(0, 3, 1, 1)),
+				new Token(NativeTokenTypes.IDENTIFIER.toTokenType(), "a", new Position(4, 1, 1, 5)),
+				new Token(NativeTokenTypes.COLON.toTokenType(), ":", new Position(5, 1, 1, 6)),
+				new Token(str, "string", new Position(7, 6, 1, 8)),
+				new Token(NativeTokenTypes.EQUALS.toTokenType(), "=", new Position(14, 1, 1, 15)),
+				new Token(read, "readInput", new Position(16, 9, 1, 17)),
+				new Token(leftPar, "(", new Position(25, 1, 1, 26)),
+				new Token(rightPar, ")", new Position(26, 1, 1, 27)),
+				new Token(NativeTokenTypes.SEMICOLON.toTokenType(), ";", new Position(27, 1, 1, 28))
+		);
+		assertTest(lexer, expectedTokens);
+	}
+
+	@Test
+	public void testReadEnv(){
+		Lexer lexer = LexerProvider.provideV11("let a: string = readEnv();");
+		TokenType str = NativeTokenTypes.STRING_TYPE.toTokenType();
+		TokenType leftPar = NativeTokenTypes.LEFT_PARENTHESIS.toTokenType();
+		TokenType rightPar = NativeTokenTypes.RIGHT_PARENTHESES.toTokenType();
+		TokenType read = NativeTokenTypes.READENV.toTokenType();
+		List<Token> expectedTokens = Arrays.asList(
+				new Token(NativeTokenTypes.LET.toTokenType(), "let", new Position(0, 3, 1, 1)),
+				new Token(NativeTokenTypes.IDENTIFIER.toTokenType(), "a", new Position(4, 1, 1, 5)),
+				new Token(NativeTokenTypes.COLON.toTokenType(), ":", new Position(5, 1, 1, 6)),
+				new Token(str, "string", new Position(7, 6, 1, 8)),
+				new Token(NativeTokenTypes.EQUALS.toTokenType(), "=", new Position(14, 1, 1, 15)),
+				new Token(read, "readEnv", new Position(16, 7, 1, 17)),
+				new Token(leftPar, "(", new Position(23, 1, 1, 24)),
+				new Token(rightPar, ")", new Position(24, 1, 1, 25)),
+				new Token(NativeTokenTypes.SEMICOLON.toTokenType(), ";", new Position(25, 1, 1, 26))
+		);
+		assertTest(lexer, expectedTokens);
+	}
+
+	private static void assertTest(Lexer lexer, List<Token> expectedTokens) {
 		List<Token> actualTokens = new ArrayList<>();
 		Try<Token, Exception> result;
 
@@ -203,4 +308,5 @@ class LexerTest {
 
 		assertEquals(expectedTokens, actualTokens, "Token lists do not match");
 	}
+
 }

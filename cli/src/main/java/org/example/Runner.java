@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.example.lexer.LexerProvider.provideV10;
 import static org.example.resources.Util.*;
 
 public class Runner {
@@ -23,7 +24,7 @@ public class Runner {
 	}
 
 	public static List<Token> lex(String code) throws Exception {
-		Lexer lexer = createLexer(code);
+		Lexer lexer = provideV10(code);
 		List<Token> tokens = new ArrayList<>();
 
 		while (lexer.hasNext()){

@@ -17,17 +17,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Util {
-	public static Lexer createLexer(String code) {
-		List<Character> whiteSpaces = List.of(' ', '\t', '\n');
-		TokenConstructor keywordConstructor =
-				new TokenConstructorImpl(PrintScriptTokenConfig.keywordTokenTypeMap());
-		Collection<TokenConstructor> tokenConstructors = List.of(
-				new TokenConstructorImpl(PrintScriptTokenConfig.separatorTokenTypeMap()),
-				new TokenConstructorImpl(PrintScriptTokenConfig.operatorTokenTypeMap()),
-				new TokenConstructorImpl(PrintScriptTokenConfig.literalTokenTypeMap())
-		);
-		return new Lexer(code, tokenConstructors, keywordConstructor, whiteSpaces);
-	}
 
 	public static Parser createParser(List<Token> tokens) {
 		List<NodeConstructor> nodeConstructors = getNodeConstructors();
@@ -43,7 +32,7 @@ public class Util {
 	private static List<NodeConstructor> getNodeConstructors() {
 		ExpressionNodeConstructor expressionNodeConstructor =
 				new ExpressionNodeConstructor(listOfOperators(),
-						List.copyOf(PrintScriptTokenConfig.literalTokenTypeMap().values()));
+						List.copyOf(PrintScriptTokenConfig.literalTokenTypeMapV10().values()));
 		AssignationNodeConstructor assignationNodeConstructor =
 				new AssignationNodeConstructor(expressionNodeConstructor);
 		VariableDeclarationNodeConstructor variableDeclarationNodeConstructor =
