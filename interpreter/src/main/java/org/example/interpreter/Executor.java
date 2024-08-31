@@ -176,6 +176,16 @@ public class Executor implements ASTVisitor {
 		evaluate(parenthesis.getExpression());
 	}
 
+	@Override
+	public void visit(BooleanLiteral booleanLiteral) throws Exception {
+
+	}
+
+	@Override
+	public void visit(IfStatement ifStatement) throws Exception {
+
+	}
+
 	private void evaluate(ASTNode node) throws Exception {
 		node.accept(this);
 	}
