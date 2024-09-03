@@ -1,5 +1,6 @@
 package org.example.nodeconstructors;
 
+import org.example.Program;
 import org.example.TextLiteral;
 import org.example.TokenBuffer;
 import org.example.lexer.token.Position;
@@ -10,7 +11,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-public class ExpressionCollectorNodeConstructor implements NodeConstructor{
+public class ScopeCollector extends ScopeNodeConstructor{
+	public ScopeCollector() {
+		super(List.of());
+	}
 
 	List<Token> collectedTokens = new LinkedList<>();
 	@Override
@@ -21,7 +25,7 @@ public class ExpressionCollectorNodeConstructor implements NodeConstructor{
 		}
 
 		return new NodeResponse(
-				new Try<>(Optional.of(new TextLiteral("default value", new Position(0,0,0, 0)))),
+				new Try<>(Optional.of(new Program(List.of()))),
 				tokenBuffer
 		);
 	}

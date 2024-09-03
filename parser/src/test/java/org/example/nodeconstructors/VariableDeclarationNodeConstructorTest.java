@@ -22,7 +22,7 @@ class VariableDeclarationNodeConstructorTest {
 
 	@Test
 	public void doesNotRecognizeOtherTokens() {
-		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
+		CollectorNodeConstructor collector = new CollectorNodeConstructor();
 
 		VariableDeclarationNodeConstructor builder = getVDNodeConst(collector);
 
@@ -67,7 +67,7 @@ class VariableDeclarationNodeConstructorTest {
 
 		List<Token> defaultCorrectSequence = getTokens(nativeTokenTypes);
 		int originalSize = defaultCorrectSequence.size();
-		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
+		CollectorNodeConstructor collector = new CollectorNodeConstructor();
 
 		VariableDeclarationNodeConstructor builder = getVDNodeConst(collector);
 		for (int i = 1; i < originalSize; i++) {
@@ -95,7 +95,7 @@ class VariableDeclarationNodeConstructorTest {
 
 	private static void assertIncorrectSituations(NativeTokenTypes[] nativeTokenTypes) {
 		List<Token> defaultCorrectSequence = getTokens(nativeTokenTypes);
-		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
+		CollectorNodeConstructor collector = new CollectorNodeConstructor();
 
 		VariableDeclarationNodeConstructor builder = getVDNodeConst(collector);
 
@@ -107,7 +107,7 @@ class VariableDeclarationNodeConstructorTest {
 	@Test
 	public void successfulVariableDeclaration() {
 		List<Token> tokens = getDefaultCorrectSequenceForVarDecl();
-		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
+		CollectorNodeConstructor collector = new CollectorNodeConstructor();
 
 		NodeConstructor variableDeclarationNodeConstructor = getVDNodeConst(collector);
 
@@ -135,7 +135,7 @@ class VariableDeclarationNodeConstructorTest {
 	private static void successfulVarDeclAss(List<Token> tokens, int numberOfExpressionTokens) {
 
 
-		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
+		CollectorNodeConstructor collector = new CollectorNodeConstructor();
 		NodeConstructor variableDeclarationNodeConstructor = getVDNodeConst(collector);
 
 		NodeResponse build = variableDeclarationNodeConstructor.build(new TokenBuffer(tokens));

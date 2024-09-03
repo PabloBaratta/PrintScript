@@ -1,7 +1,6 @@
 package org.example.nodeconstructors;
 
 import org.example.*;
-import org.example.lexer.token.NativeTokenTypes;
 import org.example.lexer.token.Position;
 import org.example.lexer.token.Token;
 import org.example.lexer.token.TokenType;
@@ -178,6 +177,11 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 			return parseLiteral(tokenBuffer, (s, position) -> {
 				TextLiteral textLiteral = new TextLiteral(s.substring(1, s.length() - 1), position);
 				return textLiteral;
+			});
+		} else if (tokenBuffer.isNextTokenOfType(BOOLEAN.toTokenType())) {
+			return parseLiteral(tokenBuffer, (s, position) -> {
+				BooleanLiteral booleanLiteral = new BooleanLiteral(Boolean.parseBoolean(s), position);
+				return booleanLiteral;
 			});
 		} else if (tokenBuffer.isNextTokenOfType(IDENTIFIER.toTokenType())) {
 
