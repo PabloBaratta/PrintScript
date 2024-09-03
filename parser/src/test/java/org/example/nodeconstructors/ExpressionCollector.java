@@ -4,6 +4,7 @@ import org.example.TextLiteral;
 import org.example.TokenBuffer;
 import org.example.lexer.token.Position;
 import org.example.lexer.token.Token;
+import org.example.lexer.token.TokenType;
 import org.example.lexer.utils.Try;
 
 import java.util.LinkedList;
@@ -11,13 +12,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.example.lexer.token.NativeTokenTypes.*;
+
 public class ExpressionCollector extends ExpressionNodeConstructor{
 
 	List<Token> collectedTokens = new LinkedList<>();
 
 
 	public ExpressionCollector() {
-		super(Map.of(), List.of(), new CallExpressionNodeConstructor(false, null));
+
+		super(Map.of(),
+				List.of(),
+				new CallExpressionNodeConstructor(
+						false,
+						null,
+						List.of(PRINTLN.toTokenType(),
+								READENV.toTokenType(),
+								READINPUT.toTokenType())));
 	}
 
 	@Override

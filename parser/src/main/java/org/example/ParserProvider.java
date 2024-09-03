@@ -10,6 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static org.example.lexer.token.NativeTokenTypes.*;
+
 public class ParserProvider {
 
 	public static Parser provide10(List<Token> tokens) {
@@ -21,8 +23,12 @@ public class ParserProvider {
 
 	public static Parser provide11(List<Token> tokens) {
 		List<TokenType> operands = List.copyOf(PrintScriptTokenConfig.literalTokenTypeMapV11().values());
-
-		CallExpressionNodeConstructor innerCall = new CallExpressionNodeConstructor(false, null);
+		List<TokenType> nativeFunctions = List.of(PRINTLN.toTokenType(),
+				READENV.toTokenType(),
+				READINPUT.toTokenType());
+		CallExpressionNodeConstructor innerCall = new CallExpressionNodeConstructor(false,
+				null,
+				nativeFunctions);
 		ExpressionNodeConstructor expCons = new ExpressionNodeConstructor(
 				mapOperatorPrecedence(), operands, innerCall);
 
@@ -30,13 +36,13 @@ public class ParserProvider {
 				new AssignationNodeConstructor(expCons);
 		VariableDeclarationNodeConstructor variableDeclarationNodeConstructor =
 				new VariableDeclarationNodeConstructor(expCons,
-						List.of(NativeTokenTypes.LET.toTokenType()),
-						List.of(NativeTokenTypes.NUMBER_TYPE.toTokenType(),
-								NativeTokenTypes.STRING_TYPE.toTokenType(),
-								NativeTokenTypes.BOOLEAN_TYPE.toTokenType()));
+						List.of(LET.toTokenType()),
+						List.of(NUMBER_TYPE.toTokenType(),
+								STRING_TYPE.toTokenType(),
+								BOOLEAN_TYPE.toTokenType()));
 
 		CallExpressionNodeConstructor callExpressionNodeConstructor =
-				new CallExpressionNodeConstructor(true, expCons);
+				new CallExpressionNodeConstructor(true, expCons, nativeFunctions);
 
 		List<NodeConstructor> constructors = List.of(
 				callExpressionNodeConstructor,
@@ -53,20 +59,21 @@ public class ParserProvider {
 
 	private static List<NodeConstructor> getNodeConstructors10() {
 		List<TokenType> operands = List.copyOf(PrintScriptTokenConfig.literalTokenTypeMapV10().values());
-
-		CallExpressionNodeConstructor innerCall = new CallExpressionNodeConstructor(false, null);
+		List<TokenType> nativeFunctions = List.of(PRINTLN.toTokenType());
+		CallExpressionNodeConstructor innerCall = new CallExpressionNodeConstructor(
+				false, null, nativeFunctions);
 		NodeConstructor expCons = new ExpressionNodeConstructor(mapOperatorPrecedence(), operands, innerCall);
 
 		AssignationNodeConstructor assignationNodeConstructor =
 				new AssignationNodeConstructor(expCons);
 		VariableDeclarationNodeConstructor variableDeclarationNodeConstructor =
 				new VariableDeclarationNodeConstructor(expCons,
-						List.of(NativeTokenTypes.LET.toTokenType()),
-						List.of(NativeTokenTypes.NUMBER_TYPE.toTokenType(),
-								NativeTokenTypes.STRING_TYPE.toTokenType()));
+						List.of(LET.toTokenType()),
+						List.of(NUMBER_TYPE.toTokenType(),
+								STRING_TYPE.toTokenType()));
 
 		CallExpressionNodeConstructor callExpressionNodeConstructor =
-				new CallExpressionNodeConstructor(true, expCons);
+				new CallExpressionNodeConstructor(true, expCons, nativeFunctions);
 		return List.of(
 				callExpressionNodeConstructor,
 				assignationNodeConstructor,
@@ -75,10 +82,10 @@ public class ParserProvider {
 	}
 
 	private static Map<TokenType, Integer> mapOperatorPrecedence() {
-		return Map.of(NativeTokenTypes.PLUS.toTokenType(), 1,
-				NativeTokenTypes.MINUS.toTokenType(), 1,
-				NativeTokenTypes.ASTERISK.toTokenType(), 2,
-				NativeTokenTypes.SLASH.toTokenType(), 2);
+		return Map.of(PLUS.toTokenType(), 1,
+				MINUS.toTokenType(), 1,
+				ASTERISK.toTokenType(), 2,
+				SLASH.toTokenType(), 2);
 	}
 
 }

@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.lexer.token.NativeTokenTypes;
 import org.example.lexer.token.Token;
+import org.example.lexer.token.TokenType;
 import org.example.nodeconstructors.CallExpressionNodeConstructor;
 import org.example.nodeconstructors.CollectorNodeConstructor;
 import org.example.nodeconstructors.NodeResponse;
@@ -22,7 +23,7 @@ public class CallExpressionTest {
 	public void onlyAcceptsItsTokens() {
 
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
-		CallExpressionNodeConstructor builder = new CallExpressionNodeConstructor(true, collector);
+		CallExpressionNodeConstructor builder = getCallConstructor(true, collector);
 
 		// does not start with an identifier
 
@@ -172,7 +173,7 @@ public class CallExpressionTest {
 		tokens.addAll(TokenTestUtil.getTokens(inParenthesisInput));
 
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
-		CallExpressionNodeConstructor builder = new CallExpressionNodeConstructor(terminal, collector);
+		CallExpressionNodeConstructor builder = getCallConstructor(terminal, collector);
 
 		NodeResponse build = builder.build(new TokenBuffer(tokens));
 		assertTrue(build.possibleNode().isFail());
@@ -191,7 +192,7 @@ public class CallExpressionTest {
 		tokens.addAll(TokenTestUtil.getTokens(inParenthesisInput));
 
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
-		CallExpressionNodeConstructor builder = new CallExpressionNodeConstructor(terminal, collector);
+		CallExpressionNodeConstructor builder = getCallConstructor(terminal, collector);
 
 		NodeResponse build = builder.build(new TokenBuffer(tokens));
 		assertTrue(build.possibleNode().isFail());
@@ -219,7 +220,7 @@ public class CallExpressionTest {
 
 
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
-		CallExpressionNodeConstructor builder = new CallExpressionNodeConstructor(terminal, collector);
+		CallExpressionNodeConstructor builder = getCallConstructor(terminal, collector);
 
 		NodeResponse build = builder.build(new TokenBuffer(tokens));
 		assertTrue(build.possibleNode().isFail());
@@ -246,7 +247,7 @@ public class CallExpressionTest {
 		tokens.addAll(TokenTestUtil.getTokens(inParenthesisInput));
 
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
-		CallExpressionNodeConstructor builder = new CallExpressionNodeConstructor(terminal, collector);
+		CallExpressionNodeConstructor builder = getCallConstructor(terminal, collector);
 
 		NodeResponse build = builder.build(new TokenBuffer(tokens));
 		assertTrue(build.possibleNode().isFail());
@@ -269,7 +270,7 @@ public class CallExpressionTest {
 		tokens.addAll(TokenTestUtil.getTokens(inParenthesisInput));
 
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
-		CallExpressionNodeConstructor builder = new CallExpressionNodeConstructor(terminal, collector);
+		CallExpressionNodeConstructor builder = getCallConstructor(terminal, collector);
 
 		NodeResponse build = builder.build(new TokenBuffer(tokens));
 		assertTrue(build.possibleNode().isSuccess());
@@ -294,7 +295,7 @@ public class CallExpressionTest {
 		tokens.addAll(TokenTestUtil.getTokens(inParenthesisInput));
 
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
-		CallExpressionNodeConstructor builder = new CallExpressionNodeConstructor(terminal, collector);
+		CallExpressionNodeConstructor builder = getCallConstructor(terminal, collector);
 
 		NodeResponse build = builder.build(new TokenBuffer(tokens));
 		assertTrue(build.possibleNode().isSuccess());
@@ -319,7 +320,7 @@ public class CallExpressionTest {
 		tokens.addAll(TokenTestUtil.getTokens(inParenthesisInput));
 
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
-		CallExpressionNodeConstructor builder = new CallExpressionNodeConstructor(terminal, collector);
+		CallExpressionNodeConstructor builder = getCallConstructor(terminal, collector);
 
 		NodeResponse build = builder.build(new TokenBuffer(tokens));
 		assertTrue(build.possibleNode().isSuccess());
@@ -327,7 +328,7 @@ public class CallExpressionTest {
 
 		private static void assertMissingLastArguments(boolean terminal, LinkedList<Token> tokens) {
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
-		CallExpressionNodeConstructor builder = new CallExpressionNodeConstructor(terminal, collector);
+		CallExpressionNodeConstructor builder = getCallConstructor(terminal, collector);
 
 		int originalTokenListSize = tokens.size();
 		for (int i = 2; i < originalTokenListSize; i++) {
@@ -341,7 +342,7 @@ public class CallExpressionTest {
 	private static void successfulAssertions(boolean terminal, LinkedList<Token> tokens,
 											int n, int withoutComma) {
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
-		CallExpressionNodeConstructor constructor = new CallExpressionNodeConstructor(terminal, collector);
+		CallExpressionNodeConstructor constructor = getCallConstructor(terminal, collector);
 
 		NodeResponse build = constructor.build(new TokenBuffer(tokens));
 
@@ -363,5 +364,13 @@ public class CallExpressionTest {
 		assertEquals(n, arguments.size());
 		assertEquals("println", method.getVariable().getName());
 		assertEquals(withoutComma, collector.getCollectedTokens().size());
+	}
+
+	private static CallExpressionNodeConstructor
+				getCallConstructor(boolean terminal, CollectorNodeConstructor collector) {
+		List<TokenType> nativeFunctions = List.of(PRINTLN.toTokenType(),
+				READENV.toTokenType(),
+				READINPUT.toTokenType());
+		return new CallExpressionNodeConstructor(terminal, collector, nativeFunctions);
 	}
 }

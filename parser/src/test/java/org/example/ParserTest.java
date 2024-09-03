@@ -99,7 +99,11 @@ public class ParserTest {
 	}
 
 	private static ExpressionNodeConstructor getExpressionNodeConstructor(List<TokenType> expressions) {
-		CallExpressionNodeConstructor callExpression = new CallExpressionNodeConstructor(false, null);
+
+		CallExpressionNodeConstructor callExpression = new CallExpressionNodeConstructor(false, null,
+				List.of(PRINTLN.toTokenType(),
+				READENV.toTokenType(),
+				READINPUT.toTokenType()));
 		return new ExpressionNodeConstructor(mapOperatorPrecedence(), expressions, callExpression);
 	}
 
@@ -225,18 +229,10 @@ public class ParserTest {
 	@Test
 	public void varWithMethods(){
 
-		List<TokenType> expressions = new ArrayList<>();
-		expressions.add(NUMBER.toTokenType());
-		expressions.add(STRING.toTokenType());
-		expressions.add(IDENTIFIER.toTokenType());
+
 		TokenType let = LET.toTokenType();
 
-		List<NodeConstructor> list = new ArrayList<>();
-		ExpressionNodeConstructor nodeConstructor = getExpressionNodeConstructor(expressions);
-		list.add(nodeConstructor);
-		TokenType str = STRING_TYPE.toTokenType();
 		TokenType num = NUMBER_TYPE.toTokenType();
-		list.add(new VariableDeclarationNodeConstructor(nodeConstructor, List.of(let), List.of(str, num)));
 
 		List<Token> tokens = new ArrayList<>();
 		tokens.add(new Token(let, "let", new Position(1, 2, 1, 1)));
@@ -250,17 +246,18 @@ public class ParserTest {
 		tokens.add(new Token(RIGHT_PARENTHESES.toTokenType(), ")", new Position(9, 1, 1, 9)));
 		tokens.add(new Token(SEMICOLON.toTokenType(), ";", new Position(10, 1, 1, 10)));
 
-		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
-		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
+
+		Parser parser = ParserProvider.provide10(tokens);
+
 		Try<ASTNode, Exception> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
-		assertTrue(node instanceof Program);
+		assertInstanceOf(Program.class, node);
 		VariableDeclaration var = (VariableDeclaration) ((Program) node).getChildren().get(0);
 		assertEquals(var.getIdentifier().toString(), "a");
 		assertEquals(var.getType().getTypeName(), "number");
 		assertTrue(var.getExpression().isPresent());
 		ASTNode optionalMethod = var.getExpression().get();
-		assertTrue(optionalMethod instanceof Method);
+		assertInstanceOf(Method.class, optionalMethod);
 		Method method = (Method) optionalMethod;
 		assertEquals(method.getVariable().toString(), "readInput");
 		assertEquals(method.getArguments().get(0).toString(), "1.0");
@@ -302,6 +299,42 @@ public class ParserTest {
 		assertInstanceOf(VariableDeclaration.class, thenBlock.get(0));
 		assertInstanceOf(VariableDeclaration.class, thenBlock.get(1));
 		assertInstanceOf(IfStatement.class, thenBlock.get(2));
+	}
+
+	@Test
+	public void testIfElse11() {
+		NativeTokenTypes[] tokenTypes = new NativeTokenTypes[] {
+
+				IF, LEFT_PARENTHESIS, BOOLEAN, RIGHT_PARENTHESES, LEFT_BRACE,
+				LET, IDENTIFIER, COLON, NUMBER_TYPE, EQUALS, NUMBER, PLUS, NUMBER, SEMICOLON,
+				RIGHT_BRACE,
+				ELSE, LEFT_BRACE,
+				LET, IDENTIFIER, COLON, NUMBER_TYPE, EQUALS, NUMBER, PLUS, NUMBER, SEMICOLON,
+				RIGHT_BRACE
+		};
+
+		Parser parser = ParserProvider.provide11(TokenTestUtil.getTokens(tokenTypes));
+
+		Try<ASTNode, Exception> astNodeExceptionTry = parser.parseExpression();
+		assertTrue(astNodeExceptionTry.isSuccess());
+		ASTNode astNode = astNodeExceptionTry.getSuccess().get();
+		assertInstanceOf(Program.class, astNode);
+		Program program = (Program) astNode;
+		List<ASTNode> children = program.getChildren();
+		assertEquals(1, children.size());
+		assertInstanceOf(IfStatement.class, children.getFirst());
+
+		IfStatement ifStatement = (IfStatement) children.getFirst();
+
+		List<ASTNode> thenBlock = ifStatement.getThenBlock();
+
+		assertEquals(1, thenBlock.size());
+		assertInstanceOf(VariableDeclaration.class, thenBlock.getFirst());
+
+		List<ASTNode> elseBlock = ifStatement.getElseBlock();
+
+		assertEquals(1, elseBlock.size());
+		assertInstanceOf(VariableDeclaration.class, elseBlock.getFirst());
 	}
 
 
