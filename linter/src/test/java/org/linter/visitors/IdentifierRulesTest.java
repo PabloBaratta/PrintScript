@@ -136,6 +136,33 @@ class IdentifierRulesTest {
 		assertTrue(report.getReportLines().isEmpty());
 	}
 
+	@Test
+	public void testIfStatement() throws Exception {
+		Report report = new Report();
+		IdentifierRules identifierRules = new IdentifierRules(Case.CAMEL_CASE, report);
+
+		Identifier condition = new Identifier("condition", new Position(0, 0, 0, 0));
+		Identifier thenIdentifier = new Identifier("thenVar", new Position(1, 0, 0, 1));
+		Identifier elseIdentifier = new Identifier("elseVar", new Position(2, 0, 0, 2));
+
+		Type string1 = new Type("string", new Position(1, 6, 1, 1));
+		VariableDeclaration thenVarDecl = new VariableDeclaration(thenIdentifier, string1, Optional.empty());
+		Type string2 = new Type("string", new Position(2, 6, 1, 2));
+		VariableDeclaration elseVarDecl = new VariableDeclaration(elseIdentifier, string2, Optional.empty());
+
+		IfStatement ifStatement = new IfStatement(
+				condition,
+				List.of(thenVarDecl),
+				List.of(elseVarDecl),
+				new Position(0, 0, 0, 0)
+		);
+
+		ifStatement.accept(identifierRules);
+
+		assertTrue(report.getReportLines().isEmpty(), "Report should be empty for valid identifiers");
+	}
+
+
 		private static void assertVarDeclCamelCase(String identifierString)
 				throws Exception {
 			Report report = getReportFromVarDecl(identifierString, Case.CAMEL_CASE);
