@@ -194,7 +194,17 @@ public class Executor implements ASTVisitor {
 
 	@Override
 	public void visit(IfStatement ifStatement) throws Exception {
-
+		evaluate(ifStatement.getCondition());
+		BooleanLiteral conditionResult = (BooleanLiteral) stack.pop();
+		if (conditionResult.getValue()) {
+			for (ASTNode node : ifStatement.getThenBlock()) {
+				node.accept(this);
+			}
+		} else if (!ifStatement.getElseBlock().isEmpty()) {
+			for (ASTNode node : ifStatement.getElseBlock()) {
+				node.accept(this);
+			}
+		}
 	}
 
 	private void evaluate(ASTNode node) throws Exception {
