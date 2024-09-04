@@ -337,6 +337,40 @@ public class ParserTest {
 		assertInstanceOf(VariableDeclaration.class, elseBlock.getFirst());
 	}
 
+	@Test
+	public void testIfConst11() {
+		NativeTokenTypes[] tokenTypes = new NativeTokenTypes[] {
+
+				IF, LEFT_PARENTHESIS, BOOLEAN, RIGHT_PARENTHESES, LEFT_BRACE,
+				CONST, IDENTIFIER, COLON, NUMBER_TYPE, EQUALS, NUMBER, PLUS, NUMBER, SEMICOLON,
+				RIGHT_BRACE,
+
+		};
+
+		Parser parser = ParserProvider.provide11(TokenTestUtil.getTokens(tokenTypes));
+
+		Try<ASTNode, Exception> astNodeExceptionTry = parser.parseExpression();
+		assertTrue(astNodeExceptionTry.isSuccess());
+		ASTNode astNode = astNodeExceptionTry.getSuccess().get();
+		assertInstanceOf(Program.class, astNode);
+		Program program = (Program) astNode;
+		List<ASTNode> children = program.getChildren();
+		assertEquals(1, children.size());
+		assertInstanceOf(IfStatement.class, children.getFirst());
+
+		IfStatement ifStatement = (IfStatement) children.getFirst();
+
+		List<ASTNode> thenBlock = ifStatement.getThenBlock();
+
+		assertEquals(1, thenBlock.size());
+		assertInstanceOf(ConstDeclaration.class, thenBlock.getFirst());
+
+		ConstDeclaration constDeclaration = (ConstDeclaration) thenBlock.getFirst();
+
+		assertInstanceOf(BinaryExpression.class, constDeclaration.getExpression());
+
+	}
+
 
 	private static Map<TokenType, Integer> mapOperatorPrecedence() {
 		return Map.of(PLUS.toTokenType(), 1,

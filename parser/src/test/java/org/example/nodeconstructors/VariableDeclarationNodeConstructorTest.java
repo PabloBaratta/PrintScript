@@ -2,6 +2,7 @@ package org.example.nodeconstructors;
 
 
 import org.example.ASTNode;
+import org.example.ConstDeclaration;
 import org.example.TokenBuffer;
 import org.example.VariableDeclaration;
 import org.example.lexer.token.NativeTokenTypes;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static org.example.TokenTestUtil.getTokens;
 import static org.example.TokenTestUtil.getaTokenFromTokenType;
@@ -55,7 +57,6 @@ class VariableDeclarationNodeConstructorTest {
 		tokens = getTokens(nativeTokenTypes);
 		intermediateTokens = 3;
 		successfulVarDeclAss(tokens, intermediateTokens);
-
 	}
 
 
@@ -132,23 +133,30 @@ class VariableDeclarationNodeConstructorTest {
 		assertTrue(collector.collectedTokens.isEmpty());
 	}
 
-	private static void successfulVarDeclAss(List<Token> tokens, int numberOfExpressionTokens) {
+
+
+
+
+
+	private static void successfulVarDeclAss(List<Token> tokens,
+											int numberOfExpressionTokens) {
 
 
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
-		NodeConstructor variableDeclarationNodeConstructor = getVDNodeConst(collector);
 
-		NodeResponse build = variableDeclarationNodeConstructor.build(new TokenBuffer(tokens));
+		NodeConstructor constructor = getVDNodeConst(collector);
+
+		NodeResponse build = constructor.build(new TokenBuffer(tokens));
 
 
-		assertTrue(build.possibleNode().isSuccess());
+		assertTrue(build.possibleNode().isSuccess(), "Has Parsed Right");
 		//consumes all tokens
-		assertFalse(build.possibleBuffer().hasAnyTokensLeft());
+		assertFalse(build.possibleBuffer().hasAnyTokensLeft(), "Inner Buffer consumes all tokens");
 
 
 		Optional<ASTNode> optionalASTNode = build.possibleNode().getSuccess().get();
 
-		assertTrue(optionalASTNode.isPresent());
+		assertTrue(optionalASTNode.isPresent(), "Recognized Expression");
 
 		ASTNode astNode = optionalASTNode.get();
 		assertInstanceOf(VariableDeclaration.class, astNode);
@@ -163,6 +171,7 @@ class VariableDeclarationNodeConstructorTest {
 				assertNotEquals(SEMICOLON.toTokenType(), token.type())
 		);
 	}
+
 
 
 	private static List<Token> getDefaultCorrectSequenceForVarDecl() {

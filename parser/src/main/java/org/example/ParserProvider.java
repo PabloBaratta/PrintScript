@@ -35,11 +35,11 @@ public class ParserProvider {
 		AssignationNodeConstructor assignationNodeConstructor =
 				new AssignationNodeConstructor(expCons);
 		VariableDeclarationNodeConstructor variableDeclarationNodeConstructor =
-				new VariableDeclarationNodeConstructor(expCons,
-						List.of(LET.toTokenType()),
-						List.of(NUMBER_TYPE.toTokenType(),
-								STRING_TYPE.toTokenType(),
-								BOOLEAN_TYPE.toTokenType()));
+				new VariableDeclarationNodeConstructor(expCons, List.of(LET.toTokenType()),
+						literalTypes11());
+
+		ConstNodeConstructor constConstructor =
+				new ConstNodeConstructor(expCons, literalTypes11());
 
 		CallExpressionNodeConstructor callExpressionNodeConstructor =
 				new CallExpressionNodeConstructor(true, expCons, nativeFunctions);
@@ -47,13 +47,20 @@ public class ParserProvider {
 		List<NodeConstructor> constructors = List.of(
 				callExpressionNodeConstructor,
 				assignationNodeConstructor,
-				variableDeclarationNodeConstructor);
+				variableDeclarationNodeConstructor,
+				constConstructor);
 
 
 		List<BlockNodeConstructor> blockNodeConstructors = new LinkedList<>(
 								List.of(new IfNodeConstructor(expCons)));
 		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
 		return new Parser(constructors, blockNodeConstructors, tokenBuffer);
+	}
+
+	private static List<TokenType> literalTypes11() {
+		return List.of(NUMBER_TYPE.toTokenType(),
+				STRING_TYPE.toTokenType(),
+				BOOLEAN_TYPE.toTokenType());
 	}
 
 
