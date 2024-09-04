@@ -70,4 +70,9 @@ public class LinterVisitor implements ASTVisitor {
 			visitor.visit(ifStatement);
 		}
 	}
+
+	@Override
+	public void visit(ConstDeclaration constDeclaration) throws Exception {
+
+	}
 }

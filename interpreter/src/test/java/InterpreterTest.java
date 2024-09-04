@@ -746,9 +746,7 @@ public class InterpreterTest {
 
 		executor.visit(ifStatement);
 
-		Variable variable = executor.getEnvironment().get("a");
-		assertEquals("boolean", variable.getType().getTypeName());
-		assertEquals(true, ((BooleanLiteral) variable.getLiteral().get()).getValue());
+		assertFalse(executor.getEnvironment().containsKey("a"));
 	}
 
 	@Test
@@ -765,9 +763,7 @@ public class InterpreterTest {
 
 		executor.visit(ifStatement);
 
-		Variable variable = executor.getEnvironment().get("a");
-		assertEquals("boolean", variable.getType().getTypeName());
-		assertEquals(true, ((BooleanLiteral) variable.getLiteral().get()).getValue());
+		assertFalse(executor.getEnvironment().containsKey("a"));
 	}
 
 	@Test
@@ -783,6 +779,32 @@ public class InterpreterTest {
 		Stack<Literal> stack = executor.getStack();
 		assertEquals(1, stack.size());
 		assertEquals(-5.0, ((NumericLiteral) stack.pop()).getValue());
+	}
+
+	@Test
+	public void testIfStatementReassignExternalVariable() throws Exception {
+		Executor executor = new Executor();
+
+		Identifier identifierB = new Identifier("b", new Position(1, 1, 0, 0));
+		Position pos = new Position(0, 0, 0, 0);
+		Type type = new Type("boolean", pos);
+		Optional<Expression> initialAssignment = Optional.of(new BooleanLiteral(false, pos));
+		VariableDeclaration declB = new VariableDeclaration(identifierB, type, initialAssignment);
+
+		declB.accept(executor);
+
+		BooleanLiteral condition = new BooleanLiteral(true, new Position(1, 4, 0, 0));
+
+		BooleanLiteral newAssignment = new BooleanLiteral(true, pos);
+		Assignation reassignB = new Assignation(identifierB, newAssignment, pos);
+
+		IfStatement ifStatement = new IfStatement(condition, List.of(reassignB), List.of(), pos);
+
+		executor.visit(ifStatement);
+
+		Variable variable = executor.getEnvironment().get("b");
+		assertEquals("boolean", variable.getType().getTypeName());
+		assertEquals(true, ((BooleanLiteral) variable.getLiteral().get()).getValue());
 	}
 
 	// CONST DECLARATION ------------------------------------------------------------------
@@ -855,8 +877,5 @@ public class InterpreterTest {
 			constDeclaration.accept(executor);
 		});
 	}
-
-
-
 
 }

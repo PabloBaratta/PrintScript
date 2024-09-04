@@ -7,25 +7,26 @@ import java.util.*;
 
 public class Executor implements ASTVisitor {
 
-	private final Map<String, Variable> environment = new HashMap<>();
+	private final Stack<Map<String, Variable>> environments = new Stack<>();
 	private final Stack<Literal> stack = new Stack<>();
+
+	public Executor() {
+		environments.push(new HashMap<>());
+	}
 
 	@Override
 	public void visit(Assignation assignation) throws Exception {
 		Identifier identifier = assignation.getIdentifier();
 		Expression exp = assignation.getExpression();
 
-		if (!environment.containsKey(identifier.toString())) {
-			int line = identifier.getPosition().getLine();
-			int column = identifier.getPosition().getColumn();
-			throw new InterpreterException("Variable not declared", line, column);
-		}
+		int line = identifier.getPosition().getLine();
+		int column = identifier.getPosition().getColumn();
 
-		Variable variable = environment.get(identifier.toString());
+		int environmentIndex = findEnvironmentIndex(identifier.toString(), line, column);
+		Map<String, Variable> env = environments.get(environmentIndex);
+		Variable variable = env.get(identifier.toString());
 
 		if (variable.isConst()) {
-			int line = identifier.getPosition().getLine();
-			int column = identifier.getPosition().getColumn();
 			throw new InterpreterException("Cannot reassign a constant variable", line, column);
 		}
 
@@ -33,12 +34,20 @@ public class Executor implements ASTVisitor {
 
 		if (typesMatch(astNodeResult, variable)) {
 			variable.setLiteral(astNodeResult);
-			environment.put(identifier.toString(), variable);
+			env.put(identifier.toString(), variable);
 		} else {
-			int line = exp.getPosition().getLine();
-			int column = exp.getPosition().getColumn();
-			throw new InterpreterException("Type mismatch", line, column);
+			int lineExp = exp.getPosition().getLine();
+			int columnExp  = exp.getPosition().getColumn();
+			throw new InterpreterException("Type mismatch", lineExp, columnExp);
 		}
+	}
+
+	private int findEnvironmentIndex(String name, int line, int column) throws InterpreterException {
+		for (int i = environments.size() - 1; i >= 0; i--) {
+			if (environments.get(i).containsKey(name)) {
+				return i;
+			}
+		} throw new InterpreterException("Variable not declared", line, column);
 	}
 
 
@@ -47,7 +56,9 @@ public class Executor implements ASTVisitor {
 		Identifier identifier = variableDeclaration.getIdentifier();
 		Type type = variableDeclaration.getType();
 
-		if (environment.containsKey(identifier.toString())) {
+		Map<String, Variable> currentEnvironment = environments.peek();
+
+		if (currentEnvironment.containsKey(identifier.toString())) {
 			int line = identifier.getPosition().getLine();
 			int column = identifier.getPosition().getColumn();
 			throw new InterpreterException("Variable already declared", line, column);
@@ -57,14 +68,14 @@ public class Executor implements ASTVisitor {
 			Literal astNodeResult = evaluateExpression(variableDeclaration.getExpression().get());
 			if (typesMatch(astNodeResult, new Variable(type, Optional.empty(), false))) {
 				Variable value = new Variable(type, Optional.of(astNodeResult), false);
-				environment.put(identifier.toString(), value);
+				currentEnvironment.put(identifier.toString(), value);
 			} else {
 				int line = variableDeclaration.getExpression().get().getPosition().getLine();
 				int column = variableDeclaration.getExpression().get().getPosition().getColumn();
 				throw new InterpreterException("Type mismatch", line, column);
 			}
 		} else {
-			environment.put(identifier.toString(), new Variable(type, Optional.empty(), false));
+			currentEnvironment.put(identifier.toString(), new Variable(type, Optional.empty(), false));
 		}
 	}
 
@@ -73,7 +84,9 @@ public class Executor implements ASTVisitor {
 		Identifier identifier = constDeclaration.getIdentifier();
 		Type type = constDeclaration.getType();
 
-		if (environment.containsKey(identifier.toString())) {
+		Map<String, Variable> currentEnvironment = environments.peek();
+
+		if (currentEnvironment.containsKey(identifier.toString())) {
 			int line = identifier.getPosition().getLine();
 			int column = identifier.getPosition().getColumn();
 			throw new InterpreterException("Constant variable already declared", line, column);
@@ -82,7 +95,8 @@ public class Executor implements ASTVisitor {
 		Literal astNodeResult = evaluateExpression(constDeclaration.getExpression());
 
 		if (typesMatch(astNodeResult, new Variable(type, Optional.empty(), true))) {
-			environment.put(identifier.toString(), new Variable(type, Optional.of(astNodeResult), true));
+			Variable value = new Variable(type, Optional.of(astNodeResult), true);
+			currentEnvironment.put(identifier.toString(), value);
 		} else {
 			int line = constDeclaration.getExpression().getPosition().getLine();
 			int column = constDeclaration.getExpression().getPosition().getColumn();
@@ -94,19 +108,31 @@ public class Executor implements ASTVisitor {
 	public void visit(Identifier identifier) throws Exception {
 		String identifierName = identifier.getName();
 
+		Optional<Variable> variableOpt = findVariable(identifierName);
+
 		int line = identifier.getPosition().getLine();
 		int column = identifier.getPosition().getColumn();
-		if (!environment.containsKey(identifierName)) {
+		if (variableOpt.isEmpty()) {
 			throw new InterpreterException("Undeclared variable", line, column);
 		}
 
-		Variable variable = environment.get(identifierName);
+		Variable variable = variableOpt.get();
 		Optional<Literal> optionalExpression = variable.getLiteral();
 
 		if (optionalExpression.isEmpty()) {
 			throw new InterpreterException("Variable declared but not assigned", line, column);
 		}
 		stack.push(optionalExpression.get());
+	}
+
+	private Optional<Variable> findVariable(String name) {
+		for (int i = environments.size() - 1; i >= 0; i--) {
+			Variable variable = environments.get(i).get(name);
+			if (variable != null) {
+				return Optional.of(variable);
+			}
+		}
+		return Optional.empty();
 	}
 
 	@Override
@@ -226,13 +252,28 @@ public class Executor implements ASTVisitor {
 	public void visit(IfStatement ifStatement) throws Exception {
 		evaluate(ifStatement.getCondition());
 		BooleanLiteral conditionResult = (BooleanLiteral) stack.pop();
+
+		Map<String, Variable> originalEnvironment = environments.peek();
+
 		if (conditionResult.getValue()) {
-			for (ASTNode node : ifStatement.getThenBlock()) {
-				node.accept(this);
+			Map<String, Variable> thenEnvironment = new HashMap<>(originalEnvironment);
+			environments.push(thenEnvironment);
+			try {
+				for (ASTNode node : ifStatement.getThenBlock()) {
+					node.accept(this);
+				}
+			} finally {
+				environments.pop();
 			}
 		} else if (!ifStatement.getElseBlock().isEmpty()) {
-			for (ASTNode node : ifStatement.getElseBlock()) {
-				node.accept(this);
+			Map<String, Variable> elseEnvironment = new HashMap<>(originalEnvironment);
+			environments.push(elseEnvironment);
+			try {
+				for (ASTNode node : ifStatement.getElseBlock()) {
+					node.accept(this);
+				}
+			} finally {
+				environments.pop();
 			}
 		}
 	}
@@ -242,7 +283,7 @@ public class Executor implements ASTVisitor {
 	}
 
 	public Map<String, Variable> getEnvironment() {
-		return environment;
+		return environments.peek();
 	}
 
 	public Stack<Literal> getStack() {
