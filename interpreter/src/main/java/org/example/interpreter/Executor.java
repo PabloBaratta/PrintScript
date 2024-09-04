@@ -1,6 +1,7 @@
 package org.example.interpreter;
 
 import org.example.*;
+import org.example.lexer.token.Position;
 
 import java.util.*;
 
@@ -12,7 +13,7 @@ public class Executor implements ASTVisitor {
 	@Override
 	public void visit(Assignation assignation) throws Exception {
 		Identifier identifier = assignation.getIdentifier();
-		Expression expression = assignation.getExpression();
+		Expression exp = assignation.getExpression();
 
 		if (!environment.containsKey(identifier.toString())) {
 			int line = identifier.getPosition().getLine();
@@ -20,15 +21,15 @@ public class Executor implements ASTVisitor {
 			throw new InterpreterException("Variable not declared", line, column);
 		}
 
-		Literal astNodeResult = evaluateExpression(expression);
+		Literal astNodeResult = evaluateExpression(exp);
 		Variable variable = environment.get(identifier.toString());
 
 		if (typesMatch(astNodeResult, variable)) {
 			variable.setLiteral(astNodeResult);
 			environment.put(identifier.toString(), variable);
 		} else {
-			int line = expression.getPosition().getLine();
-			int column = expression.getPosition().getColumn();
+			int line = exp.getPosition().getLine();
+			int column = exp.getPosition().getColumn();
 			throw new InterpreterException("Type mismatch", line, column);
 		}
 	}
@@ -90,8 +91,21 @@ public class Executor implements ASTVisitor {
 
 	@Override
 	public void visit(Method method) throws Exception {
-		evaluate(method.getArguments().getFirst()); // chequear si el identifier existe
-		System.out.println(stack.pop().getValue());
+		String methodName = method.getVariable().getName();
+		List<Expression> arguments = method.getArguments();
+
+		switch (methodName) {
+			case "println":
+				handlePrintln(arguments, method.getVariable().getPosition());
+				break;
+			case "readInput":
+				handleReadInput(arguments, method.getVariable().getPosition());
+				break;
+			default:
+				int line = method.getVariable().getPosition().getLine();
+				int column = method.getVariable().getPosition().getColumn();
+				throw new InterpreterException("Unknown method: " + methodName, line, column);
+		}
 	}
 
 	@Override
@@ -109,15 +123,12 @@ public class Executor implements ASTVisitor {
 		int column = argument.getPosition().getColumn();
 		if (argument instanceof NumericLiteral) {
 			Double value = (Double) argument.getValue();
-			return switch (operator) {
-				case "-" -> new NumericLiteral(-value, argument.getPosition());
-/*                case "++" -> new NumericLiteral(value + 1, argument.getPosition());
-				case "--" -> new NumericLiteral(value - 1, argument.getPosition()); */
-				default -> {
-					String error = "Invalid operator for numeric literal";
-					throw new InterpreterException(error, line, column);
-				}
-			};
+			if (operator.equals("-")){
+				return new NumericLiteral(-value, argument.getPosition());
+			} else {
+				String error = "Invalid operator for numeric literal";
+				throw new InterpreterException(error, line, column);
+			}
 		} else {
 			throw new InterpreterException("Unsupported unary expression argument type", line, column);
 		}
@@ -178,7 +189,7 @@ public class Executor implements ASTVisitor {
 
 	@Override
 	public void visit(BooleanLiteral booleanLiteral) throws Exception {
-
+		stack.push(booleanLiteral);
 	}
 
 	@Override
@@ -203,6 +214,8 @@ public class Executor implements ASTVisitor {
 
 		if (expression instanceof NumericLiteral && variableTypeName.equals("number")) {
 			return true;
+		} else if (expression instanceof BooleanLiteral && variableTypeName.equals("boolean")){
+			return true;
 		} else return expression instanceof TextLiteral && variableTypeName.equals("string");
 	}
 
@@ -210,4 +223,45 @@ public class Executor implements ASTVisitor {
 		evaluate(expression);
 		return stack.pop();
 	}
+
+	private void handlePrintln(List<Expression> arguments, Position position) throws Exception {
+		if (arguments.size() != 1) {
+			String message = "println expects exactly one argument";
+			throw new InterpreterException(message, position.getLine(), position.getColumn());
+		}
+		evaluate(arguments.getFirst());
+		Literal value = stack.pop();
+		System.out.println(value.getValue());
+
+	}
+
+	private void handleReadInput(List<Expression> arguments, Position position) throws Exception {
+		if (arguments.size() != 1 || !(arguments.getFirst() instanceof TextLiteral messageLiteral)) {
+			String message = "readInput expects exactly one TextLiteral argument";
+			throw new InterpreterException(message, position.getLine(), position.getColumn());
+		}
+
+		String message = messageLiteral.getValue();
+
+		System.out.print(message + ": ");
+		Scanner scanner = new Scanner(System.in);
+		String userInput = scanner.nextLine();
+
+		Literal inputLiteral = convertInputToLiteral(userInput, position);
+
+		stack.push(inputLiteral);
+	}
+
+	private Literal convertInputToLiteral(String input, Position position) {
+		if (input.equalsIgnoreCase("true") || input.equalsIgnoreCase("false")) {
+			boolean boolValue = Boolean.parseBoolean(input);
+			return new BooleanLiteral(boolValue, position);
+		} else if (input.matches("-?\\d+(\\.\\d+)?")) {
+			double numberValue = Double.parseDouble(input);
+			return new NumericLiteral(numberValue, position);
+		} else {
+			return new TextLiteral(input, position);
+		}
+	}
+
 }
