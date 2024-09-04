@@ -14,9 +14,9 @@ import java.util.Optional;
 public class ParserUtil {
 
 	public static ParseEqualsResult
-            handleEqualsWithTermination(NodeConstructor expressionConstructor,
-                                        Token eq,
-                                        TokenBuffer tb) throws Exception {
+			handleEqualsWithTermination(NodeConstructor expressionConstructor,
+										Token eq,
+										TokenBuffer tb) throws Exception {
 		List<Token> tokens = new LinkedList<>();
 
 		Token currentToken = eq;

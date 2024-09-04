@@ -86,7 +86,7 @@ public class ConstNodeConstructor implements NodeConstructor {
 
 	private NodeResponse handleEqualsToken(Token id, Token eq, Token type, TokenBuffer tb) throws Exception {
 		ParserUtil.ParseEqualsResult parseEqualsResult =
-                ParserUtil.handleEqualsWithTermination(expressionNodeConstructor, eq, tb);
+				ParserUtil.handleEqualsWithTermination(expressionNodeConstructor, eq, tb);
 		ASTNode astNode = parseEqualsResult.node();
 		return response(getConstDeclaration(id, type, (Expression) astNode), parseEqualsResult.buffer());
 	}
