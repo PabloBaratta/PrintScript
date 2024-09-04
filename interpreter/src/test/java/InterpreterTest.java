@@ -1,15 +1,18 @@
 import org.example.*;
+import org.example.interpreter.Executor;
 import org.example.interpreter.Interpreter;
+import org.example.interpreter.InterpreterException;
 import org.example.interpreter.Validator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
 import org.example.lexer.token.Position;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -496,28 +499,6 @@ public class InterpreterTest {
 
 	// UNARY EXPRESSIONS ------------------------------------------
 
-//	@Test
-//	public void testUnaryExpressionAssignment() throws Exception {
-//
-//		Interpreter interpreter = new Interpreter();
-//
-//		Identifier identifier = new Identifier("i", new Position(0,0, 0, 0));
-//		Type type = new Type("number", new Position(0,0, 0, 0));
-//		NumericLiteral initialValue = new NumericLiteral(1.0, new Position(0,0, 0, 0));
-//		VariableDeclaration var = new VariableDeclaration(identifier, type, Optional.of(initialValue));
-//		interpreter.visit(variableDeclaration);
-//
-//		UnaryExpression unaryExpression = new UnaryExpression(identifier, "++", new Position(0,0,0,0));
-//
-//		Assignation assignation = new Assignation(identifier, unaryExpression, new Position(0,0, 0, 0 ));
-//
-//		interpreter.visit(assignation);
-//
-//		Optional<Expression> optionalExpression = interpreter.getEnvironment().get("i").getExpression();
-//		assertTrue(optionalExpression.isPresent());
-//		assertEquals(2.0, optionalExpression.get().getValue());
-//	}
-
 	@Test
 	public void testUnaryExpressionAssignNegativeNumber() throws Exception {
 		Interpreter interpreter = new Interpreter();
@@ -565,21 +546,243 @@ public class InterpreterTest {
 		assertEquals(-3.0, resultExpression.get().getValue());
 	}
 
-//    @Test
-//    public void testBooleanLiteralAssignation() throws Exception {
-//        Interpreter interpreter = new Interpreter();
-//
-//        Identifier identifier = new Identifier("flag", new Position(0,0, 0, 0));
-//        Type type = new Type("boolean", new Position(0,0, 0, 0));
-//        VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
-//        interpreter.visit(variableDeclaration);
-//
-//        BooleanLiteral booleanLiteral = new BooleanLiteral(true, new Position(0,0, 0, 0));
-//        Assignation assignation = new Assignation(identifier, booleanLiteral, new Position(0,0, 0, 0));
-//        interpreter.visit(assignation);
-//
-//        Optional<Expression> resultExpression = interpreter.getEnvironment().get("flag").getExpression();
-//        assertTrue(resultExpression.isPresent());
-//        assertEquals(true, resultExpression.get().getValue());
-//    }
+	// READ INPUT
+
+	@Test
+	public void testReadInput() {
+
+		String simulatedInput = "42\n";
+		System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
+
+		try {
+
+			Position position = new Position(1, 1, 1, 1);
+			VariableDeclaration variableDeclaration = new VariableDeclaration(
+					new Identifier("a", position),
+					new Type("number", position),
+					Optional.empty()
+			);
+
+			Method readInputMethod = new Method(
+					new Identifier("readInput", position),
+					List.of(new TextLiteral("Escribe un numero:", position))
+			);
+
+			Assignation assignment = new Assignation(
+					new Identifier("a", position),
+					readInputMethod,
+					position
+			);
+
+			Executor executor = new Executor();
+			executor.visit(variableDeclaration);
+			executor.visit(assignment);
+
+			assertEquals("number", executor.getEnvironment().get("a").getType().getTypeName());
+
+			Literal aValue = executor.getEnvironment().get("a").getLiteral().get();
+			assertInstanceOf(NumericLiteral.class, aValue, "El valor de 'a' debe ser un NumericLiteral.");
+			assertEquals(42, ((NumericLiteral) aValue).getValue());
+
+
+		} catch (InterpreterException e) {
+			fail("Error en la interpretacion: " + e.getMessage() +
+					" (Linea: " + e.getLine() + ", Columna: " + e.getColumn() + ")");
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("Ocurrió una excepción inesperada.");
+		}
+	}
+
+	@Test
+	public void testReadInputWithSimulatedInputTypeMismatch() {
+
+		String simulatedInput = "hello\n";
+		System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
+
+		try {
+
+			Position position = new Position(1, 1, 1, 1);
+
+			VariableDeclaration variableDeclaration = new VariableDeclaration(
+					new Identifier("a", position),
+					new Type("number", position),
+					Optional.empty()
+			);
+
+			Method readInputMethod = new Method(
+					new Identifier("readInput", position),
+					List.of(new TextLiteral("Escribe un numero:", position))
+			);
+
+			Assignation assignment = new Assignation(
+					new Identifier("a", position),
+					readInputMethod,
+					position
+			);
+
+			Executor executor = new Executor();
+
+			executor.visit(variableDeclaration);
+
+			executor.visit(assignment);
+
+			fail("Se esperaba un error");
+
+		} catch (InterpreterException e) {
+			assertTrue(e.getMessage().contains("Type mismatch"), "Se esperaba un error");
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("Ocurrió una excepción inesperada.");
+		}
+	}
+
+	@Test
+	public void testBinaryExpressionWithReadInput() {
+
+		String simulatedInput = "Ana\n";
+		System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
+
+		try {
+			Position position = new Position(1, 1, 1, 1);
+
+			VariableDeclaration variableDeclaration = new VariableDeclaration(
+					new Identifier("a", position),
+					new Type("string", position),
+					Optional.empty()
+			);
+
+			TextLiteral holaLiteral = new TextLiteral("hola ", position);
+
+			Method readInputMethod = new Method(
+					new Identifier("readInput", position),
+					List.of(new TextLiteral("Escribe tu nombre:", position))
+			);
+
+			BinaryExpression concatenation = new BinaryExpression(
+					holaLiteral, "+",
+					readInputMethod
+			);
+
+			Assignation assignment = new Assignation(
+					new Identifier("a", position),
+					concatenation,
+					position
+			);
+
+			Executor executor = new Executor();
+
+			executor.visit(variableDeclaration);
+
+			executor.visit(assignment);
+
+			assertEquals("string", executor.getEnvironment().get("a").getType().getTypeName());
+
+			Literal aValue = executor.getEnvironment().get("a").getLiteral().get();
+			assertInstanceOf(TextLiteral.class, aValue, "El valor de 'a' debe ser un TextLiteral.");
+			assertEquals("hola Ana", ((TextLiteral) aValue).getValue());
+
+		} catch (InterpreterException e) {
+			fail("Error en la interpretación: " + e.getMessage() +
+					" (Línea: " + e.getLine() + ", Columna: " + e.getColumn() + ")");
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("Ocurrió una excepción inesperada.");
+		}
+	}
+
+	@Test
+	public void testBooleanVariableDeclaration() throws Exception {
+
+		Executor executor = new Executor();
+
+		Identifier identifier = new Identifier("a", new Position(1, 4,1,1));
+		BooleanLiteral booleanLiteral = new BooleanLiteral(true, new Position(1, 15, 1, 1));
+		Position pos = new Position(0, 0, 0, 0);
+		Optional<Expression> booleanLiteral1 = Optional.of(booleanLiteral);
+		Type type = new Type("boolean", pos);
+		VariableDeclaration vardecl = new VariableDeclaration(identifier, type, booleanLiteral1);
+
+		executor.visit(vardecl);
+
+		Variable variable = executor.getEnvironment().get("a");
+		assertEquals("boolean", variable.getType().getTypeName());
+		assertEquals(true, ((BooleanLiteral) variable.getLiteral().get()).getValue());
+	}
+
+	@Test
+	public void testIfStatementTrueCondition() throws Exception {
+
+		Executor executor = new Executor();
+		BooleanLiteral condition = new BooleanLiteral(true, new Position(1, 4,0,0));
+		Identifier identifier = new Identifier("a", new Position(1, 9,0,0));
+		Position pos = new Position(0, 0, 0, 0);
+		Type type = new Type("boolean", pos);
+		Optional<Expression> cond = Optional.of(condition);
+		VariableDeclaration decl = new VariableDeclaration(identifier, type, cond);
+
+		IfStatement ifStatement = new IfStatement(condition, List.of(decl), List.of(), pos);
+
+		executor.visit(ifStatement);
+
+		Variable variable = executor.getEnvironment().get("a");
+		assertEquals("boolean", variable.getType().getTypeName());
+		assertEquals(true, ((BooleanLiteral) variable.getLiteral().get()).getValue());
+	}
+
+	@Test
+	public void testIfStatementFalseCondition() throws Exception {
+
+		Executor executor = new Executor();
+		BooleanLiteral condition = new BooleanLiteral(false, new Position(1, 4, 0, 0));
+		Identifier identifier = new Identifier("a", new Position(1, 9, 0, 0));
+		Position pos1 = new Position(0, 0, 0, 0);
+		Optional<Expression> bool = Optional.of(new BooleanLiteral(true, new Position(1, 10, 0, 0)));
+		VariableDeclaration elsedecl = new VariableDeclaration(identifier, new Type("boolean", pos1), bool);
+
+		IfStatement ifStatement = new IfStatement(condition, List.of(), List.of(elsedecl), pos1);
+
+		executor.visit(ifStatement);
+
+		Variable variable = executor.getEnvironment().get("a");
+		assertEquals("boolean", variable.getType().getTypeName());
+		assertEquals(true, ((BooleanLiteral) variable.getLiteral().get()).getValue());
+	}
+
+	@Test
+	public void testStackAfterUnaryExpression() throws Exception {
+		Executor executor = new Executor();
+
+		NumericLiteral numericLiteral = new NumericLiteral(5.0, new Position(1, 2, 0, 0));
+		Position pos1 = new Position(1, 1, 0, 0);
+		UnaryExpression unaryExpression = new UnaryExpression( numericLiteral, "-", pos1);
+
+		executor.visit(unaryExpression);
+
+		Stack<Literal> stack = executor.getStack();
+		assertEquals(1, stack.size());
+		assertEquals(-5.0, ((NumericLiteral) stack.pop()).getValue());
+	}
+
+	@Test
+	void testVisitBinaryExpressionMultiplication() throws Exception {
+		Validator validator = new Validator();
+		Identifier identifier = new Identifier("x", null);
+		Type type = new Type("number", null);
+		validator.visit(new VariableDeclaration(identifier, type, Optional.of(new NumericLiteral(5.0, null))));
+
+		Expression left = new Identifier("x", null);
+		Expression right = new NumericLiteral(2.0, null);
+		BinaryExpression binaryExpression = new BinaryExpression(left, "*", right);
+
+		validator.visit(binaryExpression);
+
+		Literal result = validator.getStack().pop();
+		assertTrue(result instanceof NumericLiteral);
+
+		assertTrue(left instanceof Identifier);
+		assertTrue(right instanceof NumericLiteral);
+
+	}
+
 }
