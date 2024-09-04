@@ -3,6 +3,7 @@ package org.linter.visitors;
 import org.example.*;
 import org.linter.Report;
 
+import java.util.List;
 import java.util.Optional;
 
 public class OneArgFunRules implements ASTVisitor {
@@ -39,19 +40,13 @@ public class OneArgFunRules implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(Identifier identifier) throws Exception {
-
-	}
+	public void visit(Identifier identifier) throws Exception {}
 
 	@Override
-	public void visit(TextLiteral textLiteral) {
-
-	}
+	public void visit(TextLiteral textLiteral) {}
 
 	@Override
-	public void visit(NumericLiteral numericLiteral) {
-
-	}
+	public void visit(NumericLiteral numericLiteral) {}
 
 	@Override
 	public void visit(Method method) throws Exception {
@@ -90,9 +85,7 @@ public class OneArgFunRules implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(Program program) throws Exception {
-
-	}
+	public void visit(Program program) throws Exception {}
 
 	@Override
 	public void visit(Parenthesis parenthesis) throws Exception {
@@ -106,6 +99,16 @@ public class OneArgFunRules implements ASTVisitor {
 
 	@Override
 	public void visit(IfStatement ifStatement) throws Exception {
+		ifStatement.getCondition().accept(this);
+		List<ASTNode> thenBlock = ifStatement.getThenBlock();
+		List<ASTNode> elseBlock = ifStatement.getElseBlock();
+		visitBlock(thenBlock);
+		visitBlock(elseBlock);
+	}
 
+	private void visitBlock(List<ASTNode> block) throws Exception {
+		for (ASTNode node : block){
+			node.accept(this);
+		}
 	}
 }

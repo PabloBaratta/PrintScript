@@ -54,5 +54,27 @@ public class LinterTest {
 		assertTrue(analyze.getReportLines().isEmpty());
 	}
 
+	@Test
+	public void analyzeCorrectIfTest() throws Exception {
+		Linter linter = LinterProvider.getLinterV11();
+		Map<String, String> configMap = Map.of("case", "camel", "printWithIdentifiers", "true");
+		String identifierString = "camel";
+		TextLiteral hi = new TextLiteral("hi", new Position(0, 0, 0, 0));
+		Report analyze = linter.analyze(LinterConfiguratorTest.getProgramIf(identifierString, hi), configMap);
+		assertTrue(analyze.getReportLines().isEmpty());
+	}
+
+	@Test
+	public void analyzeInCorrectIfTest() throws Exception {
+		Linter linter = LinterProvider.getLinterV11();
+		Map<String, String> configMap = Map.of("case", "camel", "printWithIdentifiers", "true");
+		String identifierString = "camel__case";
+		TextLiteral hi = new TextLiteral("hi", new Position(0, 0, 0, 0));
+		Report analyze = linter.analyze(LinterConfiguratorTest.getProgramIf(identifierString, hi), configMap);
+		assertFalse(analyze.getReportLines().isEmpty());
+	}
+
+
+
 
 }

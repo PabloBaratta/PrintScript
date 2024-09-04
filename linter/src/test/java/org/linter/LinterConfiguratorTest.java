@@ -8,6 +8,7 @@ import org.linter.configurator.OneArgFunctionConfiguration;
 import org.linter.visitors.LinterVisitor;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -15,6 +16,25 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class LinterConfiguratorTest {
+
+	public static Program getProgramIf(String identifierString, TextLiteral hi) {
+		int length = identifierString.length();
+		Position position = new Position(14 + length, 7, 1, 14 + length);
+		Position position1 = new Position(8, length, 1, 8);
+		Position position2 = new Position(9 + length, 6, 1, 9 + length);
+		return new Program(
+				List.of(new IfStatement(
+						new BinaryExpression(
+								new TextLiteral("a", new Position(4, 1, 1, 4)),
+								"==",
+								new TextLiteral("a", new Position(6, 1, 1, 6))),
+						List.of(new VariableDeclaration(
+								new Identifier(identifierString, position1),
+								new Type("string", position2),
+								Optional.of(hi))),
+						new ArrayList<>(), new Position(0, 0, 0, 0))));
+
+	}
 
 	@Test
 	public void camelCaseFromJson() throws IOException {

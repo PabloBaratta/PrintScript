@@ -6,20 +6,20 @@ import java.util.List;
 
 public class IfStatement implements ASTNode {
 
-	private final BooleanLiteral condition;
+	private final Expression condition;
 	private final List<ASTNode> thenBlock;
 	private final List<ASTNode> elseBlock;
 	private final Position position;
 
 
-	public IfStatement(BooleanLiteral cond, List<ASTNode> thenBlock, List<ASTNode> elseBlock, Position position) {
+	public IfStatement(Expression cond, List<ASTNode> thenBlock, List<ASTNode> elseBlock, Position position) {
 		this.condition = cond;
 		this.thenBlock = thenBlock;
 		this.elseBlock = elseBlock;
 		this.position = position;
 	}
 
-	public BooleanLiteral getCondition() {
+	public Expression getCondition() {
 		return condition;
 	}
 
@@ -39,9 +39,9 @@ public class IfStatement implements ASTNode {
 	@Override
 	public String toString() {
 		if (!elseBlock.isEmpty()){
-			return "if (" + condition + ") { " + thenBlock + "} else" + elseBlock + "}";
+			return "if (" + condition.toString() + ") { " + thenBlock + "} else" + elseBlock + "}";
 		} else{
-			return "if (" + condition + ") { " + thenBlock + "}";
+			return "if (" + condition.toString() + ") { " + thenBlock + "}";
 		}
 
 	}

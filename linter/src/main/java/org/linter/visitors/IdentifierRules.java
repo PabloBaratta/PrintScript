@@ -3,6 +3,7 @@ package org.linter.visitors;
 import org.example.*;
 import org.linter.Report;
 
+import java.util.List;
 import java.util.regex.Matcher;
 
 public class IdentifierRules implements ASTVisitor {
@@ -54,12 +55,19 @@ public class IdentifierRules implements ASTVisitor {
 	public void visit(Parenthesis parenthesis) throws Exception {}
 
 	@Override
-	public void visit(BooleanLiteral booleanLiteral) throws Exception {
-
-	}
+	public void visit(BooleanLiteral booleanLiteral) throws Exception {}
 
 	@Override
 	public void visit(IfStatement ifStatement) throws Exception {
+		List<ASTNode> thenBlock = ifStatement.getThenBlock();
+		List<ASTNode> elseBlock = ifStatement.getElseBlock();
+		visitBlock(thenBlock);
+		visitBlock(elseBlock);
+	}
 
+	private void visitBlock(List<ASTNode> block) throws Exception {
+		for (ASTNode node : block) {
+			node.accept(this);
+		}
 	}
 }

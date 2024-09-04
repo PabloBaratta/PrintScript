@@ -62,12 +62,12 @@ public class LinterVisitor implements ASTVisitor {
 	public void visit(Parenthesis parenthesis) throws Exception {}
 
 	@Override
-	public void visit(BooleanLiteral booleanLiteral) throws Exception {
-
-	}
+	public void visit(BooleanLiteral booleanLiteral) throws Exception {}
 
 	@Override
 	public void visit(IfStatement ifStatement) throws Exception {
-
+		for (ASTVisitor visitor : visitors) {
+			visitor.visit(ifStatement);
+		}
 	}
 }
