@@ -92,7 +92,7 @@ public class InterpreterTest {
 		assertEquals("Variable already declared", exception.getMessage());
 	}
 
-	// ASSIGNATION
+	// ASSIGNATION ------------------------------------------------------------------------
 
 	@Test
 	void testAssignationVariableNotDeclared() {
@@ -151,7 +151,7 @@ public class InterpreterTest {
 		assertEquals("Type mismatch", exception.getMessage());
 	}
 
-	// BINARY EXPRESSION
+	// BINARY EXPRESSION ----------------------------------------------------------------------------------
 
 	@Test
 	void testAssignationWithExpressionTwoPlusThree() throws Exception {
@@ -241,7 +241,28 @@ public class InterpreterTest {
 		assertEquals(13.0, optionalExpression.get().getValue());
 	}
 
-	// METHOD
+	@Test
+	void testVisitBinaryExpressionMultiplication() throws Exception {
+		Validator validator = new Validator();
+		Identifier identifier = new Identifier("x", null);
+		Type type = new Type("number", null);
+		validator.visit(new VariableDeclaration(identifier, type, Optional.of(new NumericLiteral(5.0, null))));
+
+		Expression left = new Identifier("x", null);
+		Expression right = new NumericLiteral(2.0, null);
+		BinaryExpression binaryExpression = new BinaryExpression(left, "*", right);
+
+		validator.visit(binaryExpression);
+
+		Literal result = validator.getStack().pop();
+		assertTrue(result instanceof NumericLiteral);
+
+		assertTrue(left instanceof Identifier);
+		assertTrue(right instanceof NumericLiteral);
+
+	}
+
+	// PRINT LN ------------------------------------------------------------------------------------
 
 	private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	private final PrintStream originalOut = System.out;
@@ -546,7 +567,7 @@ public class InterpreterTest {
 		assertEquals(-3.0, resultExpression.get().getValue());
 	}
 
-	// READ INPUT
+	// READ INPUT ---------------------------------------------------------------------------
 
 	@Test
 	public void testReadInput() {
@@ -764,25 +785,78 @@ public class InterpreterTest {
 		assertEquals(-5.0, ((NumericLiteral) stack.pop()).getValue());
 	}
 
+	// CONST DECLARATION ------------------------------------------------------------------
+
 	@Test
-	void testVisitBinaryExpressionMultiplication() throws Exception {
-		Validator validator = new Validator();
-		Identifier identifier = new Identifier("x", null);
-		Type type = new Type("number", null);
-		validator.visit(new VariableDeclaration(identifier, type, Optional.of(new NumericLiteral(5.0, null))));
+	public void testConstDeclarationIsStoredCorrectly() throws Exception {
+		Executor executor = new Executor();
+		Identifier identifier = new Identifier("constVar", new Position(1, 1,0,0));
+		Type type = new Type("number", new Position(0,0,0,0));
+		Expression expression = new NumericLiteral(10.0, new Position(1, 10,0,0));
+		ConstDeclaration constDeclaration = new ConstDeclaration(identifier, type, expression);
 
-		Expression left = new Identifier("x", null);
-		Expression right = new NumericLiteral(2.0, null);
-		BinaryExpression binaryExpression = new BinaryExpression(left, "*", right);
+		constDeclaration.accept(executor);
 
-		validator.visit(binaryExpression);
+		Variable variable = executor.getEnvironment().get("constVar");
 
-		Literal result = validator.getStack().pop();
-		assertTrue(result instanceof NumericLiteral);
-
-		assertTrue(left instanceof Identifier);
-		assertTrue(right instanceof NumericLiteral);
-
+		assertNotNull(variable);
+		assertTrue(variable.isConst());
+		assertEquals("number", variable.getType().getTypeName());
+		assertEquals(10.0, ((NumericLiteral) variable.getLiteral().get()).getValue());
 	}
+
+	@Test
+	public void testConstReassignmentThrowsError() {
+		Executor executor = new Executor();
+		assertThrows(InterpreterException.class, () -> {
+
+			Identifier identifier = new Identifier("constVar", new Position(1, 1,0,0));
+			Type type = new Type("number", new Position(0,0,0,0));
+			Expression expression = new NumericLiteral(10.0, new Position(1, 10,0,0));
+			ConstDeclaration constDeclaration = new ConstDeclaration(identifier, type, expression);
+
+			constDeclaration.accept(executor);
+
+			Expression newExpression = new NumericLiteral(20.0, new Position(2, 10,0,0));
+			Assignation assignation = new Assignation(identifier, newExpression, new Position(0,0,0,0));
+
+			assignation.accept(executor);
+		});
+	}
+
+	@Test
+	public void testDuplicateConstDeclarationThrowsError() {
+		Executor executor = new Executor();
+		assertThrows(InterpreterException.class, () -> {
+
+			Identifier identifier = new Identifier("constVar", new Position(1, 1,0,0));
+			Type type = new Type("number", new Position(0,0,0,0));
+			Expression expression = new NumericLiteral(10.0, new Position(1, 10,0,0));
+			ConstDeclaration constDeclaration = new ConstDeclaration(identifier, type, expression);
+
+			constDeclaration.accept(executor);
+
+			Expression anotherExpression = new NumericLiteral(20.0, new Position(2, 10, 0, 0));
+			ConstDeclaration duplicateDec = new ConstDeclaration(identifier, type, anotherExpression);
+
+			duplicateDec.accept(executor);
+		});
+	}
+
+	@Test
+	public void testConstDeclarationTypeMismatchThrowsError() {
+		Executor executor = new Executor();
+		assertThrows(InterpreterException.class, () -> {
+			Identifier identifier = new Identifier("constVar", new Position(1, 1,0,0));
+			Type type = new Type("number", new Position(0,0,0,0));
+			Expression expression = new TextLiteral("text", new Position(1, 10,0,0));
+			ConstDeclaration constDeclaration = new ConstDeclaration(identifier, type, expression);
+
+			constDeclaration.accept(executor);
+		});
+	}
+
+
+
 
 }

@@ -21,8 +21,15 @@ public class Executor implements ASTVisitor {
 			throw new InterpreterException("Variable not declared", line, column);
 		}
 
-		Literal astNodeResult = evaluateExpression(exp);
 		Variable variable = environment.get(identifier.toString());
+
+		if (variable.isConst()) {
+			int line = identifier.getPosition().getLine();
+			int column = identifier.getPosition().getColumn();
+			throw new InterpreterException("Cannot reassign a constant variable", line, column);
+		}
+
+		Literal astNodeResult = evaluateExpression(exp);
 
 		if (typesMatch(astNodeResult, variable)) {
 			variable.setLiteral(astNodeResult);
@@ -48,15 +55,38 @@ public class Executor implements ASTVisitor {
 
 		if (variableDeclaration.getExpression().isPresent()) {
 			Literal astNodeResult = evaluateExpression(variableDeclaration.getExpression().get());
-			if (typesMatch(astNodeResult, new Variable(type, Optional.empty()))) {
-				environment.put(identifier.toString(), new Variable(type, Optional.of(astNodeResult)));
+			if (typesMatch(astNodeResult, new Variable(type, Optional.empty(), false))) {
+				Variable value = new Variable(type, Optional.of(astNodeResult), false);
+				environment.put(identifier.toString(), value);
 			} else {
 				int line = variableDeclaration.getExpression().get().getPosition().getLine();
 				int column = variableDeclaration.getExpression().get().getPosition().getColumn();
 				throw new InterpreterException("Type mismatch", line, column);
 			}
 		} else {
-			environment.put(identifier.toString(), new Variable(type, Optional.empty()));
+			environment.put(identifier.toString(), new Variable(type, Optional.empty(), false));
+		}
+	}
+
+	@Override
+	public void visit(ConstDeclaration constDeclaration) throws Exception {
+		Identifier identifier = constDeclaration.getIdentifier();
+		Type type = constDeclaration.getType();
+
+		if (environment.containsKey(identifier.toString())) {
+			int line = identifier.getPosition().getLine();
+			int column = identifier.getPosition().getColumn();
+			throw new InterpreterException("Constant variable already declared", line, column);
+		}
+
+		Literal astNodeResult = evaluateExpression(constDeclaration.getExpression());
+
+		if (typesMatch(astNodeResult, new Variable(type, Optional.empty(), true))) {
+			environment.put(identifier.toString(), new Variable(type, Optional.of(astNodeResult), true));
+		} else {
+			int line = constDeclaration.getExpression().getPosition().getLine();
+			int column = constDeclaration.getExpression().getPosition().getColumn();
+			throw new InterpreterException("Type mismatch", line, column);
 		}
 	}
 
