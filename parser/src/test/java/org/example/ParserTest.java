@@ -371,53 +371,53 @@ public class ParserTest {
 
 	}
 
-    @Test
-    public void test() {
-        NativeTokenTypes[] tokenTypes = new NativeTokenTypes[] {
-                PRINTLN, LEFT_PARENTHESIS, READINPUT, LEFT_PARENTHESIS, STRING, RIGHT_PARENTHESES,
-                RIGHT_PARENTHESES, SEMICOLON
-        };
+	@Test
+	public void test() {
+		NativeTokenTypes[] tokenTypes = new NativeTokenTypes[] {
+				PRINTLN, LEFT_PARENTHESIS, READINPUT, LEFT_PARENTHESIS, STRING, RIGHT_PARENTHESES,
+				RIGHT_PARENTHESES, SEMICOLON
+		};
 
-        Parser parser = ParserProvider.provide11(TokenTestUtil.getTokens(tokenTypes));
+		Parser parser = ParserProvider.provide11(TokenTestUtil.getTokens(tokenTypes));
 
-        Try<ASTNode, Exception> astNodeExceptionTry = parser.parseExpression();
-        assertTrue(astNodeExceptionTry.isSuccess());
-        ASTNode astNode = astNodeExceptionTry.getSuccess().get();
-        assertInstanceOf(Program.class, astNode);
-        Program program = (Program) astNode;
-        List<ASTNode> children = program.getChildren();
-        assertEquals(1, children.size());
-        assertInstanceOf(Method.class, children.getFirst());
-        Method print = (Method) children.getFirst();
-        List<Expression> arguments = print.getArguments();
-        assertInstanceOf(Method.class, arguments.getFirst());
-    }
+		Try<ASTNode, Exception> astNodeExceptionTry = parser.parseExpression();
+		assertTrue(astNodeExceptionTry.isSuccess());
+		ASTNode astNode = astNodeExceptionTry.getSuccess().get();
+		assertInstanceOf(Program.class, astNode);
+		Program program = (Program) astNode;
+		List<ASTNode> children = program.getChildren();
+		assertEquals(1, children.size());
+		assertInstanceOf(Method.class, children.getFirst());
+		Method print = (Method) children.getFirst();
+		List<Expression> arguments = print.getArguments();
+		assertInstanceOf(Method.class, arguments.getFirst());
+	}
 
-    @Test
-    public void readInputSentence() {
-        NativeTokenTypes[] tokenTypes = new NativeTokenTypes[] {
-                LET, IDENTIFIER, COLON, STRING_TYPE, EQUALS,
-                READINPUT, LEFT_PARENTHESIS, STRING, RIGHT_PARENTHESES, SEMICOLON
-        };
+	@Test
+	public void readInputSentence() {
+		NativeTokenTypes[] tokenTypes = new NativeTokenTypes[] {
+				LET, IDENTIFIER, COLON, STRING_TYPE, EQUALS,
+				READINPUT, LEFT_PARENTHESIS, STRING, RIGHT_PARENTHESES, SEMICOLON
+		};
 
-        Parser parser = ParserProvider.provide11(TokenTestUtil.getTokens(tokenTypes));
+		Parser parser = ParserProvider.provide11(TokenTestUtil.getTokens(tokenTypes));
 
-        Try<ASTNode, Exception> astNodeExceptionTry = parser.parseExpression();
-        assertTrue(astNodeExceptionTry.isSuccess());
-        ASTNode astNode = astNodeExceptionTry.getSuccess().get();
-        assertInstanceOf(Program.class, astNode);
-        Program program = (Program) astNode;
-        List<ASTNode> children = program.getChildren();
-        assertEquals(1, children.size());
-        assertInstanceOf(VariableDeclaration.class, children.getFirst());
-        VariableDeclaration first = (VariableDeclaration) children.getFirst();
-        assertTrue(first.getExpression().isPresent());
-        Expression expression = first.getExpression().get();
-        assertInstanceOf(Method.class, expression);
-    }
+		Try<ASTNode, Exception> astNodeExceptionTry = parser.parseExpression();
+		assertTrue(astNodeExceptionTry.isSuccess());
+		ASTNode astNode = astNodeExceptionTry.getSuccess().get();
+		assertInstanceOf(Program.class, astNode);
+		Program program = (Program) astNode;
+		List<ASTNode> children = program.getChildren();
+		assertEquals(1, children.size());
+		assertInstanceOf(VariableDeclaration.class, children.getFirst());
+		VariableDeclaration first = (VariableDeclaration) children.getFirst();
+		assertTrue(first.getExpression().isPresent());
+		Expression expression = first.getExpression().get();
+		assertInstanceOf(Method.class, expression);
+	}
 
 
-    private static Map<TokenType, Integer> mapOperatorPrecedence() {
+	private static Map<TokenType, Integer> mapOperatorPrecedence() {
 		return Map.of(PLUS.toTokenType(), 1,
 				MINUS.toTokenType(), 1,
 				ASTERISK.toTokenType(), 2,

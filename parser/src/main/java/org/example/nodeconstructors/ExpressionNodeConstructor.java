@@ -64,7 +64,7 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 		return tokenBuffer.isNextTokenOfAnyOfThisTypes(operators)
 				|| tokenBuffer.isNextTokenOfAnyOfThisTypes(expressions)
 				|| tokenBuffer.isNextTokenOfType(LEFT_PARENTHESIS.toTokenType())
-                || tokenBuffer.isNextTokenOfAnyOfThisTypes(callExpressionConstructor.functions());
+				|| tokenBuffer.isNextTokenOfAnyOfThisTypes(callExpressionConstructor.functions());
 	}
 
 	private NodeResponse parseBE(TokenBuffer tb,
@@ -186,16 +186,16 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 			});
 		} else if (tokenBuffer.isNextTokenOfType(IDENTIFIER.toTokenType())) {
 
-            TokenBuffer tokenBufferWithoutId = tokenBuffer.consumeToken();
+			TokenBuffer tokenBufferWithoutId = tokenBuffer.consumeToken();
 
-            if (tokenBufferWithoutId.isNextTokenOfType(LEFT_PARENTHESIS.toTokenType())) {
-                return callExpressionConstructor.build(tokenBuffer);
-            }
+			if (tokenBufferWithoutId.isNextTokenOfType(LEFT_PARENTHESIS.toTokenType())) {
+				return callExpressionConstructor.build(tokenBuffer);
+			}
 
-            return parseLiteral(tokenBuffer, Identifier::new);
-        } else if (tokenBuffer.isNextTokenOfAnyOfThisTypes(callExpressionConstructor.functions())) {
-            return callExpressionConstructor.build(tokenBuffer);
-        } else if (tokenBuffer.isNextTokenOfType(LEFT_PARENTHESIS.toTokenType())) {
+			return parseLiteral(tokenBuffer, Identifier::new);
+		} else if (tokenBuffer.isNextTokenOfAnyOfThisTypes(callExpressionConstructor.functions())) {
+			return callExpressionConstructor.build(tokenBuffer);
+		} else if (tokenBuffer.isNextTokenOfType(LEFT_PARENTHESIS.toTokenType())) {
 			return parseParenthesisExpression(tokenBuffer);
 		}
 		return response(new SemanticErrorException(tokenBuffer.getToken().get(),
