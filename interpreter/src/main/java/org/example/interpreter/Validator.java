@@ -42,13 +42,14 @@ public class Validator implements ASTVisitor {
 
 		if (variableDeclaration.getExpression().isPresent()) {
 			Literal astNodeResult = evaluateExpression(variableDeclaration.getExpression().get());
-			if (typesMatch(astNodeResult, new Variable(type, Optional.empty()))) {
-				environment.put(identifier.toString(), new Variable(type, Optional.of(astNodeResult)));
+			if (typesMatch(astNodeResult, new Variable(type, Optional.empty(), false))) {
+				Variable value = new Variable(type, Optional.of(astNodeResult), false);
+				environment.put(identifier.toString(), value);
 			} else {
 				throw new Exception("Type mismatch");
 			}
 		} else {
-			environment.put(identifier.toString(), new Variable(type, Optional.empty()));
+			environment.put(identifier.toString(), new Variable(type, Optional.empty(), false));
 		}
 	}
 
@@ -159,6 +160,11 @@ public class Validator implements ASTVisitor {
 
 	@Override
 	public void visit(IfStatement ifStatement) throws Exception {
+
+	}
+
+	@Override
+	public void visit(ConstDeclaration constDeclaration) throws Exception {
 
 	}
 
