@@ -158,6 +158,10 @@ public class CallExpressionNodeConstructor implements NodeConstructor {
 		return new Method(identifier1, listOfArguments);
 	}
 
+    public List<TokenType> functions() {
+        return this.nativeFunctions;
+    }
+
 	public CallExpressionNodeConstructor setExpressionParser(ExpressionNodeConstructor cons) {
 		return new CallExpressionNodeConstructor(this.terminal, cons, this.nativeFunctions);
 	}
