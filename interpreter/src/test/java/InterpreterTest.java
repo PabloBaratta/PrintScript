@@ -878,4 +878,36 @@ public class InterpreterTest {
 		});
 	}
 
+	// READ ENV -----------------------------------------------------------------
+
+	@Test
+	void testReadEnvString() throws Exception {
+		Executor executor = new Executor();
+
+		String name = "MY_VAR";
+
+		VariableDeclaration declaration = new VariableDeclaration(
+				new Identifier("myVar", new Position(1, 0, 0, 0)),
+				new Type("string", new Position(0, 0, 0, 0)),
+				Optional.empty()
+		);
+		executor.visit(declaration);
+
+		Assignation assignation = new Assignation(
+				new Identifier("myVar", new Position(1, 0, 0, 0)),
+				new Method(
+						new Identifier("readEnv", new Position(1, 1, 0, 0)),
+						List.of(new TextLiteral(name, new Position(1, 10, 0, 0)))
+				),
+				new Position(0, 0, 0, 0)
+		);
+
+		executor.visit(assignation);
+
+		Literal result = executor.getEnvironment().get("myVar").getLiteral().get();
+		assertTrue(result instanceof TextLiteral, "El valor debe ser un TextLiteral.");
+		assertEquals("Hello", ((TextLiteral) result).getValue(), "Los valores no coinciden");
+	}
+
+
 }

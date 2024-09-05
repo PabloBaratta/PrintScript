@@ -157,6 +157,9 @@ public class Executor implements ASTVisitor {
 			case "readInput":
 				handleReadInput(arguments, method.getVariable().getPosition());
 				break;
+			case "readEnv":
+				handleReadEnv(arguments, method.getVariable().getPosition());
+				break;
 			default:
 				int line = method.getVariable().getPosition().getLine();
 				int column = method.getVariable().getPosition().getColumn();
@@ -331,6 +334,36 @@ public class Executor implements ASTVisitor {
 		Literal inputLiteral = convertInputToLiteral(userInput, position);
 
 		stack.push(inputLiteral);
+	}
+
+	private void handleReadEnv(List<Expression> arguments, Position position) throws Exception {
+		if (arguments.size() != 1 || !(arguments.getFirst() instanceof TextLiteral)) {
+			String message = "readEnv expects exactly one TextLiteral argument";
+			throw new InterpreterException(message, position.getLine(), position.getColumn());
+		}
+
+		String envVariableName = ((TextLiteral) arguments.getFirst()).getValue();
+
+		String envValue = System.getenv(envVariableName);
+		if (envValue == null) {
+			String message = "Environment variable " + envVariableName + " not found";
+			throw new InterpreterException(message, position.getLine(), position.getColumn());
+		}
+
+		Literal literalValue = convertStringToLiteral(envValue, position);
+		stack.push(literalValue);
+	}
+
+	private Literal convertStringToLiteral(String input, Position position) {
+		if (input.equalsIgnoreCase("\"true\"") || input.equalsIgnoreCase("\"false\"")) {
+			boolean boolValue = Boolean.parseBoolean(input);
+			return new BooleanLiteral(boolValue, position);
+		} else if (input.matches("\"-?\\d+(\\.\\d+)?\"")) {
+			double numberValue = Double.parseDouble(input);
+			return new NumericLiteral(numberValue, position);
+		} else {
+			return new TextLiteral(input, position);
+		}
 	}
 
 	private Literal convertInputToLiteral(String input, Position position) {

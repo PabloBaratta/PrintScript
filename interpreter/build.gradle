@@ -10,3 +10,7 @@ dependencies {
     implementation project(':ast')
     implementation project(':lexer')
 }
+
+test {
+    environment "MY_VAR", "Hello"
+}
