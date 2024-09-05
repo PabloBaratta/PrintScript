@@ -6,10 +6,12 @@ public class Variable {
 
 	private Type type;
 	private Optional<Literal> literal;
+	private Boolean isConst;
 
-	public Variable(Type type, Optional<Literal> expression){
+	public Variable(Type type, Optional<Literal> expression, Boolean isConst){
 		this.type = type;
 		this.literal = expression;
+		this.isConst = isConst;
 	}
 
 	public Type getType() {
@@ -22,6 +24,10 @@ public class Variable {
 
 	public Optional<Literal> getLiteral() {
 		return literal;
+	}
+
+	public Boolean isConst() {
+		return isConst;
 	}
 
 	public void setLiteral(Literal literal) {

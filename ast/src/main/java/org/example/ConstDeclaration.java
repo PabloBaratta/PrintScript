@@ -27,7 +27,7 @@ public class ConstDeclaration implements ASTNode{
 
 	@Override
 	public void accept(ASTVisitor visitor) throws Exception {
-		//visitor.visit(this);
+		visitor.visit(this);
 	}
 
 	@Override

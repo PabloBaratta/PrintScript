@@ -68,6 +68,11 @@ public class CollectorVisitor implements ASTVisitor {
 
 	}
 
+	@Override
+	public void visit(ConstDeclaration constDeclaration) throws Exception {
+
+	}
+
 	public List<ASTNode> getVisitedNodes() {
 		return visitedNodes;
 	}
