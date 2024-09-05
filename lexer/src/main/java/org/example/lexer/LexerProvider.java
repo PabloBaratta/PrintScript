@@ -6,7 +6,7 @@ import java.util.List;
 public class LexerProvider {
 
 	public static Lexer provideV10(String code) {
-		List<Character> whiteSpaces = List.of(' ', '\t', '\n');
+		List<Character> whiteSpaces = List.of(' ', '\t', '\n', '\r');
 		TokenConstructor keywordConstructor =
 				new TokenConstructorImpl(PrintScriptTokenConfig.keywordTokenTypeMapV10());
 		Collection<TokenConstructor> tokenConstructors = List.of(
@@ -18,7 +18,7 @@ public class LexerProvider {
 	}
 
 	public static Lexer provideV11(String code) {
-		List<Character> whiteSpaces = List.of(' ', '\t', '\n');
+		List<Character> whiteSpaces = List.of(' ', '\t', '\n', '\r');
 		TokenConstructor keywordConstructor =
 				new TokenConstructorImpl(PrintScriptTokenConfig.keywordTokenTypeMapV11());
 		Collection<TokenConstructor> tokenConstructors = List.of(
