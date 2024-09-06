@@ -50,7 +50,7 @@ public class ConstNodeConstructor implements NodeConstructor {
 			TokenBuffer tokenBufferWithEquals = tokenBufferWithType.consumeToken();
 
 			TokenBuffer tokenBufferWithoutEquals = tokenBufferWithEquals.consumeToken();
-			return handleEqualsToken(identifierToken, typeToken, equalsToken, tokenBufferWithoutEquals);
+			return handleEqualsToken(identifierToken, equalsToken, typeToken, tokenBufferWithoutEquals);
 		}
 		catch (Exception e) {
 			return NodeResponse.response(e, tokenBuffer);
