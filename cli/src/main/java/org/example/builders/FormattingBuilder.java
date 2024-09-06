@@ -1,9 +1,6 @@
 package org.example.builders;
 
-import org.example.Formatter;
-import org.example.JsonReader;
-import org.example.Program;
-import org.example.Rule;
+import org.example.*;
 import org.example.lexer.StreamReader;
 import org.example.lexer.token.Token;
 
@@ -34,14 +31,15 @@ public class FormattingBuilder implements CommandBuilder{
         List<Token> tokens = lex(reader);
         Program program = parse(tokens);
         Map<String, Rule> rules = readJson(pathConfig);
-        Formatter formatter = new Formatter(rules);
-        System.out.println(formatter.format(program));
-        return formatter.format(program);
+        PrintScriptIteratorTest<ASTNode> nodes = new PrintScriptIteratorTest<>(program.getChildren());
+        Formatter formatter = FormatterProvider.provideV10();
+        System.out.println(formatter.format());
+        return formatter.format();
     }
 
     private Map<String, Rule> readJson(String pathConfig) throws IOException {
         String config = Files.lines(Paths.get(pathConfig))
                 .collect(Collectors.joining("\n"));
-        return JsonReader.readRulesFromJson(config);
+        return Ruler.readRulesFromJson(config);
     }
 }
