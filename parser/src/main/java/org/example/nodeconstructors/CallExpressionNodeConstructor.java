@@ -3,6 +3,7 @@ package org.example.nodeconstructors;
 import org.example.*;
 import org.example.lexer.token.NativeTokenTypes;
 import org.example.lexer.token.Token;
+import org.example.lexer.token.TokenType;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -15,10 +16,14 @@ public class CallExpressionNodeConstructor implements NodeConstructor {
 
 	private final boolean terminal;
 	private final NodeConstructor expConst;
+	private final List<TokenType> nativeFunctions;
 
-	public CallExpressionNodeConstructor(boolean terminal, NodeConstructor expConst){
+	public CallExpressionNodeConstructor(boolean terminal,
+										NodeConstructor expConst,
+										List<TokenType> nativeFunctions){
 		this.terminal = terminal;
 		this.expConst = expConst;
+		this.nativeFunctions = nativeFunctions;
 	}
 
 
@@ -27,7 +32,7 @@ public class CallExpressionNodeConstructor implements NodeConstructor {
 	public NodeResponse build(TokenBuffer tokenBuffer) {
 
 		if (!(tokenBuffer.isNextTokenOfType(NativeTokenTypes.IDENTIFIER.toTokenType())
-			|| tokenBuffer.isNextTokenOfType(NativeTokenTypes.PRINTLN.toTokenType()))){
+			|| tokenBuffer.isNextTokenOfAnyOfThisTypes(nativeFunctions))){
 			return emptyResponse(tokenBuffer);
 		}
 
@@ -153,7 +158,11 @@ public class CallExpressionNodeConstructor implements NodeConstructor {
 		return new Method(identifier1, listOfArguments);
 	}
 
+	public List<TokenType> functions() {
+		return this.nativeFunctions;
+	}
+
 	public CallExpressionNodeConstructor setExpressionParser(ExpressionNodeConstructor cons) {
-		return new CallExpressionNodeConstructor(this.terminal, cons);
+		return new CallExpressionNodeConstructor(this.terminal, cons, this.nativeFunctions);
 	}
 }

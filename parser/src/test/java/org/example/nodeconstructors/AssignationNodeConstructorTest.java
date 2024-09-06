@@ -20,7 +20,7 @@ public class AssignationNodeConstructorTest {
 	@Test
 	public void doesNotRecognizeOtherTokens() {
 
-		NodeConstructor builder = new AssignationNodeConstructor(new ExpressionCollectorNodeConstructor());
+		NodeConstructor builder = new AssignationNodeConstructor(new CollectorNodeConstructor());
 
 		Arrays.stream(NativeTokenTypes.values()).filter(
 				type -> !type.equals(NativeTokenTypes.IDENTIFIER)
@@ -72,7 +72,7 @@ public class AssignationNodeConstructorTest {
 				IDENTIFIER, EQUALS, STRING, SEMICOLON
 		};
 
-		NodeConstructor builder = new AssignationNodeConstructor(new ExpressionCollectorNodeConstructor());
+		NodeConstructor builder = new AssignationNodeConstructor(new CollectorNodeConstructor());
 
 
 		List<Token> tokens = getTokens(nativeTokenTypes);
@@ -87,7 +87,7 @@ public class AssignationNodeConstructorTest {
 	}
 
 	private void assertSuccess(List<Token> tokens, int intermediateTokens) {
-		ExpressionCollectorNodeConstructor collector = new ExpressionCollectorNodeConstructor();
+		CollectorNodeConstructor collector = new CollectorNodeConstructor();
 		NodeConstructor assignationNodeConstructor = new AssignationNodeConstructor(collector);
 
 		NodeResponse build = assignationNodeConstructor.build(new TokenBuffer(tokens));

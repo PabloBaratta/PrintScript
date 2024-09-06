@@ -18,7 +18,15 @@ public class TokenTestUtil {
 	}
 
 	public static Token getaTokenFromTokenType(NativeTokenTypes tokenType) {
-		return new Token(tokenType.toTokenType(), "", new Position(0, 0, 0, 0));
+		String associatedString = "";
+		if (tokenType.equals(NativeTokenTypes.STRING)) {
+			associatedString = "\"value\"";
+		} else if (tokenType.equals(NativeTokenTypes.BOOLEAN)) {
+			associatedString = "true";
+		} else if (tokenType.equals(NativeTokenTypes.NUMBER)) {
+		associatedString = "1";
+		}
+		return new Token(tokenType.toTokenType(), associatedString, new Position(0, 0, 0, 0));
 	}
 
 	public static Token getaTokenFromTokenType(NativeTokenTypes tokenType, String associatedString) {

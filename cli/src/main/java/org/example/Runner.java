@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.example.lexer.LexerProvider.provideV10;
+import static org.example.lexer.LexerProvider.provideV11;
 import static org.example.resources.Util.*;
 
 public class Runner {
@@ -41,6 +42,22 @@ public class Runner {
 		return tokens;
 	}
 
+	public static List<Token> lexV11(String code) throws Exception {
+		Lexer lexer = provideV11(code);
+		List<Token> tokens = new ArrayList<>();
+
+		while (lexer.hasNext()){
+			Try<Token, Exception> possibleToken = lexer.getNext();
+			if (possibleToken.isFail()){
+				throw possibleToken.getFail().get();
+			}
+			else {
+				tokens.add(possibleToken.getSuccess().get());
+			}
+		}
+		return tokens;
+	}
+
 	public static Program parse(List<Token> tokens) throws Exception {
 		Parser parser = createParser(tokens);
 		Try<ASTNode, Exception> possibleAst = parser.parseExpression();
@@ -50,6 +67,14 @@ public class Runner {
 		return (Program) possibleAst.getSuccess().get();
 	}
 
+	public static Program parseV11(List<Token> tokens) throws Exception {
+		Parser parser = ParserProvider.provide11(tokens);
+		Try<ASTNode, Exception> possibleAst = parser.parseExpression();
+		if (possibleAst.isFail()){
+			throw possibleAst.getFail().get();
+		}
+		return (Program) possibleAst.getSuccess().get();
+	}
 	public static void interpret(Program ast) throws Exception {
 		Interpreter interpreter = createInterpreter();
 		interpreter.visit(ast);
