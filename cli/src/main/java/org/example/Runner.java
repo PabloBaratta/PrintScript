@@ -42,18 +42,13 @@ public class Runner {
 		return tokens;
 	}
 
-	public static List<Token> lexV11(String code) throws Exception {
+	public static List<Token> lexV11(Iterator<String> code) throws Exception {
 		Lexer lexer = provideV11(code);
 		List<Token> tokens = new ArrayList<>();
 
 		while (lexer.hasNext()){
-			Try<Token, Exception> possibleToken = lexer.getNext();
-			if (possibleToken.isFail()){
-				throw possibleToken.getFail().get();
-			}
-			else {
-				tokens.add(possibleToken.getSuccess().get());
-			}
+			Token token = lexer.getNext();
+			tokens.add(token);
 		}
 		return tokens;
 	}
