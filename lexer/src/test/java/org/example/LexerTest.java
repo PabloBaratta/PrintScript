@@ -1,4 +1,4 @@
-/*
+
 package org.example;
 
 import org.example.lexer.*;
@@ -9,13 +9,15 @@ import org.example.lexer.token.TokenType;
 import org.example.lexer.utils.Try;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.*;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class LexerTest {
-
+/*
 	private final List<Character> whiteSpaces = Arrays.asList(' ', '\t', '\n');
 
 	@Test
@@ -177,10 +179,11 @@ class LexerTest {
 
 		assertTest(lexer, expectedTokens);
 	}
-
+*/
 	@Test
-	public void testConst(){
-		Lexer lexer = LexerProvider.provideV11("const a: number = 5;");
+	public void testConst() throws Exception {
+        InputStream inputStream = new ByteArrayInputStream("const a: number = 5;".getBytes());
+        Lexer lexer = LexerProvider.provideV11(new StreamReader(inputStream));
 		TokenType num = NativeTokenTypes.NUMBER_TYPE.toTokenType();
 		List<Token> expectedTokens = Arrays.asList(
 				new Token(NativeTokenTypes.CONST.toTokenType(), "const", new Position(0, 5, 1, 1)),
@@ -198,8 +201,9 @@ class LexerTest {
 
 
 	@Test
-	public void testBooleans(){
-		Lexer lexer = LexerProvider.provideV11("let a: boolean = true;");
+	public void testBooleans() throws Exception {
+        InputStream inputStream = new ByteArrayInputStream("let a: boolean = true;".getBytes());
+        Lexer lexer = LexerProvider.provideV11(new StreamReader(inputStream));
 		TokenType bool = NativeTokenTypes.BOOLEAN_TYPE.toTokenType();
 		List<Token> expectedTokens = Arrays.asList(
 				new Token(NativeTokenTypes.LET.toTokenType(), "let", new Position(0, 3, 1, 1)),
@@ -215,10 +219,11 @@ class LexerTest {
 	}
 
 	@Test
-	public void testIfElse(){
+	public void testIfElse() throws Exception {
 
 		String code = "if (a) { let b: string = \"hello\"; } else { let b: string = \"world\"; }";
-		Lexer lexer = LexerProvider.provideV11(code);
+        InputStream inputStream = new ByteArrayInputStream(code.getBytes());
+        Lexer lexer = LexerProvider.provideV11(new StreamReader(inputStream));
 		TokenType leftPar = NativeTokenTypes.LEFT_PARENTHESIS.toTokenType();
 		TokenType rightPar = NativeTokenTypes.RIGHT_PARENTHESES.toTokenType();
 		TokenType str = NativeTokenTypes.STRING_TYPE.toTokenType();
@@ -253,8 +258,9 @@ class LexerTest {
 	}
 
 	@Test
-	public void testReadInput(){
-		Lexer lexer = LexerProvider.provideV11("let a: string = readInput();");
+	public void testReadInput() throws Exception {
+        InputStream inputStream = new ByteArrayInputStream("let a: string = readInput();".getBytes());
+        Lexer lexer = LexerProvider.provideV11(new StreamReader(inputStream));
 		TokenType str = NativeTokenTypes.STRING_TYPE.toTokenType();
 		TokenType read = NativeTokenTypes.READINPUT.toTokenType();
 		TokenType leftPar = NativeTokenTypes.LEFT_PARENTHESIS.toTokenType();
@@ -274,8 +280,9 @@ class LexerTest {
 	}
 
 	@Test
-	public void testReadEnv(){
-		Lexer lexer = LexerProvider.provideV11("let a: string = readEnv();");
+	public void testReadEnv() throws Exception {
+        InputStream inputStream = new ByteArrayInputStream("let a: string = readEnv();".getBytes());
+        Lexer lexer = LexerProvider.provideV11(new StreamReader(inputStream));
 		TokenType str = NativeTokenTypes.STRING_TYPE.toTokenType();
 		TokenType leftPar = NativeTokenTypes.LEFT_PARENTHESIS.toTokenType();
 		TokenType rightPar = NativeTokenTypes.RIGHT_PARENTHESES.toTokenType();
@@ -294,21 +301,17 @@ class LexerTest {
 		assertTest(lexer, expectedTokens);
 	}
 
-	private static void assertTest(Lexer lexer, List<Token> expectedTokens) {
+	private static void assertTest(Lexer lexer, List<Token> expectedTokens) throws Exception {
 		List<Token> actualTokens = new ArrayList<>();
-		Try<Token, Exception> result;
+		Token result;
 
 		while (lexer.hasNext()) {
 			result = lexer.getNext();
-			if (result.isSuccess()) {
-				actualTokens.add(result.getSuccess().orElseThrow());
-			} else {
-				result.getFail().orElseThrow();
-			}
+			actualTokens.add(result);
+
 		}
 
 		assertEquals(expectedTokens, actualTokens, "Token lists do not match");
 	}
 
 }
-*/
