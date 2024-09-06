@@ -1,4 +1,8 @@
-execute /src/test/resources/fileTest.txt
-validate /src/test/resources/fileTest.txt
-analyze /src/test/resources/fileTest.txt /src/test/resources/configurationRules.json
-format /src/test/resources/fileTest.txt /src/test/resources/formattingRules.json
+execute /src/test/resources/fileTest.txt 1.0
+validate /src/test/resources/fileTest.txt 1.0
+analyze /src/test/resources/fileTest.txt /src/test/resources/configurationRules.json 1.0
+format /src/test/resources/fileTest.txt /src/test/resources/formattingRules.json 1.0
+execute /src/test/resources/fileTest.txt 1.1
+validate /src/test/resources/fileTest.txt 1.1
+analyze /src/test/resources/fileTest.txt /src/test/resources/configurationRules.json 1.1
+format /src/test/resources/fileTest.txt /src/test/resources/formattingRules.json 1.1

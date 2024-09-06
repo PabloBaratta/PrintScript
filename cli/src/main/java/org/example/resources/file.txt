@@ -1,3 +1,4 @@
-let holaSi: number = (((10 + 10)));
-println(("hola" + holaSi));
-holaSi = 20;
+if (true) {
+const a: number = 2;
+println(a - 3);
+}

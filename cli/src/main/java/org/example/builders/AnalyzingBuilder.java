@@ -2,10 +2,6 @@ package org.example.builders;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.Program;
-import org.example.lexer.StreamReader;
-import org.example.lexer.token.Token;
-import org.linter.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -14,31 +10,28 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import static org.example.Runner.lex;
-import static org.example.Runner.parse;
+
+import static org.example.Runner.*;
 
 public class AnalyzingBuilder implements CommandBuilder{
     @Override
     public String buildAndRun(String[] parts) throws Exception {
-        if (parts.length != 3) {
-            throw new RuntimeException("Invalid number of arguments, should be three");
+        if (parts.length != 4) {
+            throw new RuntimeException("Invalid number of arguments, should be four");
         }
         String pathFile = Paths.get("").toAbsolutePath() + parts[1];
+
         String pathConfig = Paths.get("").toAbsolutePath() + parts[2];
         String code = Files.lines(Paths.get(pathFile))
                 .collect(Collectors.joining("\n"));
         InputStream inputStream = new ByteArrayInputStream(code.getBytes());
-        StreamReader reader = new StreamReader(inputStream);
-        List<Token> tokens = lex(reader);        Program program = parse(tokens);
-        Linter linter = LinterProvider.getLinterV10();
-        Report report = linter.analyze(program, getConfigurators(pathConfig));
-        for (ReportLine reportLine : report.getReportLines()) {
-            System.out.println(reportLine.errorMessage() + " on " + reportLine.position().toString());
-        }
-        return report.toString();
+
+        String version = parts[3];
+
+        lint(inputStream, version, getConfigurators(pathConfig));
+        return "linting completed";
     }
 
     private Map<String, String> getConfigurators(String pathConfig) throws IOException {
