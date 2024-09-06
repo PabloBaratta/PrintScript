@@ -2,12 +2,17 @@ package org.example;
 
 import org.example.interpreter.Interpreter;
 import org.example.lexer.Lexer;
+import org.example.lexer.StreamReader;
 import org.example.lexer.token.Token;
 import org.example.lexer.utils.Try;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,39 +24,31 @@ public class Runner {
 
 	public static void run(String filePath) throws Exception {
 		String code = readFileAsString(filePath);
-		List<Token> tokens = lex(code);
+		InputStream inputStream = new ByteArrayInputStream(code.getBytes());
+		StreamReader reader = new StreamReader(inputStream);
+		List<Token> tokens = lex(reader);
 		Program ast = parse(tokens);
 		interpret(ast);
 	}
 
-	public static List<Token> lex(String code) throws Exception {
-		Lexer lexer = provideV10(code);
+	public static List<Token> lex(Iterator<String> reader) throws Exception {
+		Lexer lexer = provideV10(reader);
 		List<Token> tokens = new ArrayList<>();
 
 		while (lexer.hasNext()){
-			Try<Token, Exception> possibleToken = lexer.getNext();
-			if (possibleToken.isFail()){
-				throw possibleToken.getFail().get();
-			}
-			else {
-				tokens.add(possibleToken.getSuccess().get());
-			}
+			Token token = lexer.getNext();
+			tokens.add(token);
 		}
 		return tokens;
 	}
 
-	public static List<Token> lexV11(String code) throws Exception {
+	public static List<Token> lexV11(Iterator<String> code) throws Exception {
 		Lexer lexer = provideV11(code);
 		List<Token> tokens = new ArrayList<>();
 
 		while (lexer.hasNext()){
-			Try<Token, Exception> possibleToken = lexer.getNext();
-			if (possibleToken.isFail()){
-				throw possibleToken.getFail().get();
-			}
-			else {
-				tokens.add(possibleToken.getSuccess().get());
-			}
+			Token token = lexer.getNext();
+			tokens.add(token);
 		}
 		return tokens;
 	}

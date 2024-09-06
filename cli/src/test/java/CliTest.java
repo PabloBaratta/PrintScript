@@ -1,8 +1,12 @@
 import org.example.Cli;
 import org.example.Runner;
+import org.example.lexer.StreamReader;
 import org.example.lexer.token.Token;
 import org.junit.jupiter.api.Test;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -45,7 +49,9 @@ public class CliTest {
 
 	@Test
 	public void testRunner() throws Exception {
-		List<Token> tokens =Runner.lexV11("const a: number = 1;");
+		InputStream inputStream = new ByteArrayInputStream("const a: number = 1;".getBytes());
+		StreamReader reader = new StreamReader(inputStream);
+		List<Token> tokens =Runner.lexV11(reader);
 		Runner.parseV11(tokens);
 	}
 }

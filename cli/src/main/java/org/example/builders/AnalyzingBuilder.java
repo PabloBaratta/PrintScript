@@ -3,10 +3,13 @@ package org.example.builders;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.Program;
+import org.example.lexer.StreamReader;
 import org.example.lexer.token.Token;
 import org.linter.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -27,8 +30,9 @@ public class AnalyzingBuilder implements CommandBuilder{
         String pathConfig = Paths.get("").toAbsolutePath() + parts[2];
         String code = Files.lines(Paths.get(pathFile))
                 .collect(Collectors.joining("\n"));
-        List<Token> tokens = lex(code);
-        Program program = parse(tokens);
+        InputStream inputStream = new ByteArrayInputStream(code.getBytes());
+        StreamReader reader = new StreamReader(inputStream);
+        List<Token> tokens = lex(reader);        Program program = parse(tokens);
         Linter linter = LinterProvider.getLinterV10();
         Report report = linter.analyze(program, getConfigurators(pathConfig));
         for (ReportLine reportLine : report.getReportLines()) {
