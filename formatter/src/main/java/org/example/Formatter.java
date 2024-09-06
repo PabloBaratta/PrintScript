@@ -96,14 +96,14 @@ public class Formatter {
 		StringBuilder result = new StringBuilder();
 		if (identifier.toString().equals("println")) {
 			checkNewLines(result);
-			result.append(identifier.toString()).append("(");
-			addNewLines(arguments, result);
-			result.append(");\n");
 		}
+		result.append(identifier.toString()).append("(");
+		formatArguments(arguments, result);
+		result.append(");\n");
 		return result;
 	}
 
-	private static void addNewLines(List<Expression> arguments, StringBuilder result) {
+	private static void formatArguments(List<Expression> arguments, StringBuilder result) {
 		for (int i = 0; i < arguments.size(); i++) {
 			result.append(arguments.get(i).toString());
 			if (i < arguments.size() - 1) {

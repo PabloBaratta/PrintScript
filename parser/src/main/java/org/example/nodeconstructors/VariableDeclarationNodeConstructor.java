@@ -20,8 +20,7 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
 
 	public VariableDeclarationNodeConstructor(NodeConstructor ec,
 											List<TokenType> types,
-											List<TokenType> literalType
-	) {
+											List<TokenType> literalType) {
 		this.expressionNodeConstructor = ec;
 		this.variableDeclarationTokenTypes = types;
 		this.literalTypes = literalType;

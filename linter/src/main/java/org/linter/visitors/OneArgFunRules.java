@@ -106,6 +106,11 @@ public class OneArgFunRules implements ASTVisitor {
 		visitBlock(elseBlock);
 	}
 
+	@Override
+	public void visit(ConstDeclaration constDeclaration) throws Exception {
+
+	}
+
 	private void visitBlock(List<ASTNode> block) throws Exception {
 		for (ASTNode node : block){
 			node.accept(this);

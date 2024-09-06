@@ -15,5 +15,6 @@ include('lexer', 'parser', 'interpreter', 'linter')
 include 'ast'
 include 'cli'
 include 'formatter'
+include 'utils'
 include 'runner'
 

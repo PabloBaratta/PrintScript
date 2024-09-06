@@ -18,10 +18,12 @@ public class Literal<T extends Comparable<T>> implements Expression{
 
 	@Override
 	public void accept(ASTVisitor visitor) throws Exception {
-		if (this instanceof TextLiteral){
-			visitor.visit((TextLiteral) this);
-		} else if (this instanceof NumericLiteral){
-			visitor.visit((NumericLiteral) this);
+		switch (this) {
+			case TextLiteral textLiteral -> visitor.visit(textLiteral);
+			case NumericLiteral numericLiteral -> visitor.visit(numericLiteral);
+			case BooleanLiteral booleanLiteral -> visitor.visit(booleanLiteral);
+			default -> {
+			}
 		}
 	}
 

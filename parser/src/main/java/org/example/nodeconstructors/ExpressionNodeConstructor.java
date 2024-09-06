@@ -1,7 +1,6 @@
 package org.example.nodeconstructors;
 
 import org.example.*;
-import org.example.lexer.token.NativeTokenTypes;
 import org.example.lexer.token.Position;
 import org.example.lexer.token.Token;
 import org.example.lexer.token.TokenType;
@@ -64,7 +63,8 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 	private boolean isThisExpression(TokenBuffer tokenBuffer) {
 		return tokenBuffer.isNextTokenOfAnyOfThisTypes(operators)
 				|| tokenBuffer.isNextTokenOfAnyOfThisTypes(expressions)
-				|| tokenBuffer.isNextTokenOfType(LEFT_PARENTHESIS.toTokenType());
+				|| tokenBuffer.isNextTokenOfType(LEFT_PARENTHESIS.toTokenType())
+				|| tokenBuffer.isNextTokenOfAnyOfThisTypes(callExpressionConstructor.functions());
 	}
 
 	private NodeResponse parseBE(TokenBuffer tb,
@@ -179,6 +179,11 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 				TextLiteral textLiteral = new TextLiteral(s.substring(1, s.length() - 1), position);
 				return textLiteral;
 			});
+		} else if (tokenBuffer.isNextTokenOfType(BOOLEAN.toTokenType())) {
+			return parseLiteral(tokenBuffer, (s, position) -> {
+				BooleanLiteral booleanLiteral = new BooleanLiteral(Boolean.parseBoolean(s), position);
+				return booleanLiteral;
+			});
 		} else if (tokenBuffer.isNextTokenOfType(IDENTIFIER.toTokenType())) {
 
 			TokenBuffer tokenBufferWithoutId = tokenBuffer.consumeToken();
@@ -188,6 +193,8 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 			}
 
 			return parseLiteral(tokenBuffer, Identifier::new);
+		} else if (tokenBuffer.isNextTokenOfAnyOfThisTypes(callExpressionConstructor.functions())) {
+			return callExpressionConstructor.build(tokenBuffer);
 		} else if (tokenBuffer.isNextTokenOfType(LEFT_PARENTHESIS.toTokenType())) {
 			return parseParenthesisExpression(tokenBuffer);
 		}

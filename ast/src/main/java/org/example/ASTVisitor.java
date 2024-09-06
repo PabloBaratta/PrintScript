@@ -27,4 +27,5 @@ public interface ASTVisitor {
 	void visit(BooleanLiteral booleanLiteral) throws Exception;
 
 	void visit(IfStatement ifStatement) throws Exception;
+	void visit(ConstDeclaration constDeclaration) throws Exception;
 }
