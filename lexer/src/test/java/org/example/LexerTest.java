@@ -182,8 +182,8 @@ class LexerTest {
 */
 	@Test
 	public void testConst() throws Exception {
-        InputStream inputStream = new ByteArrayInputStream("const a: number = 5;".getBytes());
-        Lexer lexer = LexerProvider.provideV11(new StreamReader(inputStream));
+		InputStream inputStream = new ByteArrayInputStream("const a: number = 5;".getBytes());
+		Lexer lexer = LexerProvider.provideV11(new StreamReader(inputStream));
 		TokenType num = NativeTokenTypes.NUMBER_TYPE.toTokenType();
 		List<Token> expectedTokens = Arrays.asList(
 				new Token(NativeTokenTypes.CONST.toTokenType(), "const", new Position(0, 5, 1, 1)),
@@ -202,8 +202,8 @@ class LexerTest {
 
 	@Test
 	public void testBooleans() throws Exception {
-        InputStream inputStream = new ByteArrayInputStream("let a: boolean = true;".getBytes());
-        Lexer lexer = LexerProvider.provideV11(new StreamReader(inputStream));
+		InputStream inputStream = new ByteArrayInputStream("let a: boolean = true;".getBytes());
+		Lexer lexer = LexerProvider.provideV11(new StreamReader(inputStream));
 		TokenType bool = NativeTokenTypes.BOOLEAN_TYPE.toTokenType();
 		List<Token> expectedTokens = Arrays.asList(
 				new Token(NativeTokenTypes.LET.toTokenType(), "let", new Position(0, 3, 1, 1)),
@@ -222,8 +222,8 @@ class LexerTest {
 	public void testIfElse() throws Exception {
 
 		String code = "if (a) { let b: string = \"hello\"; } else { let b: string = \"world\"; }";
-        InputStream inputStream = new ByteArrayInputStream(code.getBytes());
-        Lexer lexer = LexerProvider.provideV11(new StreamReader(inputStream));
+		InputStream inputStream = new ByteArrayInputStream(code.getBytes());
+		Lexer lexer = LexerProvider.provideV11(new StreamReader(inputStream));
 		TokenType leftPar = NativeTokenTypes.LEFT_PARENTHESIS.toTokenType();
 		TokenType rightPar = NativeTokenTypes.RIGHT_PARENTHESES.toTokenType();
 		TokenType str = NativeTokenTypes.STRING_TYPE.toTokenType();
@@ -259,8 +259,8 @@ class LexerTest {
 
 	@Test
 	public void testReadInput() throws Exception {
-        InputStream inputStream = new ByteArrayInputStream("let a: string = readInput();".getBytes());
-        Lexer lexer = LexerProvider.provideV11(new StreamReader(inputStream));
+		InputStream inputStream = new ByteArrayInputStream("let a: string = readInput();".getBytes());
+		Lexer lexer = LexerProvider.provideV11(new StreamReader(inputStream));
 		TokenType str = NativeTokenTypes.STRING_TYPE.toTokenType();
 		TokenType read = NativeTokenTypes.READINPUT.toTokenType();
 		TokenType leftPar = NativeTokenTypes.LEFT_PARENTHESIS.toTokenType();
@@ -281,8 +281,8 @@ class LexerTest {
 
 	@Test
 	public void testReadEnv() throws Exception {
-        InputStream inputStream = new ByteArrayInputStream("let a: string = readEnv();".getBytes());
-        Lexer lexer = LexerProvider.provideV11(new StreamReader(inputStream));
+		InputStream inputStream = new ByteArrayInputStream("let a: string = readEnv();".getBytes());
+		Lexer lexer = LexerProvider.provideV11(new StreamReader(inputStream));
 		TokenType str = NativeTokenTypes.STRING_TYPE.toTokenType();
 		TokenType leftPar = NativeTokenTypes.LEFT_PARENTHESIS.toTokenType();
 		TokenType rightPar = NativeTokenTypes.RIGHT_PARENTHESES.toTokenType();
