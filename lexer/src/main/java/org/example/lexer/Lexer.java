@@ -1,90 +1,99 @@
 package org.example.lexer;
 
+import org.example.PrintScriptIterator;
 import org.example.lexer.token.Token;
-import org.example.lexer.utils.Try;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Comparator;
+import java.util.*;
 
-public class Lexer {
+public class Lexer implements PrintScriptIterator<Token> {
 
-	private final String code;
-	private final Collection<TokenConstructor> tokConstr;
-	private final TokenConstructor keyConstr;
+	private final Iterator<String> reader;
+	private final Collection<TokenConstructor> constructors;
+	private final TokenConstructor keywords;
 	private final List<Character> whiteSpaces;
-	int pos = 0;
-	int line = 1;
-	int column = 1;
+	private String currentLine;
+	private int offset = 0;
+	private int line = 1;
 
-	public Lexer(String code,
-				Collection<TokenConstructor> tokConstr,
-				TokenConstructor keyConstr,
-				List<Character> whiteSpaces){
-		this.code = code;
-		this.tokConstr = tokConstr;
-		this.keyConstr = keyConstr;
+	public Lexer(Iterator<String> reader,
+				Collection<TokenConstructor> constructors,
+				TokenConstructor keywords,
+				List<Character> whiteSpaces) {
+		this.reader = reader;
+		this.constructors = constructors;
+		this.keywords = keywords;
 		this.whiteSpaces = whiteSpaces;
+		this.currentLine = reader.hasNext() ? reader.next() : "";
 	}
 
-	public boolean hasNext(){
-		return pos < code.length();
-	}
-
-	public Try<Token, Exception> getNext() {
-
-		if (!hasNext()) {
-			return new Try<>(new NoMoreTokensAvailableException());
+	@Override
+	public boolean hasNext() {
+		// Check if the current line is empty or if the offset has reached the end of the current line
+		// and there are no more lines to read from the reader
+		if ((currentLine.isEmpty() || currentLine.length() == offset) && !reader.hasNext()) {
+			return false;
 		}
 
-		char currentCharacter = code.charAt(pos);
+		// If the current line is empty but there are more lines to read, advance to the next line
+		while (reader.hasNext() && currentLine.isEmpty()) {
+			currentLine = reader.next();
+			line++;
+		}
 
-		skipCharactersFromList(currentCharacter, whiteSpaces);
+		// Return true if the current line is not empty
+		return !currentLine.isEmpty();
+	}
 
-		Optional<Token> op = keyConstr.constructToken(code.substring(pos), pos, line, column)
-				.or(() -> tokConstr.stream()
-						.map(c -> c.constructToken(code.substring(pos), pos, line, column))
+	@Override
+	public Token getNext() throws Exception {
+
+		checkEndOfLine();
+		skipWhiteSpace();
+		checkEndOfLine();
+
+		char currentCharacter = currentLine.charAt(offset);
+
+		Optional<Token> optionalToken = getOptionalToken();
+
+		if (optionalToken.isPresent()) {
+			Token token = optionalToken.get();
+			setOffset(offset + token.position().getLength());
+			return token;
+		}
+
+		throw new UnsupportedCharacterException(currentCharacter, offset, line);
+	}
+
+	private Optional<Token> getOptionalToken() {
+		String s = currentLine.substring(offset);
+		return keywords.constructToken(s, offset, line, offset + 1)
+				.or(() -> constructors.stream()
+						.map(c -> c.constructToken(s, offset, line, offset + 1))
 						.filter(Optional::isPresent)
 						.map(Optional::get)
 						.max(Comparator.comparingInt(Token::length)));
-
-		if (op.isPresent()) {
-			Token token = op.get();
-			setPos(pos + token.position().getLength());
-			return new Try<>(token);
-		}
-
-		UnsupportedCharacterException l = new UnsupportedCharacterException(currentCharacter, pos, line);
-
-		return new Try<>(l);
-
 	}
 
-	private void skipCharactersFromList(char currentCharacter, List<Character> characters) {
-
-		while (characters.contains(currentCharacter) && hasNext()) {
-			setPos(pos + 1);
-			if (hasNext()) {
-				currentCharacter = code.charAt(pos);
-			}
+	private void checkEndOfLine() throws NoMoreTokensAvailableException {
+		if (currentLine.length() == offset && reader.hasNext()) {
+			currentLine = reader.next();
+			offset = 0;
+			line++;
+		}
+		else if (currentLine.length() == offset && !reader.hasNext()) {
+			throw new NoMoreTokensAvailableException();
 		}
 	}
 
-
-	private void setPos(int newPosition) {
-		while (pos < newPosition) {
-			char currentChar = code.charAt(pos);
-			if (currentChar == '\n') {
-				line++;
-				column = 0;
-			}
-			else {
-				column++;
-			}
-			pos++;
-
+	private void skipWhiteSpace() {
+		while (offset < currentLine.length() && whiteSpaces.contains(currentLine.charAt(offset))) {
+			offset++;
 		}
 	}
 
+	private void setOffset(int newPosition) {
+		while (offset < newPosition && offset < currentLine.length()) {
+			offset++;
+		}
+	}
 }
