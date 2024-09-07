@@ -2,6 +2,7 @@ package org.example.resources;
 
 import org.example.Parser;
 import org.example.ParserProvider;
+import org.example.PrintScriptIterator;
 import org.example.TokenBuffer;
 import org.example.interpreter.Interpreter;
 import org.example.lexer.Lexer;
@@ -20,7 +21,7 @@ import java.util.Map;
 
 public class Util {
 
-	public static Parser createParser(List<Token> tokens) {
+	public static Parser createParser(PrintScriptIterator<Token> tokens) throws Exception {
 		return ParserProvider.provide10(tokens);
 	}
 

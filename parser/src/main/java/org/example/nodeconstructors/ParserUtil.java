@@ -35,8 +35,8 @@ public class ParserUtil {
 		if (noTokensBetweenEqualsAndSemiColon){
 			throw new SemanticErrorException(eq, "was expecting assignation");
 		}
-
-		TokenBuffer expressionTokenBuffer = new TokenBuffer(tokens);
+		Accumulator accumulator = new Accumulator(tokens);
+		TokenBuffer expressionTokenBuffer = new TokenBuffer(accumulator);
 
 		NodeResponse buildResult = expressionConstructor.build(expressionTokenBuffer);
 

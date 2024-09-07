@@ -15,7 +15,7 @@ public class ScopeNodeConstructor implements  NodeConstructor{
 		this.constructors = constructors;
 	}
 	@Override
-	public NodeResponse build(TokenBuffer tokenBuffer) {
+	public NodeResponse build(TokenBuffer tokenBuffer) throws Exception {
 		LinkedList<ASTNode> nodes = new LinkedList<>();
 
 		while (tokenBuffer.hasAnyTokensLeft()) {
@@ -35,7 +35,7 @@ public class ScopeNodeConstructor implements  NodeConstructor{
 	}
 
 
-	private Response getAstNodeExceptionTry(TokenBuffer tokens) {
+	private Response getAstNodeExceptionTry(TokenBuffer tokens) throws Exception {
 		for (NodeConstructor nodeConstructor : constructors) {
 
 			NodeResponse build = nodeConstructor.build(tokens);

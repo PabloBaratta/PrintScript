@@ -14,14 +14,14 @@ import static org.example.lexer.token.NativeTokenTypes.*;
 
 public class ParserProvider {
 
-	public static Parser provide10(List<Token> tokens) {
+	public static Parser provide10(PrintScriptIterator<Token> tokens) throws Exception {
 		List<NodeConstructor> nodeConstructors = getNodeConstructors10();
 		List<BlockNodeConstructor> blockNodeConstructors = new LinkedList<>();
 		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
 		return new Parser(nodeConstructors, blockNodeConstructors, tokenBuffer);
 	}
 
-	public static Parser provide11(List<Token> tokens) {
+	public static Parser provide11(PrintScriptIterator<Token> tokens) throws Exception {
 		List<TokenType> operands = List.copyOf(PrintScriptTokenConfig.literalTokenTypeMapV11().values());
 		List<TokenType> nativeFunctions = List.of(PRINTLN.toTokenType(),
 				READENV.toTokenType(),

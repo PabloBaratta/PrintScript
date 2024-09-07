@@ -28,7 +28,7 @@ public class Parser {
 
 	}
 
-	public Try<ASTNode, Exception> parseExpression() {
+	public Try<ASTNode, Exception> parseExpression() throws Exception {
 		NodeResponse build = scopeConstructor.build(tokens);
 		if (build.possibleNode().isFail()) {
 			return new Try<>(build.possibleNode().getFail().get());

@@ -4,10 +4,7 @@ import org.example.lexer.token.Position;
 import org.example.lexer.token.Token;
 import org.example.lexer.token.TokenType;
 import org.example.lexer.utils.Try;
-import org.example.nodeconstructors.CallExpressionNodeConstructor;
-import org.example.nodeconstructors.ExpressionNodeConstructor;
-import org.example.nodeconstructors.NodeConstructor;
-import org.example.nodeconstructors.VariableDeclarationNodeConstructor;
+import org.example.nodeconstructors.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ParserTest {
 
 	@Test
-	public void testSimpleAddExpression(){
+	public void testSimpleAddExpression() throws Exception {
 		List<NodeConstructor> list = new ArrayList<>();
 		List<TokenType> expressions = new ArrayList<>();
 		expressions.add(NUMBER.toTokenType());
@@ -34,7 +31,8 @@ public class ParserTest {
 		tokens.add(new Token(NUMBER.toTokenType(), "1", new Position(1, 1, 1, 1)));
 		tokens.add(new Token(PLUS.toTokenType(), "+", new Position(2, 1, 1, 2)));
 		tokens.add(new Token(NUMBER.toTokenType(), "2", new Position(3, 1, 1, 3)));
-		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
+		Accumulator accumulator = new Accumulator(tokens);
+		TokenBuffer tokenBuffer = new TokenBuffer(accumulator);
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
 		Try<ASTNode, Exception> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
@@ -42,7 +40,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void testNumberStringOperatorCombination(){
+	public void testNumberStringOperatorCombination() throws Exception {
 		List<NodeConstructor> list = new ArrayList<>();
 		List<TokenType> expressions = new ArrayList<>();
 		expressions.add(NUMBER.toTokenType());
@@ -55,7 +53,8 @@ public class ParserTest {
 		tokens.add(new Token(NUMBER.toTokenType(), "2", new Position(3, 1, 1, 3)));
 		tokens.add(new Token(ASTERISK.toTokenType(), "*", new Position(4, 1, 1, 4)));
 		tokens.add(new Token(STRING.toTokenType(), "\"hola\"", new Position(5, 6, 1, 5)));
-		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
+		Accumulator accumulator = new Accumulator(tokens);
+		TokenBuffer tokenBuffer = new TokenBuffer(accumulator);
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
 		Try<ASTNode, Exception> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
@@ -63,7 +62,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void testOnlyNumber(){
+	public void testOnlyNumber() throws Exception {
 		List<NodeConstructor> list = new ArrayList<>();
 		List<TokenType> expressions = new ArrayList<>();
 		expressions.add(NUMBER.toTokenType());
@@ -72,7 +71,8 @@ public class ParserTest {
 		list.add(getExpressionNodeConstructor(expressions));
 		List<Token> tokens = new ArrayList<>();
 		tokens.add(new Token(NUMBER.toTokenType(), "1", new Position(1, 1, 1, 1)));
-		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
+		Accumulator accumulator = new Accumulator(tokens);
+		TokenBuffer tokenBuffer = new TokenBuffer(accumulator);
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
 		Try<ASTNode, Exception> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
@@ -80,7 +80,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void testOnlyString(){
+	public void testOnlyString() throws Exception {
 		List<NodeConstructor> list = new ArrayList<>();
 		List<TokenType> expressions = new ArrayList<>();
 		expressions.add(NUMBER.toTokenType());
@@ -91,7 +91,8 @@ public class ParserTest {
 		List<Token> tokens = new ArrayList<>();
 		Position pos = new Position(1, 20, 1, 1);
 		tokens.add(new Token(str, "\"hola buenas tardes\"", pos));
-		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
+		Accumulator accumulator = new Accumulator(tokens);
+		TokenBuffer tokenBuffer = new TokenBuffer(accumulator);
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
 		Try<ASTNode, Exception> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
@@ -108,7 +109,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void testOnlyIdentifier(){
+	public void testOnlyIdentifier() throws Exception {
 		List<NodeConstructor> list = new ArrayList<>();
 		List<TokenType> expressions = new ArrayList<>();
 		expressions.add(NUMBER.toTokenType());
@@ -117,7 +118,8 @@ public class ParserTest {
 		list.add(getExpressionNodeConstructor(expressions));
 		List<Token> tokens = new ArrayList<>();
 		tokens.add(new Token(IDENTIFIER.toTokenType(), "si", new Position(1, 2, 1, 1)));
-		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
+		Accumulator accumulator = new Accumulator(tokens);
+		TokenBuffer tokenBuffer = new TokenBuffer(accumulator);
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
 		Try<ASTNode, Exception> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
@@ -125,7 +127,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void testVariableDeclarationWithParentheses() {
+	public void testVariableDeclarationWithParentheses() throws Exception {
 
 		List<TokenType> expressions = new ArrayList<>();
 
@@ -144,7 +146,8 @@ public class ParserTest {
 		tokens.add(new Token(NUMBER.toTokenType(), "2", new Position(9, 1, 17, 9)));
 		tokens.add(new Token(rightPar, ")", new Position(10, 1, 17, 10)));
 
-		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
+		Accumulator accumulator = new Accumulator(tokens);
+		TokenBuffer tokenBuffer = new TokenBuffer(accumulator);
 		ExpressionNodeConstructor e1 = getExpressionNodeConstructor(expressions);
 		Parser parser = new Parser(new LinkedList<>(List.of(e1)), new ArrayList<>(), tokenBuffer);
 
@@ -158,16 +161,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void method(){
-
-		List<TokenType> expressions = new ArrayList<>();
-		expressions.add(NUMBER.toTokenType());
-		expressions.add(STRING.toTokenType());
-		expressions.add(IDENTIFIER.toTokenType());
-
-		List<NodeConstructor> list = new ArrayList<>();
-		list.add(getExpressionNodeConstructor(expressions));
-
+	public void method() throws Exception {
 		List<Token> tokens = new ArrayList<>();
 		tokens.add(new Token(IDENTIFIER.toTokenType(), "readInput", new Position(1, 2, 1, 1)));
 		tokens.add(new Token(LEFT_PARENTHESIS.toTokenType(), "(", new Position(2, 1, 1, 2)));
@@ -175,9 +169,10 @@ public class ParserTest {
 		tokens.add(new Token(PLUS.toTokenType(), "+", new Position(4, 1, 1, 4)));
 		tokens.add(new Token(NUMBER.toTokenType(), "2", new Position(5, 1, 1, 5)));
 		tokens.add(new Token(RIGHT_PARENTHESES.toTokenType(), ")", new Position(6, 1, 1, 6)));
+		tokens.add(new Token(SEMICOLON.toTokenType(), ";", new Position(6, 1, 1, 6)));
 
-		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
-		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
+		Accumulator accumulator = new Accumulator(tokens);
+		Parser parser = ParserProvider.provide10(accumulator);
 		Try<ASTNode, Exception> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
 		assertTrue(node instanceof Program);
@@ -188,16 +183,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void methodWithMethods(){
-
-		List<TokenType> expressions = new ArrayList<>();
-		expressions.add(NUMBER.toTokenType());
-		expressions.add(STRING.toTokenType());
-		expressions.add(IDENTIFIER.toTokenType());
-
-		List<NodeConstructor> list = new ArrayList<>();
-		list.add(getExpressionNodeConstructor(expressions));
-
+	public void methodWithMethods() throws Exception {
 		List<Token> tokens = new ArrayList<>();
 		tokens.add(new Token(IDENTIFIER.toTokenType(), "readInput", new Position(1, 2, 1, 1)));
 		tokens.add(new Token(LEFT_PARENTHESIS.toTokenType(), "(", new Position(2, 1, 1, 2)));
@@ -208,9 +194,11 @@ public class ParserTest {
 		tokens.add(new Token(NUMBER.toTokenType(), "1", new Position(7, 1, 1, 7)));
 		tokens.add(new Token(RIGHT_PARENTHESES.toTokenType(), ")", new Position(8, 1, 1, 8)));
 		tokens.add(new Token(RIGHT_PARENTHESES.toTokenType(), ")", new Position(9, 1, 1, 9)));
+		tokens.add(new Token(SEMICOLON.toTokenType(), ";", new Position(9, 1, 1, 9)));
 
-		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
-		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
+		Accumulator accumulator = new Accumulator(tokens);
+		Parser parser = ParserProvider.provide10(accumulator);
+
 		Try<ASTNode, Exception> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
 		assertTrue(node instanceof Program);
@@ -227,7 +215,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void varWithMethods(){
+	public void varWithMethods() throws Exception {
 
 
 		TokenType let = LET.toTokenType();
@@ -246,8 +234,8 @@ public class ParserTest {
 		tokens.add(new Token(RIGHT_PARENTHESES.toTokenType(), ")", new Position(9, 1, 1, 9)));
 		tokens.add(new Token(SEMICOLON.toTokenType(), ";", new Position(10, 1, 1, 10)));
 
-
-		Parser parser = ParserProvider.provide10(tokens);
+		Accumulator accumulator = new Accumulator(tokens);
+		Parser parser = ParserProvider.provide10(accumulator);
 
 		Try<ASTNode, Exception> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
@@ -264,7 +252,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void testEntireProgram11() {
+	public void testEntireProgram11() throws Exception {
 		NativeTokenTypes[] tokenTypes = new NativeTokenTypes[] {
 			LET, IDENTIFIER, COLON, STRING_TYPE, EQUALS, STRING, SEMICOLON,
 			PRINTLN, LEFT_PARENTHESIS, IDENTIFIER, RIGHT_PARENTHESES, SEMICOLON,
@@ -277,8 +265,8 @@ public class ParserTest {
 				RIGHT_BRACE,
 			RIGHT_BRACE
 		};
-
-		Parser parser = ParserProvider.provide11(TokenTestUtil.getTokens(tokenTypes));
+		Accumulator accumulator = new Accumulator(TokenTestUtil.getTokens(tokenTypes));
+		Parser parser = ParserProvider.provide11(accumulator);
 
 		Try<ASTNode, Exception> astNodeExceptionTry = parser.parseExpression();
 		assertTrue(astNodeExceptionTry.isSuccess());
@@ -302,7 +290,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void testIfElse11() {
+	public void testIfElse11() throws Exception {
 		NativeTokenTypes[] tokenTypes = new NativeTokenTypes[] {
 
 				IF, LEFT_PARENTHESIS, BOOLEAN, RIGHT_PARENTHESES, LEFT_BRACE,
@@ -313,7 +301,8 @@ public class ParserTest {
 				RIGHT_BRACE
 		};
 
-		Parser parser = ParserProvider.provide11(TokenTestUtil.getTokens(tokenTypes));
+		Accumulator accumulator = new Accumulator(TokenTestUtil.getTokens(tokenTypes));
+		Parser parser = ParserProvider.provide11(accumulator);
 
 		Try<ASTNode, Exception> astNodeExceptionTry = parser.parseExpression();
 		assertTrue(astNodeExceptionTry.isSuccess());
@@ -338,7 +327,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void testIfConst11() {
+	public void testIfConst11() throws Exception {
 		NativeTokenTypes[] tokenTypes = new NativeTokenTypes[] {
 
 				IF, LEFT_PARENTHESIS, BOOLEAN, RIGHT_PARENTHESES, LEFT_BRACE,
@@ -347,7 +336,8 @@ public class ParserTest {
 
 		};
 
-		Parser parser = ParserProvider.provide11(TokenTestUtil.getTokens(tokenTypes));
+		Accumulator accumulator = new Accumulator(TokenTestUtil.getTokens(tokenTypes));
+		Parser parser = ParserProvider.provide11(accumulator);
 
 		Try<ASTNode, Exception> astNodeExceptionTry = parser.parseExpression();
 		assertTrue(astNodeExceptionTry.isSuccess());
@@ -372,13 +362,14 @@ public class ParserTest {
 	}
 
 	@Test
-	public void test() {
+	public void test() throws Exception {
 		NativeTokenTypes[] tokenTypes = new NativeTokenTypes[] {
 				PRINTLN, LEFT_PARENTHESIS, READINPUT, LEFT_PARENTHESIS, STRING, RIGHT_PARENTHESES,
 				RIGHT_PARENTHESES, SEMICOLON
 		};
 
-		Parser parser = ParserProvider.provide11(TokenTestUtil.getTokens(tokenTypes));
+		Accumulator accumulator = new Accumulator(TokenTestUtil.getTokens(tokenTypes));
+		Parser parser = ParserProvider.provide11(accumulator);
 
 		Try<ASTNode, Exception> astNodeExceptionTry = parser.parseExpression();
 		assertTrue(astNodeExceptionTry.isSuccess());
@@ -394,13 +385,14 @@ public class ParserTest {
 	}
 
 	@Test
-	public void readInputSentence() {
+	public void readInputSentence() throws Exception {
 		NativeTokenTypes[] tokenTypes = new NativeTokenTypes[] {
 				LET, IDENTIFIER, COLON, STRING_TYPE, EQUALS,
 				READINPUT, LEFT_PARENTHESIS, STRING, RIGHT_PARENTHESES, SEMICOLON
 		};
 
-		Parser parser = ParserProvider.provide11(TokenTestUtil.getTokens(tokenTypes));
+		Accumulator accumulator = new Accumulator(TokenTestUtil.getTokens(tokenTypes));
+		Parser parser = ParserProvider.provide11(accumulator);
 
 		Try<ASTNode, Exception> astNodeExceptionTry = parser.parseExpression();
 		assertTrue(astNodeExceptionTry.isSuccess());

@@ -3,6 +3,7 @@ package org.example.builders;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.Program;
+import org.example.lexer.Lexer;
 import org.example.lexer.StreamReader;
 import org.example.lexer.token.Token;
 import org.linter.*;
@@ -17,8 +18,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import static org.example.Runner.lex;
 import static org.example.Runner.parse;
+import static org.example.lexer.LexerProvider.provideV10;
 
 public class AnalyzingBuilder implements CommandBuilder{
     @Override
@@ -32,7 +33,8 @@ public class AnalyzingBuilder implements CommandBuilder{
                 .collect(Collectors.joining("\n"));
         InputStream inputStream = new ByteArrayInputStream(code.getBytes());
         StreamReader reader = new StreamReader(inputStream);
-        List<Token> tokens = lex(reader);        Program program = parse(tokens);
+        Lexer lexer = provideV10(reader);
+        Program program = parse(lexer);
         Linter linter = LinterProvider.getLinterV10();
         Report report = linter.analyze(program, getConfigurators(pathConfig));
         for (ReportLine reportLine : report.getReportLines()) {

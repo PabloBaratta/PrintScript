@@ -29,7 +29,7 @@ public class CallExpressionNodeConstructor implements NodeConstructor {
 
 
 	@Override
-	public NodeResponse build(TokenBuffer tokenBuffer) {
+	public NodeResponse build(TokenBuffer tokenBuffer) throws Exception {
 
 		if (!(tokenBuffer.isNextTokenOfType(NativeTokenTypes.IDENTIFIER.toTokenType())
 			|| tokenBuffer.isNextTokenOfAnyOfThisTypes(nativeFunctions))){
@@ -37,18 +37,20 @@ public class CallExpressionNodeConstructor implements NodeConstructor {
 		}
 
 		Token identifier = tokenBuffer.getToken().get();
-		TokenBuffer tokenBufferWithoutIdentifier = tokenBuffer.consumeToken();
+		Token possibleParenthesis = tokenBuffer.peekNext();
 
-		if (!tokenBufferWithoutIdentifier.isNextTokenOfType(NativeTokenTypes.LEFT_PARENTHESIS.toTokenType())) {
+		if (!TokenBuffer.isThisTokenType(possibleParenthesis, NativeTokenTypes.LEFT_PARENTHESIS.toTokenType())){
 			return emptyResponse(tokenBuffer);
 		}
-
-		TokenBuffer tokenBufferWithoutLeft = tokenBufferWithoutIdentifier.consumeToken();
+		//consume id
+		tokenBuffer.consumeToken();
+		//consum (
+		TokenBuffer tokenBufferWithoutLeft = tokenBuffer.consumeToken();
 		return handleCallExpression(identifier, tokenBufferWithoutLeft);
 	}
 
 	//TODO refactor
-	private NodeResponse handleCallExpression(Token identifier, TokenBuffer tokenBuffer) {
+	private NodeResponse handleCallExpression(Token identifier, TokenBuffer tokenBuffer) throws Exception {
 		// ( --> +1 , ) --> -1
 		int parenthesisCount = 1;
 		Token lastToken = identifier; // it should be the left parenthesis
@@ -95,7 +97,8 @@ public class CallExpressionNodeConstructor implements NodeConstructor {
 					return response(error,
 							tokenBuffer);
 				}
-				NodeResponse build = expConst.build(new TokenBuffer(tokenAcc));
+				Accumulator accumulator = new Accumulator(tokenAcc);
+				NodeResponse build = expConst.build(new TokenBuffer(accumulator));
 
 				if (build.possibleNode().isFail()){
 					return build;
@@ -123,8 +126,8 @@ public class CallExpressionNodeConstructor implements NodeConstructor {
 
 		// f(a,b) --> build the b
 		if (!tokenAcc.isEmpty()) {
-
-			NodeResponse build = expConst.build(new TokenBuffer(tokenAcc));
+			Accumulator accumulator = new Accumulator(tokenAcc);
+			NodeResponse build = expConst.build(new TokenBuffer(accumulator));
 
 			if (build.possibleNode().isFail()){
 				return build;

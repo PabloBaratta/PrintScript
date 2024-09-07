@@ -1,6 +1,7 @@
 package org.example.nodeconstructors;
 
 import org.example.*;
+import org.example.lexer.token.NativeTokenTypes;
 import org.example.lexer.token.Position;
 import org.example.lexer.token.Token;
 import org.example.lexer.token.TokenType;
@@ -19,7 +20,7 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 
 	private final List<TokenType> operators;
 	private final List<TokenType> expressions;
-	private final List<Function<TokenBuffer, NodeResponse>> functions;
+	private final List<ThrowingFunction<TokenBuffer, NodeResponse>> functions;
 	private final CallExpressionNodeConstructor callExpressionConstructor;
 
 	public ExpressionNodeConstructor(Map<TokenType, Integer> mapOperatorsToPrecedence, List<TokenType> operands,
@@ -30,19 +31,20 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 		this.callExpressionConstructor = callConstructor.setExpressionParser(this);
 	}
 
-	private List<Function<TokenBuffer, NodeResponse>> getFunctions(Map<TokenType, Integer> opsPrecedence) {
+	private List<ThrowingFunction<TokenBuffer, NodeResponse>> getFunctions(Map<TokenType, Integer> opsPrecedence){
 		Map<Integer, List<TokenType>> groupedByPrecedence = opsPrecedence.entrySet().stream()
 				.collect(Collectors.groupingBy(
 						Map.Entry::getValue,
 						() -> new TreeMap<>(Collections.reverseOrder()),
 						Collectors.mapping(Map.Entry::getKey, Collectors.toList())
 				));
-		List<Function<TokenBuffer, NodeResponse>> functions = new ArrayList<>(groupedByPrecedence.size());
+        int functionsSize = groupedByPrecedence.size();
+        List<ThrowingFunction<TokenBuffer, NodeResponse>> functions = new ArrayList<>(functionsSize);
 
-		Function<TokenBuffer, NodeResponse> func = this::unary;
+		ThrowingFunction<TokenBuffer, NodeResponse> func = this::unary;
 		Collection<List<TokenType>> values = groupedByPrecedence.values();
 		for (List<TokenType> value : values) {
-			Function<TokenBuffer, NodeResponse> finalFunc = func; //cannot pass a global variable
+			ThrowingFunction<TokenBuffer, NodeResponse> finalFunc = func; //cannot pass a global variable
 			functions.addLast((tokenBuffer -> parseBE(tokenBuffer, finalFunc, value)));
 			func = functions.getLast();
 		}
@@ -51,7 +53,7 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 
 
 	@Override
-	public NodeResponse build(TokenBuffer tokenBuffer) {
+	public NodeResponse build(TokenBuffer tokenBuffer) throws Exception {
 
 		// statement should start with an opening parenthesis, operator or a single expression
 		if (!isThisExpression(tokenBuffer)) {
@@ -68,8 +70,8 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 	}
 
 	private NodeResponse parseBE(TokenBuffer tb,
-								Function<TokenBuffer, NodeResponse> hpp,
-								List<TokenType> operatorTypes) {
+								ThrowingFunction<TokenBuffer, NodeResponse> hpp,
+								List<TokenType> operatorTypes) throws Exception {
 		NodeResponse possibleExpression = hpp.apply(tb);
 		if (possibleExpression.possibleNode().isFail()) {
 			return possibleExpression;
@@ -102,7 +104,7 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 		return response(expression, newTokenBuffer);
 	}
 	//TODO modify to accept post operators
-	private NodeResponse parseUnaryExpression(TokenBuffer tokenBuffer) {
+	private NodeResponse parseUnaryExpression(TokenBuffer tokenBuffer) throws Exception {
 		Token operator = tokenBuffer.getToken().get();
 		tokenBuffer = tokenBuffer.consumeToken();
 
@@ -125,17 +127,18 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 	}
 
 	private NodeResponse parseLiteral(TokenBuffer tb,
-									BiFunction<String, Position, Expression> ec) {
+									BiFunction<String, Position, Expression> ec)
+                                    throws Exception {
 		Token token = tb.getToken().get();
 		tb = tb.consumeToken();
 		return response(ec.apply(token.associatedString(), token.position()), tb);
 	}
 
-	private NodeResponse parseParenthesisExpression(TokenBuffer tokenBuffer) {
+	private NodeResponse parseParenthesisExpression(TokenBuffer tokenBuffer) throws Exception {
 		Token leftParToken = tokenBuffer.getToken().get();
 		tokenBuffer = tokenBuffer.consumeToken();
 
-		Function<TokenBuffer, NodeResponse> fun = getLeastPrecedenceFun();
+		ThrowingFunction<TokenBuffer, NodeResponse> fun = getLeastPrecedenceFun();
 		NodeResponse possibleExpression = fun.apply(tokenBuffer);
 
 		if (possibleExpression.possibleNode().isFail()) {
@@ -156,11 +159,11 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 		return response(new Parenthesis(expression), tokenBuffer);
 	}
 
-	private Function<TokenBuffer, NodeResponse> getLeastPrecedenceFun() {
+	private ThrowingFunction<TokenBuffer, NodeResponse> getLeastPrecedenceFun() {
 		return this.functions.getLast();
 	}
 
-	private NodeResponse unary(TokenBuffer tokenBuffer) {
+	private NodeResponse unary(TokenBuffer tokenBuffer) throws Exception {
 		if (tokenBuffer.isNextTokenOfType(MINUS.toTokenType())) {
 			return parseUnaryExpression(tokenBuffer);
 		}
@@ -168,7 +171,7 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 	}
 
 	// number, string, identifier and left parenthesis
-	private NodeResponse primary(TokenBuffer tokenBuffer) {
+	private NodeResponse primary(TokenBuffer tokenBuffer) throws Exception {
 		if (tokenBuffer.isNextTokenOfType(NUMBER.toTokenType())) {
 			return parseLiteral(tokenBuffer, (s, position) -> {
 				NumericLiteral numericLiteral = new NumericLiteral(Double.parseDouble(s), position);
@@ -186,9 +189,10 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 			});
 		} else if (tokenBuffer.isNextTokenOfType(IDENTIFIER.toTokenType())) {
 
-			TokenBuffer tokenBufferWithoutId = tokenBuffer.consumeToken();
 
-			if (tokenBufferWithoutId.isNextTokenOfType(LEFT_PARENTHESIS.toTokenType())) {
+			Token peekParenthesis = tokenBuffer.peekNext();
+
+			if (TokenBuffer.isThisTokenType(peekParenthesis, LEFT_PARENTHESIS.toTokenType())) {
 				return callExpressionConstructor.build(tokenBuffer);
 			}
 

@@ -26,34 +26,13 @@ public class Runner {
 		String code = readFileAsString(filePath);
 		InputStream inputStream = new ByteArrayInputStream(code.getBytes());
 		StreamReader reader = new StreamReader(inputStream);
-		List<Token> tokens = lex(reader);
-		Program ast = parse(tokens);
+		Lexer lexer = provideV10(reader);
+		Program ast = parse(lexer);
 		interpret(ast);
 	}
 
-	public static List<Token> lex(Iterator<String> reader) throws Exception {
-		Lexer lexer = provideV10(reader);
-		List<Token> tokens = new ArrayList<>();
 
-		while (lexer.hasNext()){
-			Token token = lexer.getNext();
-			tokens.add(token);
-		}
-		return tokens;
-	}
-
-	public static List<Token> lexV11(Iterator<String> code) throws Exception {
-		Lexer lexer = provideV11(code);
-		List<Token> tokens = new ArrayList<>();
-
-		while (lexer.hasNext()){
-			Token token = lexer.getNext();
-			tokens.add(token);
-		}
-		return tokens;
-	}
-
-	public static Program parse(List<Token> tokens) throws Exception {
+	public static Program parse(PrintScriptIterator<Token> tokens) throws Exception {
 		Parser parser = createParser(tokens);
 		Try<ASTNode, Exception> possibleAst = parser.parseExpression();
 		if (possibleAst.isFail()){
@@ -62,7 +41,7 @@ public class Runner {
 		return (Program) possibleAst.getSuccess().get();
 	}
 
-	public static Program parseV11(List<Token> tokens) throws Exception {
+	public static Program parseV11(PrintScriptIterator<Token> tokens) throws Exception {
 		Parser parser = ParserProvider.provide11(tokens);
 		Try<ASTNode, Exception> possibleAst = parser.parseExpression();
 		if (possibleAst.isFail()){
