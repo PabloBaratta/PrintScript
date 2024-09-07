@@ -38,8 +38,8 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 						() -> new TreeMap<>(Collections.reverseOrder()),
 						Collectors.mapping(Map.Entry::getKey, Collectors.toList())
 				));
-        int functionsSize = groupedByPrecedence.size();
-        List<ThrowingFunction<TokenBuffer, NodeResponse>> functions = new ArrayList<>(functionsSize);
+		int functionsSize = groupedByPrecedence.size();
+		List<ThrowingFunction<TokenBuffer, NodeResponse>> functions = new ArrayList<>(functionsSize);
 
 		ThrowingFunction<TokenBuffer, NodeResponse> func = this::unary;
 		Collection<List<TokenType>> values = groupedByPrecedence.values();
@@ -128,7 +128,7 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 
 	private NodeResponse parseLiteral(TokenBuffer tb,
 									BiFunction<String, Position, Expression> ec)
-                                    throws Exception {
+									throws Exception {
 		Token token = tb.getToken().get();
 		tb = tb.consumeToken();
 		return response(ec.apply(token.associatedString(), token.position()), tb);

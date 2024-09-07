@@ -94,7 +94,7 @@ public class ConstNodeConstructorTest {
 
 
 	private static void successfulConstDeclAss(List<Token> tokens, int numberOfExpressionTokens)
-                                                throws Exception {
+												throws Exception {
 
 
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();

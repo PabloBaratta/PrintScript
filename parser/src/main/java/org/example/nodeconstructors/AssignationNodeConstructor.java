@@ -60,7 +60,7 @@ public class AssignationNodeConstructor implements NodeConstructor{
 	}
 
 	private NodeResponse handleEqualsToken(Token identifierToken, Token equalsToken, TokenBuffer tokenBuffer)
-            throws Exception {
+			throws Exception {
 		List<Token> tokens = new LinkedList<>();
 
 		Token currentToken = equalsToken;

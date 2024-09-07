@@ -368,7 +368,7 @@ public class CallExpressionTest {
 	}
 
 		private static void assertMissingLastArguments(boolean terminal, LinkedList<Token> tokens)
-                throws Exception {
+				throws Exception {
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
 		CallExpressionNodeConstructor builder = getCallConstructor(terminal, collector);
 
@@ -384,7 +384,7 @@ public class CallExpressionTest {
 
 	private static void successfulAssertions(boolean terminal, LinkedList<Token> tokens,
 											int n, int withoutComma)
-                                            throws Exception {
+											throws Exception {
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
 		CallExpressionNodeConstructor constructor = getCallConstructor(terminal, collector);
 

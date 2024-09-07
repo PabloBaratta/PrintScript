@@ -156,7 +156,7 @@ class VariableDeclarationNodeConstructorTest {
 
 
 	private static void successfulVarDeclAss(List<Token> tokens, int numberOfExpressionTokens)
-            throws Exception {
+			throws Exception {
 
 
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
