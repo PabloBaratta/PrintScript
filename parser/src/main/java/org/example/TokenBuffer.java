@@ -11,17 +11,31 @@ import java.util.Optional;
 
 public class TokenBuffer {
 
+	private final PrintScriptIterator<Token> tokens;
+	private final List<Token> tokenAcc;
+	private Token token;
 
-	private final Token token;
-	private final List<Token> tokens;
-
-	public TokenBuffer(List<Token> tokens) {
+	public TokenBuffer(PrintScriptIterator<Token> tokens) throws Exception {
 		this.tokens = tokens;
-		this.token = tokens.isEmpty() ? null : tokens.getFirst();
+		this.token = tokens.hasNext() ? tokens.getNext() : null;
+		this.tokenAcc = new LinkedList<>();
+	}
+
+	private static Token getTokenFromIterator(PrintScriptIterator<Token> tokens) throws Exception {
+		return tokens.hasNext() ? tokens.getNext() : null;
+	}
+
+	private static Token decideToken(PrintScriptIterator<Token> tokens, List<Token> tokensAcc) throws Exception {
+		if (!tokensAcc.isEmpty()) {
+			Token first = tokensAcc.getFirst();
+			tokensAcc.removeFirst();
+			return first;
+		}
+		return getTokenFromIterator(tokens);
 	}
 
 	public boolean hasAnyTokensLeft(){
-		return !tokens.isEmpty();
+		return token != null;
 	}
 
 	public boolean isNextTokenOfType(TokenType expectedType){
@@ -33,11 +47,11 @@ public class TokenBuffer {
 	}
 
 
-	static boolean isThisTokenType(Token token, List<TokenType> types){
+	public static boolean isThisTokenType(Token token, List<TokenType> types){
 		return token != null && types.contains(getType(token));
 	}
 
-	static boolean isThisTokenType(Token token, TokenType expectedType) {
+	public static boolean isThisTokenType(Token token, TokenType expectedType) {
 		return token != null && getType(token).equals(expectedType);
 	}
 
@@ -45,17 +59,27 @@ public class TokenBuffer {
 		return Optional.ofNullable(token);
 	}
 
-	public TokenBuffer consumeToken(){
-		List<Token> newTokenList = getTokensWithoutFirst();
-		return new TokenBuffer(newTokenList);
+	public TokenBuffer consumeToken() throws Exception {
+		this.token = decideToken(tokens, tokenAcc);
+		return this;
 	}
 
-	private List<Token> getTokensWithoutFirst() {
-		List<Token> newTokenList = new LinkedList<>();
-		for (int i = 1; i < tokens.size(); i++) {
-			newTokenList.add(this.tokens.get(i));
+	public Token peekNext() throws Exception {
+		return lookahead(0);
+	}
+	//zero index
+	public Token lookahead(int n) throws Exception {
+		if (n < tokenAcc.size()) {
+			return tokenAcc.get(n);
 		}
-		return newTokenList;
+		int tokensToAsk = n - tokenAcc.size() + 1;
+		for (int i = 1; i <= tokensToAsk; i++) {
+			Token tokenFromIterator = getTokenFromIterator(tokens);
+			if (tokenFromIterator != null) {
+				tokenAcc.add(tokenFromIterator);
+			}
+		}
+		return n < tokenAcc.size() ? tokenAcc.get(n) : null;
 	}
 
 	private static TokenType getType(Token token) {

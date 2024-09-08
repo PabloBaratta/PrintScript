@@ -25,8 +25,21 @@ public class AssignationNodeConstructorTest {
 		Arrays.stream(NativeTokenTypes.values()).filter(
 				type -> !type.equals(NativeTokenTypes.IDENTIFIER)
 		).forEach(type ->
-				{TokenBuffer tokenBuffer = new TokenBuffer(List.of(getaTokenFromTokenType(type)));
-				NodeResponse build = builder.build(tokenBuffer);
+				{
+				Accumulator accumulator = new Accumulator(List.of(getaTokenFromTokenType(type)));
+					TokenBuffer tokenBuffer = null;
+					try {
+						tokenBuffer = new TokenBuffer(accumulator);
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+					TokenBuffer finalTokenBuffer = tokenBuffer;
+					NodeResponse build = null;
+					try {
+						build = builder.build(tokenBuffer);
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
 				assertTrue(build.possibleNode().isSuccess());
 				assertTrue(build.possibleNode().getSuccess().get().isEmpty());}
 		);
@@ -37,14 +50,26 @@ public class AssignationNodeConstructorTest {
 				{
 					Token e1 = getaTokenFromTokenType(IDENTIFIER);
 					Token e2 = getaTokenFromTokenType(type);
-					TokenBuffer tokenBuffer = new TokenBuffer(List.of(e1, e2));
-					NodeResponse build = builder.build(tokenBuffer);
+					Accumulator accumulator = new Accumulator(List.of(e1, e2));
+					TokenBuffer tokenBuffer = null;
+					try {
+						tokenBuffer = new TokenBuffer(accumulator);
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+					TokenBuffer finalTokenBuffer = tokenBuffer;
+					NodeResponse build = null;
+					try {
+						build = builder.build(tokenBuffer);
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
 					assertTrue(build.possibleNode().isSuccess());
 					assertTrue(build.possibleNode().getSuccess().get().isEmpty());});
 	}
 
 	@Test
-	public void successfulScenarios(){
+	public void successfulScenarios() throws Exception {
 		NativeTokenTypes[] nativeTokenTypes = new NativeTokenTypes[]{
 				IDENTIFIER, EQUALS, STRING, SEMICOLON
 		};
@@ -67,7 +92,7 @@ public class AssignationNodeConstructorTest {
 	}
 
 	@Test
-	public void syntaxErrors() {
+	public void syntaxErrors() throws Exception {
 		NativeTokenTypes[] nativeTokenTypes = new NativeTokenTypes[]{
 				IDENTIFIER, EQUALS, STRING, SEMICOLON
 		};
@@ -80,17 +105,19 @@ public class AssignationNodeConstructorTest {
 		int originalTokenListSize = tokens.size();
 		for (int i = 2; i < originalTokenListSize; i++) {
 			tokens.removeLast();
-			NodeResponse build = builder.build(new TokenBuffer(tokens));
+			Accumulator accumulator = new Accumulator(tokens);
+			NodeResponse build = builder.build(new TokenBuffer(accumulator));
 			assertTrue(build.possibleNode().isFail());
 		}
 
 	}
 
-	private void assertSuccess(List<Token> tokens, int intermediateTokens) {
+	private void assertSuccess(List<Token> tokens, int intermediateTokens) throws Exception {
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
 		NodeConstructor assignationNodeConstructor = new AssignationNodeConstructor(collector);
 
-		NodeResponse build = assignationNodeConstructor.build(new TokenBuffer(tokens));
+		Accumulator accumulator = new Accumulator(tokens);
+		NodeResponse build = assignationNodeConstructor.build(new TokenBuffer(accumulator));
 
 		assertTrue(build.possibleNode().isSuccess());
 		assertFalse(build.possibleBuffer().hasAnyTokensLeft());

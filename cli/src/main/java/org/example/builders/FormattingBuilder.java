@@ -4,6 +4,7 @@ import org.example.Formatter;
 import org.example.JsonReader;
 import org.example.Program;
 import org.example.Rule;
+import org.example.lexer.Lexer;
 import org.example.lexer.StreamReader;
 import org.example.lexer.token.Token;
 
@@ -16,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.example.Runner.lex;
 import static org.example.Runner.parse;
+import static org.example.lexer.LexerProvider.provideV10;
 
 public class FormattingBuilder implements CommandBuilder{
     @Override
@@ -31,8 +32,8 @@ public class FormattingBuilder implements CommandBuilder{
                 .collect(Collectors.joining("\n"));
         InputStream inputStream = new ByteArrayInputStream(code.getBytes());
         StreamReader reader = new StreamReader(inputStream);
-        List<Token> tokens = lex(reader);
-        Program program = parse(tokens);
+        Lexer lexer = provideV10(reader);
+        Program program = parse(lexer);
         Map<String, Rule> rules = readJson(pathConfig);
         Formatter formatter = new Formatter(rules);
         System.out.println(formatter.format(program));

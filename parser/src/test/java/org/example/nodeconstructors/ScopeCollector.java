@@ -18,7 +18,7 @@ public class ScopeCollector extends ScopeNodeConstructor{
 
 	List<Token> collectedTokens = new LinkedList<>();
 	@Override
-	public NodeResponse build(TokenBuffer tokenBuffer) {
+	public NodeResponse build(TokenBuffer tokenBuffer) throws Exception {
 		while (tokenBuffer.hasAnyTokensLeft()) {
 			collectedTokens.add(tokenBuffer.getToken().get());
 			tokenBuffer = tokenBuffer.consumeToken();

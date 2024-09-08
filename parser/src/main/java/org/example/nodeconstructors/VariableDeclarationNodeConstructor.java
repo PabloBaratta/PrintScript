@@ -9,6 +9,7 @@ import org.example.lexer.utils.Try;
 
 import java.util.*;
 
+import static org.example.nodeconstructors.NodeResponse.emptyResponse;
 import static org.example.nodeconstructors.NodeResponse.response;
 
 public class VariableDeclarationNodeConstructor implements NodeConstructor {
@@ -28,7 +29,7 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
 
 	//TODO refactor
 	@Override
-	public NodeResponse build(TokenBuffer tokenBuffer) {
+	public NodeResponse build(TokenBuffer tokenBuffer) throws Exception {
 
 		if (!tokenBuffer.isNextTokenOfAnyOfThisTypes(variableDeclarationTokenTypes)){
 			return new NodeResponse(new Try<>(Optional.empty()), tokenBuffer);
@@ -107,7 +108,7 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
 		}
 	}
 
-	private NodeResponse handleEqualsToken(Token id, Token eq, Token type, TokenBuffer tb) {
+	private NodeResponse handleEqualsToken(Token id, Token eq, Token type, TokenBuffer tb) throws Exception {
 		List<Token> tokens = new LinkedList<>();
 
 		Token currentToken = eq;
@@ -128,8 +129,8 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
 			return response(new SemanticErrorException(eq, "was expecting assignation"),
 					tb);
 		}
-
-		TokenBuffer expressionTokenBuffer = new TokenBuffer(tokens);
+		Accumulator accumulator = new Accumulator(tokens);
+		TokenBuffer expressionTokenBuffer = new TokenBuffer(accumulator);
 
 		NodeResponse buildResult = expressionNodeConstructor.build(expressionTokenBuffer);
 

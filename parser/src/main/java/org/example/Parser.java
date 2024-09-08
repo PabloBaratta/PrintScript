@@ -13,9 +13,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-public class Parser {
+public class Parser implements PrintScriptIterator<ASTNode>{
 	private final ScopeNodeConstructor scopeConstructor;
-	private TokenBuffer tokens;
+	private final TokenBuffer tokens;
 
 	public Parser(List<NodeConstructor> nodeConstructors,
 				List<BlockNodeConstructor> blockNodeConstructors,
@@ -28,7 +28,7 @@ public class Parser {
 
 	}
 
-	public Try<ASTNode, Exception> parseExpression() {
+	public Try<ASTNode, Exception> parseExpression() throws Exception {
 		NodeResponse build = scopeConstructor.build(tokens);
 		if (build.possibleNode().isFail()) {
 			return new Try<>(build.possibleNode().getFail().get());
@@ -41,4 +41,17 @@ public class Parser {
 						new SemanticErrorException(build.possibleBuffer().getToken().get())));
 	}
 
+	@Override
+	public boolean hasNext() {
+		return this.tokens.hasAnyTokensLeft();
+	}
+
+	@Override
+	public ASTNode getNext() throws Exception {
+		Try<ASTNode, Exception> astNodeExceptionTry = parseExpression();
+		if (astNodeExceptionTry.isFail()){
+			throw astNodeExceptionTry.getFail().get();
+		}
+		return astNodeExceptionTry.getSuccess().get();
+	}
 }

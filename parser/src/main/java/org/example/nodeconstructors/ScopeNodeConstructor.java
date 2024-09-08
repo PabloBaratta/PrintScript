@@ -15,27 +15,42 @@ public class ScopeNodeConstructor implements  NodeConstructor{
 		this.constructors = constructors;
 	}
 	@Override
-	public NodeResponse build(TokenBuffer tokenBuffer) {
-		LinkedList<ASTNode> nodes = new LinkedList<>();
+	public NodeResponse build(TokenBuffer tokenBuffer) throws Exception {
 
+		Response response = getAstNodeExceptionTry(tokenBuffer);
+
+		Try<ASTNode, Exception> astNodeExceptionTry = response.result();
+
+		if (astNodeExceptionTry.isFail()){
+			return NodeResponse.response(astNodeExceptionTry.getFail().get(), tokenBuffer);
+		}
+
+		ASTNode astNode = astNodeExceptionTry.getSuccess().get();
+		tokenBuffer = response.newBuffer();
+
+
+		return NodeResponse.response(astNode, tokenBuffer);
+	}
+
+	public NodeResponse buildAll(TokenBuffer tokenBuffer) throws Exception {
+
+		List<ASTNode> nodes = new LinkedList<>();
 		while (tokenBuffer.hasAnyTokensLeft()) {
-			Response response = getAstNodeExceptionTry(tokenBuffer);
+			NodeResponse build = build(tokenBuffer);
 
-			Try<ASTNode, Exception> astNodeExceptionTry = response.result();
-
-			if (astNodeExceptionTry.isFail()){
-				return NodeResponse.response(astNodeExceptionTry.getFail().get(), tokenBuffer);
+			if (build.possibleNode().isFail()) {
+				return build;
 			}
+			ASTNode astNode = build.possibleNode().getSuccess().get().get();
 
-			nodes.add(astNodeExceptionTry.getSuccess().get());
-			tokenBuffer = response.newBuffer();
+			nodes.add(astNode);
 		}
 
 		return NodeResponse.response(new Program(nodes), tokenBuffer);
 	}
 
 
-	private Response getAstNodeExceptionTry(TokenBuffer tokens) {
+	private Response getAstNodeExceptionTry(TokenBuffer tokens) throws Exception {
 		for (NodeConstructor nodeConstructor : constructors) {
 
 			NodeResponse build = nodeConstructor.build(tokens);

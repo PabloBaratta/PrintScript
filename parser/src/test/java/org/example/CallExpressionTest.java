@@ -3,6 +3,7 @@ package org.example;
 import org.example.lexer.token.NativeTokenTypes;
 import org.example.lexer.token.Token;
 import org.example.lexer.token.TokenType;
+import org.example.nodeconstructors.Accumulator;
 import org.example.nodeconstructors.CallExpressionNodeConstructor;
 import org.example.nodeconstructors.CollectorNodeConstructor;
 import org.example.nodeconstructors.NodeResponse;
@@ -30,8 +31,24 @@ public class CallExpressionTest {
 		Arrays.stream(NativeTokenTypes.values()).filter(
 				type -> !type.equals(IDENTIFIER)
 		).forEach(type ->
-				{TokenBuffer tokenBuffer = new TokenBuffer(List.of(getaTokenFromTokenType(type)));
-					NodeResponse build = builder.build(tokenBuffer);
+				{
+					List<Token> tokens = List.of(getaTokenFromTokenType(type));
+					Accumulator accumulator = new Accumulator(tokens);
+					assertDoesNotThrow(() -> new TokenBuffer(accumulator));
+					TokenBuffer tokenBuffer = null;
+					try {
+						tokenBuffer = new TokenBuffer(accumulator);
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+					TokenBuffer finalTokenBuffer = tokenBuffer;
+					assertDoesNotThrow(() -> builder.build(finalTokenBuffer));
+					NodeResponse build = null;
+					try {
+						build = builder.build(tokenBuffer);
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
 					assertTrue(build.possibleNode().isSuccess());
 					assertTrue(build.possibleNode().getSuccess().get().isEmpty());}
 		);
@@ -39,17 +56,30 @@ public class CallExpressionTest {
 		Arrays.stream(NativeTokenTypes.values()).filter(
 				type -> !type.equals(LEFT_PARENTHESIS)
 		).forEach(type ->
-				{TokenBuffer tokenBuffer = new TokenBuffer(List.of( getaTokenFromTokenType(IDENTIFIER),
-						getaTokenFromTokenType(type)
-						));
-					NodeResponse build = builder.build(tokenBuffer);
+				{
+					List<Token> tokenList = List.of(getaTokenFromTokenType(IDENTIFIER),
+							getaTokenFromTokenType(type));
+					Accumulator accumulator = new Accumulator(tokenList);
+					TokenBuffer tokenBuffer = null;
+					try {
+						tokenBuffer = new TokenBuffer(accumulator);
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+
+					NodeResponse build;
+					try {
+						build = builder.build(tokenBuffer);
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
 					assertTrue(build.possibleNode().isSuccess());
 					assertTrue(build.possibleNode().getSuccess().get().isEmpty());}
 		);
 	}
 
 	@Test
-	public void simplePrintLnTest() {
+	public void simplePrintLnTest() throws Exception {
 
 		boolean terminal = true;
 		Token functionCall = getaTokenFromTokenType(PRINTLN, "println");
@@ -63,7 +93,7 @@ public class CallExpressionTest {
 	}
 
 	@Test
-	public void insideExpressionPrintLnTest() {
+	public void insideExpressionPrintLnTest() throws Exception {
 		boolean terminal = true;
 		Token functionCall = getaTokenFromTokenType(PRINTLN, "println");
 		NativeTokenTypes[] inParenthesisInput = new NativeTokenTypes[]{
@@ -76,7 +106,7 @@ public class CallExpressionTest {
 	}
 
 	@Test
-	public void twoArgumentsExpressionPrintLnTest() {
+	public void twoArgumentsExpressionPrintLnTest() throws Exception {
 		boolean terminal = true;
 		Token functionCall = getaTokenFromTokenType(PRINTLN, "println");
 		NativeTokenTypes[] inParenthesisInput = new NativeTokenTypes[]{
@@ -89,7 +119,7 @@ public class CallExpressionTest {
 	}
 
 	@Test
-	public void multipleParenthesisExpressionsPrintLnTest() {
+	public void multipleParenthesisExpressionsPrintLnTest() throws Exception {
 		boolean terminal = true;
 		Token functionCall = getaTokenFromTokenType(PRINTLN, "println");
 		NativeTokenTypes[] inParenthesisInput = new NativeTokenTypes[]{
@@ -111,7 +141,7 @@ public class CallExpressionTest {
 	}
 
 	@Test
-	public void nonTerminalMultipleParenthesisExpressionsPrintLnTest() {
+	public void nonTerminalMultipleParenthesisExpressionsPrintLnTest() throws Exception {
 		boolean terminal = false;
 		Token functionCall = getaTokenFromTokenType(PRINTLN, "println");
 		NativeTokenTypes[] inParenthesisInput = new NativeTokenTypes[]{
@@ -132,7 +162,7 @@ public class CallExpressionTest {
 	}
 
 	@Test
-	public void notSuccessfulSimplePrintLnTest() {
+	public void notSuccessfulSimplePrintLnTest() throws Exception {
 		boolean terminal = true;
 		Token functionCall = getaTokenFromTokenType(PRINTLN, "println");
 		NativeTokenTypes[] inParenthesisInput = new NativeTokenTypes[]{
@@ -161,7 +191,7 @@ public class CallExpressionTest {
 	}
 
 	@Test
-	public void multipleConsecutiveCommas() {
+	public void multipleConsecutiveCommas() throws Exception {
 
 		// println("hi",,)
 		boolean terminal = true;
@@ -175,12 +205,14 @@ public class CallExpressionTest {
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
 		CallExpressionNodeConstructor builder = getCallConstructor(terminal, collector);
 
-		NodeResponse build = builder.build(new TokenBuffer(tokens));
+
+		Accumulator accumulator = new Accumulator(tokens);
+		NodeResponse build = builder.build(new TokenBuffer(accumulator));
 		assertTrue(build.possibleNode().isFail());
 	}
 
 	@Test
-	public void missingArgumentAfterCommas() {
+	public void missingArgumentAfterCommas() throws Exception {
 
 		// println("hi",)
 		boolean terminal = true;
@@ -194,12 +226,14 @@ public class CallExpressionTest {
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
 		CallExpressionNodeConstructor builder = getCallConstructor(terminal, collector);
 
-		NodeResponse build = builder.build(new TokenBuffer(tokens));
+
+		Accumulator accumulator = new Accumulator(tokens);
+		NodeResponse build = builder.build(new TokenBuffer(accumulator));
 		assertTrue(build.possibleNode().isFail());
 	}
 
 	@Test
-	public void argumentsAfterFunctionInTerminal() {
+	public void argumentsAfterFunctionInTerminal() throws Exception {
 		boolean terminal = true;
 		Token functionCall = getaTokenFromTokenType(PRINTLN, "println");
 		NativeTokenTypes[] inParenthesisInput = new NativeTokenTypes[]{
@@ -222,12 +256,14 @@ public class CallExpressionTest {
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
 		CallExpressionNodeConstructor builder = getCallConstructor(terminal, collector);
 
-		NodeResponse build = builder.build(new TokenBuffer(tokens));
+
+		Accumulator accumulator = new Accumulator(tokens);
+		NodeResponse build = builder.build(new TokenBuffer(accumulator));
 		assertTrue(build.possibleNode().isFail());
 	}
 
 	@Test
-	public void methodWithIdentifier() {
+	public void methodWithIdentifier() throws Exception {
 		boolean terminal = true;
 		Token functionCall = getaTokenFromTokenType(IDENTIFIER, "readEnv");
 		NativeTokenTypes[] inParenthesisInput = new NativeTokenTypes[]{
@@ -249,12 +285,13 @@ public class CallExpressionTest {
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
 		CallExpressionNodeConstructor builder = getCallConstructor(terminal, collector);
 
-		NodeResponse build = builder.build(new TokenBuffer(tokens));
+		Accumulator accumulator = new Accumulator(tokens);
+		NodeResponse build = builder.build(new TokenBuffer(accumulator));
 		assertTrue(build.possibleNode().isFail());
 	}
 
 	@Test
-	public void methodWithMethods(){
+	public void methodWithMethods() throws Exception {
 		boolean terminal = true;
 		Token functionCall = getaTokenFromTokenType(IDENTIFIER, "readInput");
 		NativeTokenTypes[] inParenthesisInput = new NativeTokenTypes[]{
@@ -272,12 +309,13 @@ public class CallExpressionTest {
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
 		CallExpressionNodeConstructor builder = getCallConstructor(terminal, collector);
 
-		NodeResponse build = builder.build(new TokenBuffer(tokens));
+		Accumulator accumulator = new Accumulator(tokens);
+		NodeResponse build = builder.build(new TokenBuffer(accumulator));
 		assertTrue(build.possibleNode().isSuccess());
 	}
 
 	@Test
-	public void methodWithOperations(){
+	public void methodWithOperations() throws Exception {
 		boolean terminal = true;
 		Token functionCall = getaTokenFromTokenType(IDENTIFIER, "readInput");
 		NativeTokenTypes[] inParenthesisInput = new NativeTokenTypes[]{
@@ -297,12 +335,14 @@ public class CallExpressionTest {
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
 		CallExpressionNodeConstructor builder = getCallConstructor(terminal, collector);
 
-		NodeResponse build = builder.build(new TokenBuffer(tokens));
+
+		Accumulator accumulator = new Accumulator(tokens);
+		NodeResponse build = builder.build(new TokenBuffer(accumulator));
 		assertTrue(build.possibleNode().isSuccess());
 	}
 
 	@Test
-	public void methodWithOperations2(){
+	public void methodWithOperations2() throws Exception {
 		boolean terminal = true;
 		Token functionCall = getaTokenFromTokenType(IDENTIFIER, "readInput");
 		NativeTokenTypes[] inParenthesisInput = new NativeTokenTypes[]{
@@ -322,29 +362,35 @@ public class CallExpressionTest {
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
 		CallExpressionNodeConstructor builder = getCallConstructor(terminal, collector);
 
-		NodeResponse build = builder.build(new TokenBuffer(tokens));
+		Accumulator accumulator = new Accumulator(tokens);
+		NodeResponse build = builder.build(new TokenBuffer(accumulator));
 		assertTrue(build.possibleNode().isSuccess());
 	}
 
-		private static void assertMissingLastArguments(boolean terminal, LinkedList<Token> tokens) {
+		private static void assertMissingLastArguments(boolean terminal, LinkedList<Token> tokens)
+				throws Exception {
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
 		CallExpressionNodeConstructor builder = getCallConstructor(terminal, collector);
 
 		int originalTokenListSize = tokens.size();
 		for (int i = 2; i < originalTokenListSize; i++) {
 			tokens.removeLast();
-			NodeResponse build = builder.build(new TokenBuffer(tokens));
+			Accumulator accumulator = new Accumulator(tokens);
+			NodeResponse build = builder.build(new TokenBuffer(accumulator));
 			assertTrue(build.possibleNode().isFail());
 		}
 	}
 
 
 	private static void successfulAssertions(boolean terminal, LinkedList<Token> tokens,
-											int n, int withoutComma) {
+											int n, int withoutComma)
+											throws Exception {
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
 		CallExpressionNodeConstructor constructor = getCallConstructor(terminal, collector);
 
-		NodeResponse build = constructor.build(new TokenBuffer(tokens));
+
+		Accumulator accumulator = new Accumulator(tokens);
+		NodeResponse build = constructor.build(new TokenBuffer(accumulator));
 
 		assertFalse(build.possibleBuffer().hasAnyTokensLeft());
 		assertTrue(build.possibleNode().isSuccess());
