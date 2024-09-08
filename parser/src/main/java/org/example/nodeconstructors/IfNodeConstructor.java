@@ -90,7 +90,7 @@ public class IfNodeConstructor implements BlockNodeConstructor{
 		}
 
 		Accumulator accumulator = new Accumulator(acummulatedTokens);
-		NodeResponse build = innerConstructor.build(new TokenBuffer(accumulator));
+		NodeResponse build = innerConstructor.buildAll(new TokenBuffer(accumulator));
 
 		if (build.possibleNode().isFail()) {
 			throw build.possibleNode().getFail().get();

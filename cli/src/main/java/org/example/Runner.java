@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,20 +35,20 @@ public class Runner {
 
 	public static Program parse(PrintScriptIterator<Token> tokens) throws Exception {
 		Parser parser = createParser(tokens);
-		Try<ASTNode, Exception> possibleAst = parser.parseExpression();
-		if (possibleAst.isFail()){
-			throw possibleAst.getFail().get();
-		}
-		return (Program) possibleAst.getSuccess().get();
+        List<ASTNode> nodes = new LinkedList<>();
+		while (parser.hasNext()){
+            nodes.add(parser.getNext());
+        }
+		return new Program(nodes);
 	}
 
 	public static Program parseV11(PrintScriptIterator<Token> tokens) throws Exception {
 		Parser parser = ParserProvider.provide11(tokens);
-		Try<ASTNode, Exception> possibleAst = parser.parseExpression();
-		if (possibleAst.isFail()){
-			throw possibleAst.getFail().get();
-		}
-		return (Program) possibleAst.getSuccess().get();
+        List<ASTNode> nodes = new LinkedList<>();
+        while (parser.hasNext()){
+            nodes.add(parser.getNext());
+        }
+        return new Program(nodes);
 	}
 	public static void interpret(Program ast) throws Exception {
 		Interpreter interpreter = createInterpreter();

@@ -16,23 +16,38 @@ public class ScopeNodeConstructor implements  NodeConstructor{
 	}
 	@Override
 	public NodeResponse build(TokenBuffer tokenBuffer) throws Exception {
-		LinkedList<ASTNode> nodes = new LinkedList<>();
 
-		while (tokenBuffer.hasAnyTokensLeft()) {
-			Response response = getAstNodeExceptionTry(tokenBuffer);
+        Response response = getAstNodeExceptionTry(tokenBuffer);
 
-			Try<ASTNode, Exception> astNodeExceptionTry = response.result();
+        Try<ASTNode, Exception> astNodeExceptionTry = response.result();
 
-			if (astNodeExceptionTry.isFail()){
-				return NodeResponse.response(astNodeExceptionTry.getFail().get(), tokenBuffer);
-			}
+        if (astNodeExceptionTry.isFail()){
+            return NodeResponse.response(astNodeExceptionTry.getFail().get(), tokenBuffer);
+        }
 
-			nodes.add(astNodeExceptionTry.getSuccess().get());
-			tokenBuffer = response.newBuffer();
-		}
+        ASTNode astNode = astNodeExceptionTry.getSuccess().get();
+        tokenBuffer = response.newBuffer();
 
-		return NodeResponse.response(new Program(nodes), tokenBuffer);
+
+		return NodeResponse.response(astNode, tokenBuffer);
 	}
+
+    public NodeResponse buildAll(TokenBuffer tokenBuffer) throws Exception {
+
+        List<ASTNode> nodes = new LinkedList<>();
+        while (tokenBuffer.hasAnyTokensLeft()) {
+            NodeResponse build = build(tokenBuffer);
+
+            if (build.possibleNode().isFail()) {
+                return build;
+            }
+            ASTNode astNode = build.possibleNode().getSuccess().get().get();
+
+            nodes.add(astNode);
+        }
+
+        return NodeResponse.response(new Program(nodes), tokenBuffer);
+    }
 
 
 	private Response getAstNodeExceptionTry(TokenBuffer tokens) throws Exception {
