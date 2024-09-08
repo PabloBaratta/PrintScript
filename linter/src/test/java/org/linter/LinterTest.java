@@ -18,9 +18,9 @@ public class LinterTest {
 	public void analyzeCorrectTest() throws Exception {
 		Linter linter = LinterProvider.getLinterV10();
 		Map<String, String> configMap = Map.of("case", "camel", "printWithIdentifiers", "true");
-		String identifierString = "camel";
+		String identifier = "camel";
 		TextLiteral hi = new TextLiteral("hi", new Position(0, 0, 0, 0));
-		Report analyze = linter.analyze(LinterConfiguratorTest.getProgram(identifierString, hi), configMap);
+		Report analyze = linter.analyze(LinterConfiguratorTest.iteratorProgram(identifier, hi), configMap);
 		assertTrue(analyze.getReportLines().isEmpty());
 	}
 
@@ -28,9 +28,9 @@ public class LinterTest {
 	public void analyzeIncorrectCase() throws Exception {
 		Linter linter = LinterProvider.getLinterV10();
 		Map<String, String> configMap = Map.of("case", "camel", "printWithIdentifiers", "true");
-		String identifierString = "snake__";
+		String identifier = "snake__";
 		TextLiteral hi = new TextLiteral("hi", new Position(0, 0, 0, 0));
-		Report analyze = linter.analyze(LinterConfiguratorTest.getProgram(identifierString, hi), configMap);
+		Report analyze = linter.analyze(LinterConfiguratorTest.iteratorProgram(identifier, hi), configMap);
 		assertFalse(analyze.getReportLines().isEmpty());
 	}
 
@@ -38,19 +38,19 @@ public class LinterTest {
 	public void analyzeNotKnownProperty() {
 		Linter linter = LinterProvider.getLinterV10();
 		Map<String, String> configMap = Map.of("case", "camel", "growPotatoes", "true");
-		String identifierString = "someIdentifier";
+		String identifier = "someIdentifier";
 		TextLiteral hi = new TextLiteral("hi", new Position(0, 0, 0, 0));
 		assertThrows(WrongConfigurationException.class,
-			() -> linter.analyze(LinterConfiguratorTest.getProgram(identifierString, hi), configMap));
+			() -> linter.analyze(LinterConfiguratorTest.iteratorProgram(identifier, hi), configMap));
 	}
 
 	@Test
 	public void analyzeCorrectTestV11() throws Exception {
 		Linter linter = LinterProvider.getLinterV11();
 		Map<String, String> configMap = Map.of("case", "camel", "printWithIdentifiers", "true");
-		String identifierString = "camel";
+		String identifier = "camel";
 		TextLiteral hi = new TextLiteral("hi", new Position(0, 0, 0, 0));
-		Report analyze = linter.analyze(LinterConfiguratorTest.getProgram(identifierString, hi), configMap);
+		Report analyze = linter.analyze(LinterConfiguratorTest.iteratorProgramIf(identifier, hi), configMap);
 		assertTrue(analyze.getReportLines().isEmpty());
 	}
 
@@ -58,9 +58,9 @@ public class LinterTest {
 	public void analyzeCorrectIfTest() throws Exception {
 		Linter linter = LinterProvider.getLinterV11();
 		Map<String, String> configMap = Map.of("case", "camel", "printWithIdentifiers", "true");
-		String identifierString = "camel";
+		String identifier = "camel";
 		TextLiteral hi = new TextLiteral("hi", new Position(0, 0, 0, 0));
-		Report analyze = linter.analyze(LinterConfiguratorTest.getProgramIf(identifierString, hi), configMap);
+		Report analyze = linter.analyze(LinterConfiguratorTest.iteratorProgramIf(identifier, hi), configMap);
 		assertTrue(analyze.getReportLines().isEmpty());
 	}
 
@@ -68,9 +68,9 @@ public class LinterTest {
 	public void analyzeInCorrectIfTest() throws Exception {
 		Linter linter = LinterProvider.getLinterV11();
 		Map<String, String> configMap = Map.of("case", "camel", "printWithIdentifiers", "true");
-		String identifierString = "camel__case";
+		String identifier = "camel__case";
 		TextLiteral hi = new TextLiteral("hi", new Position(0, 0, 0, 0));
-		Report analyze = linter.analyze(LinterConfiguratorTest.getProgramIf(identifierString, hi), configMap);
+		Report analyze = linter.analyze(LinterConfiguratorTest.iteratorProgramIf(identifier, hi), configMap);
 		assertFalse(analyze.getReportLines().isEmpty());
 	}
 
