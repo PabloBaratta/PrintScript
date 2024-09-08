@@ -172,7 +172,7 @@ public class ParserTest {
 		Parser parser = ParserProvider.provide10(accumulator);
 		Try<ASTNode, Exception> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
-        assertInstanceOf(Method.class, node);
+		assertInstanceOf(Method.class, node);
 		Method method = (Method) node;
 		assertEquals(method.getVariable().toString(), "readInput");
 		assertEquals(method.getArguments().get(0).toString(), "1.0 + 2.0");
@@ -193,19 +193,19 @@ public class ParserTest {
 		tokens.add(new Token(RIGHT_PARENTHESES.toTokenType(), ")", new Position(9, 1, 1, 9)));
 		tokens.add(new Token(SEMICOLON.toTokenType(), ";", new Position(9, 1, 1, 9)));
 
-        Accumulator accumulator = new Accumulator(tokens);
-        Parser parser = ParserProvider.provide10(accumulator);
+		Accumulator accumulator = new Accumulator(tokens);
+		Parser parser = ParserProvider.provide10(accumulator);
 
-        Try<ASTNode, Exception> astNodeExceptionTry = parser.parseExpression();
-        assertTrue(astNodeExceptionTry.isSuccess());
-        ASTNode astNode = astNodeExceptionTry.getSuccess().get();
-        assertInstanceOf(Method.class, astNode);
-        Method print = (Method) astNode;
-        assertEquals(1, print.getArguments().size());
+		Try<ASTNode, Exception> astNodeExceptionTry = parser.parseExpression();
+		assertTrue(astNodeExceptionTry.isSuccess());
+		ASTNode astNode = astNodeExceptionTry.getSuccess().get();
+		assertInstanceOf(Method.class, astNode);
+		Method print = (Method) astNode;
+		assertEquals(1, print.getArguments().size());
 
-        Expression readinput = print.getArguments().get(0);
-        assertInstanceOf(BinaryExpression.class, readinput);
-        assertInstanceOf(Method.class, ((BinaryExpression) readinput).getRight());
+		Expression readinput = print.getArguments().get(0);
+		assertInstanceOf(BinaryExpression.class, readinput);
+		assertInstanceOf(Method.class, ((BinaryExpression) readinput).getRight());
 
 	}
 
@@ -227,27 +227,27 @@ public class ParserTest {
 		Accumulator accumulator = new Accumulator(TokenTestUtil.getTokens(tokenTypes));
 		Parser parser = ParserProvider.provide11(accumulator);
 
-        assertTrue(parser.hasNext());
+		assertTrue(parser.hasNext());
 		Try<ASTNode, Exception> astNodeExceptionTry = parser.parseExpression();
 		assertTrue(astNodeExceptionTry.isSuccess());
 		ASTNode astNode = astNodeExceptionTry.getSuccess().get();
 		assertInstanceOf(VariableDeclaration.class, astNode);
 
-        assertTrue(parser.hasNext());
+		assertTrue(parser.hasNext());
 
-        Try<ASTNode, Exception> methodOrTry = parser.parseExpression();
-        assertTrue(methodOrTry.isSuccess());
-        ASTNode method = methodOrTry.getSuccess().get();
+		Try<ASTNode, Exception> methodOrTry = parser.parseExpression();
+		assertTrue(methodOrTry.isSuccess());
+		ASTNode method = methodOrTry.getSuccess().get();
 
 		assertInstanceOf(Method.class, method);
 
-        assertTrue(parser.hasNext());
+		assertTrue(parser.hasNext());
 
-        Try<ASTNode, Exception> ifOrTry = parser.parseExpression();
-        assertTrue(ifOrTry.isSuccess());
-        ASTNode ifStatement = ifOrTry.getSuccess().get();
+		Try<ASTNode, Exception> ifOrTry = parser.parseExpression();
+		assertTrue(ifOrTry.isSuccess());
+		ASTNode ifStatement = ifOrTry.getSuccess().get();
 
-        assertInstanceOf(IfStatement.class, ifStatement);
+		assertInstanceOf(IfStatement.class, ifStatement);
 
 		List<ASTNode> thenBlock =((IfStatement) ifStatement).getThenBlock();
 
@@ -336,10 +336,10 @@ public class ParserTest {
 		assertTrue(astNodeExceptionTry.isSuccess());
 		ASTNode astNode = astNodeExceptionTry.getSuccess().get();
 		assertInstanceOf(Method.class, astNode);
-        Method print = (Method) astNode;
-        assertEquals(1, print.getArguments().size());
+		Method print = (Method) astNode;
+		assertEquals(1, print.getArguments().size());
 
-        Expression readinput = print.getArguments().get(0);
+		Expression readinput = print.getArguments().get(0);
 		assertInstanceOf(Method.class, readinput);
 	}
 
@@ -353,19 +353,19 @@ public class ParserTest {
 		Accumulator accumulator = new Accumulator(TokenTestUtil.getTokens(tokenTypes));
 		Parser parser = ParserProvider.provide11(accumulator);
 
-        assertTrue(parser.hasNext());
+		assertTrue(parser.hasNext());
 		Try<ASTNode, Exception> astNodeExceptionTry = parser.parseExpression();
 		assertTrue(astNodeExceptionTry.isSuccess());
 		ASTNode astNode = astNodeExceptionTry.getSuccess().get();
 		assertInstanceOf(VariableDeclaration.class, astNode);
 
-        Optional<Expression> callExpression = ((VariableDeclaration) astNode).getExpression();
-        assertTrue(callExpression.isPresent());
-        Expression callNode = callExpression.get();
-        assertInstanceOf(Method.class, callNode);
+		Optional<Expression> callExpression = ((VariableDeclaration) astNode).getExpression();
+		assertTrue(callExpression.isPresent());
+		Expression callNode = callExpression.get();
+		assertInstanceOf(Method.class, callNode);
 
-        assertFalse(parser.hasNext());
-    }
+		assertFalse(parser.hasNext());
+	}
 
 
 	private static Map<TokenType, Integer> mapOperatorPrecedence() {

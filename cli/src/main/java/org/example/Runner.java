@@ -35,20 +35,20 @@ public class Runner {
 
 	public static Program parse(PrintScriptIterator<Token> tokens) throws Exception {
 		Parser parser = createParser(tokens);
-        List<ASTNode> nodes = new LinkedList<>();
+		List<ASTNode> nodes = new LinkedList<>();
 		while (parser.hasNext()){
-            nodes.add(parser.getNext());
-        }
+			nodes.add(parser.getNext());
+		}
 		return new Program(nodes);
 	}
 
 	public static Program parseV11(PrintScriptIterator<Token> tokens) throws Exception {
 		Parser parser = ParserProvider.provide11(tokens);
-        List<ASTNode> nodes = new LinkedList<>();
-        while (parser.hasNext()){
-            nodes.add(parser.getNext());
-        }
-        return new Program(nodes);
+		List<ASTNode> nodes = new LinkedList<>();
+		while (parser.hasNext()){
+			nodes.add(parser.getNext());
+		}
+		return new Program(nodes);
 	}
 	public static void interpret(Program ast) throws Exception {
 		Interpreter interpreter = createInterpreter();

@@ -41,17 +41,17 @@ public class Parser implements PrintScriptIterator<ASTNode>{
 						new SemanticErrorException(build.possibleBuffer().getToken().get())));
 	}
 
-    @Override
-    public boolean hasNext() {
-        return this.tokens.hasAnyTokensLeft();
-    }
+	@Override
+	public boolean hasNext() {
+		return this.tokens.hasAnyTokensLeft();
+	}
 
-    @Override
-    public ASTNode getNext() throws Exception {
-        Try<ASTNode, Exception> astNodeExceptionTry = parseExpression();
-        if (astNodeExceptionTry.isFail()){
-            throw astNodeExceptionTry.getFail().get();
-        }
-        return astNodeExceptionTry.getSuccess().get();
-    }
+	@Override
+	public ASTNode getNext() throws Exception {
+		Try<ASTNode, Exception> astNodeExceptionTry = parseExpression();
+		if (astNodeExceptionTry.isFail()){
+			throw astNodeExceptionTry.getFail().get();
+		}
+		return astNodeExceptionTry.getSuccess().get();
+	}
 }
