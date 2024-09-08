@@ -45,7 +45,7 @@ public class ConstNodeConstructor implements NodeConstructor {
 			errorMessage = "Was expecting equals '=' for const declaration";
 			Token equalsToken = extractNextToken(tokenBuffer, EQUALS.toTokenType(), errorMessage);
 
-            TokenBuffer tokenBufferWithoutEquals = tokenBuffer.consumeToken();
+			TokenBuffer tokenBufferWithoutEquals = tokenBuffer.consumeToken();
 			return handleEqualsToken(identifierToken, equalsToken, typeToken, tokenBufferWithoutEquals);
 		}
 		catch (Exception e) {
