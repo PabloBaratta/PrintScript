@@ -5,6 +5,7 @@ import org.token.Position;
 import org.junit.jupiter.api.Test;
 import org.linter.Report;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,47 +66,37 @@ class IdentifierRulesTest {
 
 	@Test
 	public void successfulSnakeCaseScenarios() throws Exception {
+		List<String> identifierStrings = Arrays.asList(
+				"variable_name",
+				"variable_name_with_numbers_123",
+				"a",
+				"snake_case",
+				"another_test_case"
+		);
 
+		for (String identifierString : identifierStrings) {
+			assertConstSnakeCase(identifierString);
+			assertVarDeclSnakeCase(identifierString);
+		}
 
-		String identifierString = "variable_name";
-		assertVarDeclSnakeCase(identifierString);
-
-		identifierString = "variable_name_with_numbers_123";
-		assertVarDeclSnakeCase(identifierString);
-
-		identifierString = "a";
-		assertVarDeclSnakeCase(identifierString);
-
-		identifierString = "snake_case";
-		assertVarDeclSnakeCase(identifierString);
-
-		identifierString = "another_test_case";
-		assertVarDeclSnakeCase(identifierString);
 	}
 
 	@Test
 	public void unsuccessfulSnakeCaseScenarios() throws Exception {
 
-		String identifierString = "_leading_underscore";
+		List<String> identifierStrings = Arrays.asList(
+				"_leading_underscore",
+				"trailing_underscore_",
+				"multiple__underscores",
+				"123_variable",
+				"mixedCASE",
+				"variable-name",
+				" variable_with_space"
+		);
+		for (String identifierString : identifierStrings) {
+		assertConstSnakeCaseFalse(identifierString);
 		assertVarDeclSnakeCaseFalse(identifierString);
-
-		identifierString = "trailing_underscore_";
-		assertVarDeclSnakeCaseFalse(identifierString);
-
-		identifierString = "multiple__underscores";
-		assertVarDeclSnakeCaseFalse(identifierString);
-
-		identifierString = "123_variable";
-		assertVarDeclSnakeCaseFalse(identifierString);
-
-		identifierString = "mixedCASE";
-		assertVarDeclSnakeCaseFalse(identifierString);
-
-		identifierString = "variable-name";
-		assertVarDeclSnakeCaseFalse(identifierString);
-
-		identifierString = " variable_with_space";
-		assertVarDeclSnakeCaseFalse(identifierString);
+		}
 	}
 
 	@Test
@@ -163,12 +154,11 @@ class IdentifierRulesTest {
 	}
 
 
-		private static void assertVarDeclCamelCase(String identifierString)
-				throws Exception {
-			Report report = getReportFromVarDecl(identifierString, Case.CAMEL_CASE);
+	private static void assertVarDeclCamelCase(String identifierString)
+			throws Exception {
+		Report report = getReportFromVarDecl(identifierString, Case.CAMEL_CASE);
 
-			assertTrue(report.getReportLines().isEmpty());
-
+		assertTrue(report.getReportLines().isEmpty());
 	}
 
 
@@ -202,6 +192,35 @@ class IdentifierRulesTest {
 
 		identifierRules.visit(variableDeclaration);
 		return report;
+	}
+
+	private static Report getReportFromConstDecl(String identifierString, Case identifierCase) throws Exception {
+		int length = identifierString.length();
+
+		// Crear una instancia de ConstDeclaration
+		ConstDeclaration constDeclaration = new ConstDeclaration(
+				new Identifier(identifierString, new Position(4, length, 1, 4)),
+				new Type("string", new Position(5 + length, 6, 1, 5 + length)),
+				new TextLiteral("america", new Position(14 + length, 7, 1, 14 + length))
+		);
+
+		Report report = new Report();
+		IdentifierRules identifierRules = new IdentifierRules(identifierCase, report);
+
+		// Pasar la ConstDeclaration al visitor
+		identifierRules.visit(constDeclaration);
+		return report;
+	}
+
+
+	private static void assertConstSnakeCaseFalse(String identifierString) throws Exception {
+		Report report = getReportFromConstDecl(identifierString, Case.SNAKE_CASE);
+		assertFalse(report.getReportLines().isEmpty());
+	}
+
+	private static void assertConstSnakeCase(String identifierString) throws Exception {
+		Report report = getReportFromConstDecl(identifierString, Case.SNAKE_CASE);
+		assertTrue(report.getReportLines().isEmpty());
 	}
 
 
