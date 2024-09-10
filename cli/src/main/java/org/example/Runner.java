@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,49 +27,28 @@ public class Runner {
 		String code = readFileAsString(filePath);
 		InputStream inputStream = new ByteArrayInputStream(code.getBytes());
 		StreamReader reader = new StreamReader(inputStream);
-		List<Token> tokens = lex(reader);
-		Program ast = parse(tokens);
+		Lexer lexer = provideV10(reader);
+		Program ast = parse(lexer);
 		interpret(ast);
 	}
 
-	public static List<Token> lex(Iterator<String> reader) throws Exception {
-		Lexer lexer = provideV10(reader);
-		List<Token> tokens = new ArrayList<>();
 
-		while (lexer.hasNext()){
-			Token token = lexer.getNext();
-			tokens.add(token);
-		}
-		return tokens;
-	}
-
-	public static List<Token> lexV11(Iterator<String> code) throws Exception {
-		Lexer lexer = provideV11(code);
-		List<Token> tokens = new ArrayList<>();
-
-		while (lexer.hasNext()){
-			Token token = lexer.getNext();
-			tokens.add(token);
-		}
-		return tokens;
-	}
-
-	public static Program parse(List<Token> tokens) throws Exception {
+	public static Program parse(PrintScriptIterator<Token> tokens) throws Exception {
 		Parser parser = createParser(tokens);
-		Try<ASTNode, Exception> possibleAst = parser.parseExpression();
-		if (possibleAst.isFail()){
-			throw possibleAst.getFail().get();
+		List<ASTNode> nodes = new LinkedList<>();
+		while (parser.hasNext()){
+			nodes.add(parser.getNext());
 		}
-		return (Program) possibleAst.getSuccess().get();
+		return new Program(nodes);
 	}
 
-	public static Program parseV11(List<Token> tokens) throws Exception {
+	public static Program parseV11(PrintScriptIterator<Token> tokens) throws Exception {
 		Parser parser = ParserProvider.provide11(tokens);
-		Try<ASTNode, Exception> possibleAst = parser.parseExpression();
-		if (possibleAst.isFail()){
-			throw possibleAst.getFail().get();
+		List<ASTNode> nodes = new LinkedList<>();
+		while (parser.hasNext()){
+			nodes.add(parser.getNext());
 		}
-		return (Program) possibleAst.getSuccess().get();
+		return new Program(nodes);
 	}
 	public static void interpret(Program ast) throws Exception {
 		Interpreter interpreter = createInterpreter();

@@ -35,22 +35,18 @@ public class ConstNodeConstructor implements NodeConstructor {
 		try {
 			String errorMessage = "Const should be followed by a valid identifier";
 			Token identifierToken = extractNextToken(tokenBuffer, IDENTIFIER.toTokenType(), errorMessage);
-			TokenBuffer tokenBufferWithIdentifier = tokenBuffer.consumeToken();
 
 			errorMessage = "Identifier should be followed by type assignation ':'";
-			extractNextToken(tokenBufferWithIdentifier, COLON.toTokenType(), errorMessage);
-			TokenBuffer tokenBufferWithColon = tokenBufferWithIdentifier.consumeToken();
+			extractNextToken(tokenBuffer, COLON.toTokenType(), errorMessage);
 
 			errorMessage = "Was expecting a valid type";
-			Token typeToken = extractNextToken(tokenBufferWithColon, literalTypes, errorMessage);
-			TokenBuffer tokenBufferWithType = tokenBufferWithColon.consumeToken();
+			Token typeToken = extractNextToken(tokenBuffer, literalTypes, errorMessage);
 
 			errorMessage = "Was expecting equals '=' for const declaration";
-			Token equalsToken = extractNextToken(tokenBufferWithType, EQUALS.toTokenType(), errorMessage);
-			TokenBuffer tokenBufferWithEquals = tokenBufferWithType.consumeToken();
+			Token equalsToken = extractNextToken(tokenBuffer, EQUALS.toTokenType(), errorMessage);
 
-			TokenBuffer tokenBufferWithoutEquals = tokenBufferWithEquals.consumeToken();
-			return handleEqualsToken(identifierToken, typeToken, equalsToken, tokenBufferWithoutEquals);
+			TokenBuffer tokenBufferWithoutEquals = tokenBuffer.consumeToken();
+			return handleEqualsToken(identifierToken, equalsToken, typeToken, tokenBufferWithoutEquals);
 		}
 		catch (Exception e) {
 			return NodeResponse.response(e, tokenBuffer);
@@ -61,7 +57,7 @@ public class ConstNodeConstructor implements NodeConstructor {
 
 	//assumes there is a token in the buffer
 	private Token extractNextToken(TokenBuffer buffer, TokenType expectedType, String errorMessage)
-			throws SemanticErrorException {
+			throws Exception {
 
 		Token lastToken = buffer.getToken().get();
 		buffer = buffer.consumeToken();
@@ -73,7 +69,7 @@ public class ConstNodeConstructor implements NodeConstructor {
 	}
 
 	private Token extractNextToken(TokenBuffer buffer, List<TokenType> expectedTypes, String errorMessage)
-			throws SemanticErrorException {
+			throws Exception {
 
 		Token lastToken = buffer.getToken().get();
 		buffer = buffer.consumeToken();

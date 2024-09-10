@@ -89,7 +89,8 @@ public class IfNodeConstructor implements BlockNodeConstructor{
 			tokenBuffer = tokenBuffer.consumeToken();
 		}
 
-		NodeResponse build = innerConstructor.build(new TokenBuffer(acummulatedTokens));
+		Accumulator accumulator = new Accumulator(acummulatedTokens);
+		NodeResponse build = innerConstructor.buildAll(new TokenBuffer(accumulator));
 
 		if (build.possibleNode().isFail()) {
 			throw build.possibleNode().getFail().get();
@@ -126,8 +127,8 @@ public class IfNodeConstructor implements BlockNodeConstructor{
 			acummulatedTokens.add(token);
 			tokenBuffer = tokenBuffer.consumeToken();
 		}
-
-		NodeResponse build = expressionNodeConstructor.build(new TokenBuffer(acummulatedTokens));
+		Accumulator accumulator = new Accumulator(acummulatedTokens);
+		NodeResponse build = expressionNodeConstructor.build(new TokenBuffer(accumulator));
 
 		if (build.possibleNode().isFail()) {
 			throw build.possibleNode().getFail().get();

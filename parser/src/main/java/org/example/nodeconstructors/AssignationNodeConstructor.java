@@ -23,23 +23,23 @@ public class AssignationNodeConstructor implements NodeConstructor{
 		this.expressionNodeConstructor = expressionNodeConstructor;
 	}
 	@Override
-	public NodeResponse build(TokenBuffer tokenBuffer) {
-		boolean hasIdentifier = tokenBuffer.isNextTokenOfType(NativeTokenTypes.IDENTIFIER.toTokenType());
+	public NodeResponse build(TokenBuffer tokenBuffer) throws Exception {
 
+		if (!tokenBuffer.isNextTokenOfType(NativeTokenTypes.IDENTIFIER.toTokenType())) {
+			return NodeResponse.emptyResponse(tokenBuffer);
+		}
 		Token identifierToken = tokenBuffer.getToken().get();
-		TokenBuffer tokenBufferWithoutIdentifier = tokenBuffer.consumeToken();
+		Token equals = tokenBuffer.peekNext();
 
-		NodeResponse tokenBufferWithoutIdentifier1 = hasEquals(hasIdentifier, tokenBufferWithoutIdentifier);
-		if (tokenBufferWithoutIdentifier1 != null) return tokenBufferWithoutIdentifier1;
+		if (!TokenBuffer.isThisTokenType(equals, NativeTokenTypes.EQUALS.toTokenType())) {
+			return NodeResponse.emptyResponse(tokenBuffer);
+		}
+		//consumes id
+		tokenBuffer.consumeToken();
+		//consumes equals
+		tokenBuffer.consumeToken();
 
-
-		Token equals = tokenBufferWithoutIdentifier.getToken().get();
-		TokenBuffer tokenBufferWithoutEquals = tokenBufferWithoutIdentifier.consumeToken();
-
-		NodeResponse equals1 = isEnding(tokenBufferWithoutEquals, equals);
-		if (equals1 != null) return equals1;
-
-		return handleEqualsToken(identifierToken, equals, tokenBufferWithoutEquals);
+		return handleEqualsToken(identifierToken, equals, tokenBuffer);
 	}
 
 	private static NodeResponse isEnding(TokenBuffer tokenBufferWithoutEquals, Token equals) {
@@ -59,7 +59,8 @@ public class AssignationNodeConstructor implements NodeConstructor{
 		return null;
 	}
 
-	private NodeResponse handleEqualsToken(Token identifierToken, Token equalsToken, TokenBuffer tokenBuffer) {
+	private NodeResponse handleEqualsToken(Token identifierToken, Token equalsToken, TokenBuffer tokenBuffer)
+			throws Exception {
 		List<Token> tokens = new LinkedList<>();
 
 		Token currentToken = equalsToken;
@@ -78,7 +79,8 @@ public class AssignationNodeConstructor implements NodeConstructor{
 		NodeResponse equalsToken1 = isAssignation(equalsToken, tokenBuffer, noTokensBetweenEqualsAndSemiColon);
 		if (equalsToken1 != null) return equalsToken1;
 
-		TokenBuffer expressionTokenBuffer = new TokenBuffer(tokens);
+		Accumulator accumulator = new Accumulator(tokens);
+		TokenBuffer expressionTokenBuffer = new TokenBuffer(accumulator);
 
 		NodeResponse buildResult = expressionNodeConstructor.build(expressionTokenBuffer);
 

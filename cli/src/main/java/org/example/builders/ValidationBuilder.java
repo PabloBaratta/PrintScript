@@ -2,6 +2,7 @@ package org.example.builders;
 
 import org.example.Program;
 import org.example.interpreter.Interpreter;
+import org.example.lexer.Lexer;
 import org.example.lexer.StreamReader;
 import org.example.lexer.token.Token;
 
@@ -12,8 +13,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.example.Runner.lex;
 import static org.example.Runner.parse;
+import static org.example.lexer.LexerProvider.provideV10;
 import static org.example.resources.Util.createInterpreter;
 
 public class ValidationBuilder implements CommandBuilder{
@@ -27,8 +28,8 @@ public class ValidationBuilder implements CommandBuilder{
                 .collect(Collectors.joining("\n"));
         InputStream inputStream = new ByteArrayInputStream(code.getBytes());
         StreamReader reader = new StreamReader(inputStream);
-        List<Token> tokens = lex(reader);
-        Program ast = parse(tokens);
+        Lexer lexer = provideV10(reader);
+        Program ast = parse(lexer);
         Interpreter interpreter = createInterpreter();
         interpreter.validate(ast);
         return "Validation completed";

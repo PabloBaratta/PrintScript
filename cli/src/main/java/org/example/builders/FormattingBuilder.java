@@ -3,7 +3,7 @@ package org.example.builders;
 import org.example.*;
 import org.example.lexer.StreamReader;
 import org.example.lexer.token.Token;
-
+import org.example.lexer.Lexer;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.example.Runner.lex;
 import static org.example.Runner.parse;
+import static org.example.lexer.LexerProvider.provideV10;
 
 public class FormattingBuilder implements CommandBuilder{
     @Override
@@ -28,8 +28,8 @@ public class FormattingBuilder implements CommandBuilder{
                 .collect(Collectors.joining("\n"));
         InputStream inputStream = new ByteArrayInputStream(code.getBytes());
         StreamReader reader = new StreamReader(inputStream);
-        List<Token> tokens = lex(reader);
-        Program program = parse(tokens);
+        Lexer lexer = provideV10(reader);
+        Program program = parse(lexer);
         Map<String, Rule> rules = readJson(pathConfig);
         PrintScriptIteratorTest<ASTNode> nodes = new PrintScriptIteratorTest<>(program.getChildren());
         Formatter formatter = FormatterProvider.provideV10();

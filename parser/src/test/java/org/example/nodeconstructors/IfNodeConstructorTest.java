@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class IfNodeConstructorTest {
 
 	@Test
-	public void successfulIfNodeConstruction() {
+	public void successfulIfNodeConstruction() throws Exception {
 		Token ifToken = getaTokenFromTokenType(IF, "if");
 
 		NativeTokenTypes[][] successfulTestCases = new NativeTokenTypes[][]{
@@ -49,7 +49,7 @@ public class IfNodeConstructorTest {
 	}
 
 	@Test
-	public void unsuccessfulTestCase() {
+	public void unsuccessfulTestCase() throws Exception {
 		Token ifToken = getaTokenFromTokenType(IF, "if");
 
 		NativeTokenTypes[][] testCases = new NativeTokenTypes[][]{
@@ -81,13 +81,13 @@ public class IfNodeConstructorTest {
 		}
 	}
 
-	private static void asssertUnSuccessfulCase(LinkedList<Token> tokens) {
+	private static void asssertUnSuccessfulCase(LinkedList<Token> tokens) throws Exception {
 		setUpTests result = getSetUpTests(tokens);
 
 		assertTrue(result.optionalExceptionTry().isFail());
 	}
 
-	private static void assertSuccessfulCase(LinkedList<Token> tokens) {
+	private static void assertSuccessfulCase(LinkedList<Token> tokens) throws Exception {
 		setUpTests result = getSetUpTests(tokens);
 
 		assertTrue(result.optionalExceptionTry().isSuccess());
@@ -97,13 +97,14 @@ public class IfNodeConstructorTest {
 		assertFalse(result.build().possibleBuffer().hasAnyTokensLeft());
 	}
 
-	private static setUpTests getSetUpTests(LinkedList<Token> tokens) {
+	private static setUpTests getSetUpTests(LinkedList<Token> tokens) throws Exception {
 		ExpressionCollector expression = new ExpressionCollector();
 		ScopeCollector scope = new ScopeCollector();
 		IfNodeConstructor ifNodeConstructor = new IfNodeConstructor(expression);
 		ifNodeConstructor.acceptInnerConstructor(scope);
 
-		NodeResponse build = ifNodeConstructor.build(new TokenBuffer(tokens));
+		Accumulator accumulator = new Accumulator(tokens);
+		NodeResponse build = ifNodeConstructor.build(new TokenBuffer(accumulator));
 
 
 		Try<Optional<ASTNode>, Exception> optionalExceptionTry = build.possibleNode();
