@@ -3,8 +3,8 @@ plugins {
 }
 
 dependencies {
-    implementation project(':lexer') //may be changed to utils due to json reading
     implementation project(':ast')
     implementation project(':utils')
+    implementation project(':token')
     testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
 }

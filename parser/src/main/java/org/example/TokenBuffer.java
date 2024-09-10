@@ -1,10 +1,8 @@
 package org.example;
 
-
-
-import org.example.lexer.token.NativeTokenTypes;
-import org.example.lexer.token.Token;
-import org.example.lexer.token.TokenType;
+import org.token.Token;
+import org.token.TokenType;
+import org.token.NativeTokenTypes;
 import functional.Try;
 
 import java.util.LinkedList;
@@ -25,7 +23,7 @@ public class TokenBuffer {
 		this.tokenAcc = new LinkedList<>();
 	}
 	/**
-	@throws Exception if it cannot process a Token
+	@throws Exception if it cannot process a org.token.Token
 	*/
 
 	private static Token getTokenFromIterator(PrintScriptIterator<Token> tokens) throws Exception {
@@ -33,7 +31,7 @@ public class TokenBuffer {
 	}
 
 	/**
-	@throws Exception if it cannot process a Token or if token is trying to be consumes while there
+	@throws Exception if it cannot process a org.token.Token or if token is trying to be consumes while there
 	is not any more tokens
 	 */
 

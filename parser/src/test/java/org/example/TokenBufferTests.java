@@ -1,9 +1,9 @@
 package org.example;
 
-import org.example.lexer.token.NativeTokenTypes;
-import org.example.lexer.token.Position;
-import org.example.lexer.token.Token;
-import org.example.lexer.token.TokenType;
+import org.token.NativeTokenTypes;
+import org.token.Position;
+import org.token.Token;
+import org.token.TokenType;
 import functional.Try;
 import org.example.nodeconstructors.Accumulator;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.example.TokenTestUtil.getTokens;
-import static org.example.lexer.token.NativeTokenTypes.*;
+import static org.token.NativeTokenTypes.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TokenBufferTests {
@@ -29,7 +29,7 @@ public class TokenBufferTests {
 /*
 	@Test
 	public void immutabilityTest() {
-		List<Token> tokens = getListOfDifferentTokenTypes();
+		List<org.token.Token> tokens = getListOfDifferentTokenTypes();
 		Accumulator accumulator = new Accumulator(tokens);
 		TokenBuffer buffer = new TokenBuffer(accumulator);
 

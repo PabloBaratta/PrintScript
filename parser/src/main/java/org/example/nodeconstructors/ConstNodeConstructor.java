@@ -1,15 +1,15 @@
 package org.example.nodeconstructors;
 
 import org.example.*;
-import org.example.lexer.token.NativeTokenTypes;
-import org.example.lexer.token.Token;
-import org.example.lexer.token.TokenType;
+import org.token.NativeTokenTypes;
+import org.token.Token;
+import org.token.TokenType;
+import static org.token.NativeTokenTypes.*;
 import functional.Try;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.example.lexer.token.NativeTokenTypes.*;
 import static org.example.nodeconstructors.NodeResponse.response;
 
 public class ConstNodeConstructor implements NodeConstructor {

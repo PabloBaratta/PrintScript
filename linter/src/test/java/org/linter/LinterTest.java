@@ -1,13 +1,9 @@
 package org.linter;
 
 import org.example.TextLiteral;
-import org.example.lexer.token.Position;
+import org.token.Position;
 import org.junit.jupiter.api.Test;
-import org.linter.configurator.Configurator;
-import org.linter.configurator.IdentifierConfiguration;
-import org.linter.configurator.OneArgFunctionConfiguration;
 
-import java.util.List;
 import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -2,10 +2,10 @@
 package org.example;
 
 import org.example.lexer.*;
-import org.example.lexer.token.NativeTokenTypes;
-import org.example.lexer.token.Position;
-import org.example.lexer.token.Token;
-import org.example.lexer.token.TokenType;
+import org.token.NativeTokenTypes;
+import org.token.Position;
+import org.token.Token;
+import org.token.TokenType;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;

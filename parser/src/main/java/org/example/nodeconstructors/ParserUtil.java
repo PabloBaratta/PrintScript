@@ -3,9 +3,9 @@ package org.example.nodeconstructors;
 import org.example.ASTNode;
 import org.example.SemanticErrorException;
 import org.example.TokenBuffer;
-import org.example.lexer.token.NativeTokenTypes;
-import org.example.lexer.token.Token;
-import org.example.lexer.token.TokenType;
+import org.token.NativeTokenTypes;
+import org.token.Token;
+import org.token.TokenType;
 import functional.Try;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package org.example.nodeconstructors;
 
 import org.example.PrintScriptIterator;
-import org.example.lexer.token.Token;
+import org.token.Token;
 
 import java.util.Iterator;
 import java.util.List;
