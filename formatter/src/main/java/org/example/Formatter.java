@@ -7,23 +7,28 @@ import java.util.Optional;
 public class Formatter {
 
 	private final Map<String, Rule> rules;
+	private final PrintScriptIterator<ASTNode> nodes;
 
-	public Formatter(Map<String, Rule> rules) {
+	public Formatter(Map<String, Rule> rules, PrintScriptIterator<ASTNode> nodes) {
 		this.rules = rules;
+		this.nodes = nodes;
 	}
 
-	public String format(Program program) throws Exception {
+	public String format() throws Exception {
 		StringBuilder result = new StringBuilder();
-		formatNode(program, result);
+		while (nodes.hasNext()) {
+			ASTNode child = nodes.getNext();
+			formatNode(child, result, 0);
+		}
 		return result.toString();
 	}
 
-	private void formatNode(ASTNode child, StringBuilder result) {
+	private void formatNode(ASTNode child, StringBuilder result, int nestingLevel) {
 		switch (child) {
 			case Program program:
 				List<ASTNode> children = program.getChildren();
 				for (ASTNode child1 : children) {
-					formatNode(child1, result);
+					formatNode(child1, result, nestingLevel);
 				}
 				break;
 			case VariableDeclaration variableDeclaration:
@@ -39,7 +44,7 @@ public class Formatter {
 				result.append(formatMethod(method));
 				break;
 			case IfStatement ifStatement:
-				result.append(formatIfStatement(ifStatement));
+				result.append(formatIfStatement(ifStatement, nestingLevel));
 				break;
 			default:
 				String s = "Unknown node type: ";
@@ -47,28 +52,30 @@ public class Formatter {
 		}
 	}
 
-	private StringBuilder formatIfStatement(IfStatement ifStatement) {
+	private StringBuilder formatIfStatement(IfStatement ifStatement, int nestingLevel) {
 		Expression condition = ifStatement.getCondition();
 		List<ASTNode> thenBlock = ifStatement.getThenBlock();
 		List<ASTNode> elseBlock = ifStatement.getElseBlock();
 		StringBuilder result = new StringBuilder();
-		result.append("if (").append(condition.toString()).append(") { \n");
-		formatChildren(thenBlock, result);
+		result.append("if (").append(condition.toString()).append(") {\n");
+		formatChildren(thenBlock, result, nestingLevel + 1);
+		checkSpaces(result, nestingLevel);
 		result.append("}");
-		if (elseBlock.isEmpty()){
+		if (!elseBlock.isEmpty()) {
+			result.append(" else {\n");
+			formatChildren(elseBlock, result, nestingLevel + 1);
+			checkSpaces(result, nestingLevel);
+			result.append("}\n");
+		} else {
 			result.append("\n");
-			return result;
 		}
-		result.append(" else { \n");
-		formatChildren(elseBlock, result);
-		result.append("}\n");
 		return result;
 	}
 
-	private void formatChildren(List<ASTNode> thenBlock, StringBuilder result) {
-		for (ASTNode node : thenBlock) {
-			checkSpaces(result);
-			formatNode(node, result);
+	private void formatChildren(List<ASTNode> children, StringBuilder result, int nestingLevel) {
+		for (ASTNode node : children) {
+			checkSpaces(result, nestingLevel);
+			formatNode(node, result, nestingLevel);
 		}
 	}
 
@@ -119,9 +126,9 @@ public class Formatter {
 		}
 	}
 
-	private void checkSpaces(StringBuilder result) {
+	private void checkSpaces(StringBuilder result, int nestingLevel) {
 		if (rules.get("indentation").getRule()) {
-			int qty = rules.get("indentation").getQty().get();
+			int qty = rules.get("indentation").getQty().get() * nestingLevel;
 			result.append(" ".repeat(Math.max(0, qty)));
 		}
 	}
