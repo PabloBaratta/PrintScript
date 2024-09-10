@@ -39,10 +39,10 @@ public class Parser implements PrintScriptIterator<ASTNode>{
 
 		return optionalASTNode.map(Try::new)
 				.orElseGet(() -> {
-                    Token errorToken = build.possibleBuffer().getToken().getSuccess().get();
-                    return new Try<>(
-                            new SemanticErrorException(errorToken));
-                });
+					Token errorToken = build.possibleBuffer().getToken().getSuccess().get();
+					return new Try<>(
+							new SemanticErrorException(errorToken));
+				});
 	}
 
 	@Override
