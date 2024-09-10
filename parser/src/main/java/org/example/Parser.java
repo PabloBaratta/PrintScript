@@ -2,8 +2,9 @@ package org.example;
 
 
 
-import org.example.lexer.utils.Try;
+import functional.Try;
 
+import org.example.lexer.token.Token;
 import org.example.nodeconstructors.BlockNodeConstructor;
 import org.example.nodeconstructors.NodeResponse;
 import org.example.nodeconstructors.NodeConstructor;
@@ -28,7 +29,7 @@ public class Parser implements PrintScriptIterator<ASTNode>{
 
 	}
 
-	public Try<ASTNode, Exception> parseExpression() throws Exception {
+	public Try<ASTNode> parseExpression() {
 		NodeResponse build = scopeConstructor.build(tokens);
 		if (build.possibleNode().isFail()) {
 			return new Try<>(build.possibleNode().getFail().get());
@@ -37,8 +38,11 @@ public class Parser implements PrintScriptIterator<ASTNode>{
 		Optional<ASTNode> optionalASTNode = build.possibleNode().getSuccess().get();
 
 		return optionalASTNode.map(Try::new)
-				.orElseGet(() -> new Try<>(
-						new SemanticErrorException(build.possibleBuffer().getToken().get())));
+				.orElseGet(() -> {
+                    Token errorToken = build.possibleBuffer().getToken().getSuccess().get();
+                    return new Try<>(
+                            new SemanticErrorException(errorToken));
+                });
 	}
 
 	@Override
@@ -48,7 +52,12 @@ public class Parser implements PrintScriptIterator<ASTNode>{
 
 	@Override
 	public ASTNode getNext() throws Exception {
-		Try<ASTNode, Exception> astNodeExceptionTry = parseExpression();
+
+		if (!hasNext()) {
+			throw new NoMoreTokensException();
+		}
+
+		Try<ASTNode> astNodeExceptionTry = parseExpression();
 		if (astNodeExceptionTry.isFail()){
 			throw astNodeExceptionTry.getFail().get();
 		}

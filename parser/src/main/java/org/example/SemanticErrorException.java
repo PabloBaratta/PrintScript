@@ -3,6 +3,8 @@ package org.example;
 
 import org.example.lexer.token.Token;
 
+
+
 public class SemanticErrorException extends Exception{
 
 	public SemanticErrorException(Token token){
