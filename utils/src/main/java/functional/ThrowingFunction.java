@@ -1,4 +1,4 @@
-package org.example.nodeconstructors;
+package functional;
 
 @FunctionalInterface
 public interface ThrowingFunction<T, R> {

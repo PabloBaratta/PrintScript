@@ -34,16 +34,13 @@ public class CallExpressionTest {
 				{
 					List<Token> tokens = List.of(getaTokenFromTokenType(type));
 					Accumulator accumulator = new Accumulator(tokens);
-					assertDoesNotThrow(() -> new TokenBuffer(accumulator));
 					TokenBuffer tokenBuffer = null;
 					try {
 						tokenBuffer = new TokenBuffer(accumulator);
 					} catch (Exception e) {
 						throw new RuntimeException(e);
 					}
-					TokenBuffer finalTokenBuffer = tokenBuffer;
-					assertDoesNotThrow(() -> builder.build(finalTokenBuffer));
-					NodeResponse build = null;
+					NodeResponse build;
 					try {
 						build = builder.build(tokenBuffer);
 					} catch (Exception e) {

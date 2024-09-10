@@ -6,7 +6,7 @@ import org.example.TokenBuffer;
 import org.example.TokenTestUtil;
 import org.example.lexer.token.NativeTokenTypes;
 import org.example.lexer.token.Token;
-import org.example.lexer.utils.Try;
+import functional.Try;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
@@ -107,11 +107,11 @@ public class IfNodeConstructorTest {
 		NodeResponse build = ifNodeConstructor.build(new TokenBuffer(accumulator));
 
 
-		Try<Optional<ASTNode>, Exception> optionalExceptionTry = build.possibleNode();
+		Try<Optional<ASTNode>> optionalExceptionTry = build.possibleNode();
 		return new setUpTests(build, optionalExceptionTry);
 	}
 
-	private record setUpTests(NodeResponse build, Try<Optional<ASTNode>, Exception> optionalExceptionTry) {
+	private record setUpTests(NodeResponse build, Try<Optional<ASTNode>> optionalExceptionTry) {
 	}
 
 

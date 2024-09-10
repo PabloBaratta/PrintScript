@@ -6,6 +6,7 @@ plugins {
 dependencies {
     implementation project(':ast')
     implementation project(':lexer')
+    implementation project(':utils')
     // Jackson Core
     implementation 'com.fasterxml.jackson.core:jackson-core:2.15.0'
 

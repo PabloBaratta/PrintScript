@@ -1,0 +1,125 @@
+@startuml
+
+' Define classes
+class Lexer {
+    -Iterator<String> reader
+    -Collection<TokenConstructor> constructors
+    -TokenConstructor keywords
+    -List<Character> whiteSpaces
+    -String currentLine
+    -int offset
+    -int line
+    +Lexer(Iterator<String> reader, Collection<TokenConstructor> constructors, TokenConstructor keywords, List<Character> whiteSpaces)
+    +boolean hasNext()
+    +Token getNext() throws Exception
+    -Optional<Token> getOptionalToken()
+    -void skipWhiteSpace()
+    -void setOffset(int newPosition)
+}
+
+class Token {
+    -TokenType type
+    -String associatedString
+    -Position position
+    +Token(TokenType type, String associatedString, Position position)
+    +String toString()
+    +int length()
+}
+
+class TokenType {
+    -String name
+    +TokenType(String name)
+}
+
+class Position {
+    -int offset
+    -int length
+    -int line
+    -int column
+    +Position(int offset, int length, int line, int column)
+    +int getOffset()
+    +int getLength()
+    +int getLine()
+    +int getColumn()
+}
+
+enum NativeTokenTypes {
+    -String regex
+    +SEMICOLON
+    +LEFT_PARENTHESIS
+    +RIGHT_PARENTHESES
+    +COMMA
+    +COLON
+    +EOF
+    +EQUALS
+    +PLUS
+    +MINUS
+    +ASTERISK
+    +SLASH
+    +IDENTIFIER
+    +STRING
+    +NUMBER
+    +BOOLEAN
+    +LET
+    +CONST
+    +STRING_TYPE
+    +NUMBER_TYPE
+    +BOOLEAN_TYPE
+    +PRINTLN
+    +READINPUT
+    +READENV
+    +IF
+    +ELSE
+    +LEFT_BRACE
+    +RIGHT_BRACE
+    +NativeTokenTypes(String regex)
+    +TokenType toTokenType()
+    +Pattern getRegex()
+}
+
+interface TokenConstructor {
+    +Optional<Token> constructToken(String code, int offset, int line, int column)
+}
+
+class TokenConstructorImpl implements TokenConstructor {
+    -Map<Pattern, TokenType> map
+    +TokenConstructorImpl(Map<Pattern, TokenType> map)
+    +Optional<Token> constructToken(String code, int offset, int line, int column)
+}
+
+class StreamReader implements Iterator<String> {
+    -BufferedReader reader
+    -String nextLine
+    +StreamReader(InputStream inputStream)
+    +boolean hasNext()
+    +String next()
+    -void advance()
+}
+
+class LexerProvider {
+    +static Lexer provideV10(Iterator<String> reader)
+    +static Lexer provideV11(Iterator<String> reader)
+}
+
+interface PrintScriptIterator {
+    +boolean hasNext()
+    +Token getNext() throws Exception
+}
+
+interface Iterator<T> {
+    +boolean hasNext()
+    +T next()
+}
+
+' Define relationships
+Lexer --> TokenConstructor
+Lexer ..> Token
+Token --> TokenType
+Token --> Position
+NativeTokenTypes ..> TokenType
+TokenConstructor ..> Token
+LexerProvider ..> Lexer
+Lexer ..|> PrintScriptIterator
+Lexer --> Iterator
+
+@enduml
