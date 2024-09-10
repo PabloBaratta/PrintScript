@@ -1,16 +1,9 @@
 package org.example.builders;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.example.Runner.*;
@@ -30,22 +23,11 @@ public class AnalyzingBuilder implements CommandBuilder{
 
         String version = parts[3];
 
-        lint(inputStream, version, getConfigurators(pathConfig));
+        String config = Files.lines(Paths.get(pathConfig))
+                .collect(Collectors.joining("\n"));
+
+        lint(inputStream, version, config);
         return "linting completed";
-    }
-
-    private Map<String, String> getConfigurators(String pathConfig) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = mapper.readTree(Paths.get(pathConfig).toFile());
-        Map<String, String> configMap = new HashMap<>();
-
-        Iterator<Map.Entry<String, JsonNode>> fields = rootNode.fields();
-        while (fields.hasNext()) {
-            Map.Entry<String, JsonNode> field = fields.next();
-            configMap.put(field.getKey(), field.getValue().asText());
-        }
-
-        return configMap;
     }
 
 }

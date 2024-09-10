@@ -1,5 +1,6 @@
 package org.example;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.interpreter.Interpreter;
 import org.example.lexer.Lexer;
 import org.example.lexer.StreamReader;
@@ -28,15 +29,15 @@ public class Runner {
 		validate(lexAndParse(inputStream, version));
 	}
 
-	public static void lint(InputStream inputStream, String version, Map<String, String> config) throws Exception {
+	public static void lint(InputStream inputStream, String version, String config) throws Exception {
 		ASTNode ast = lexAndParse(inputStream, version);
 		boolean isV10 = version.equals("1.0");
 		lint(ast, isV10, config);
 	}
 
-	public static void format(InputStream inputStream, String version, String config) throws Exception {
+	public static String format(InputStream inputStream, String version, String config) throws Exception {
 		ASTNode ast = lexAndParse(inputStream, version);
-		format(ast, config);
+		return format(ast, config);
 	}
 
 	private static ASTNode lexAndParse(InputStream inputStream, String version) throws Exception {
@@ -78,17 +79,23 @@ public class Runner {
 		interpreter.validate(ast);
 	}
 
-	private static void lint(ASTNode ast, boolean isV10, Map<String, String> config) throws Exception {
+	private static void lint(ASTNode ast, boolean isV10, String config) throws Exception {
 		Linter linter = isV10 ? LinterProvider.getLinterV10() : LinterProvider.getLinterV11();
-		Report report = linter.analyze((Program) ast, config);
+		Map<String, String> configuration = parseConfig(config);
+		Report report = linter.analyze((Program) ast, configuration);
 		for (ReportLine reportLine : report.getReportLines()) {
 			System.out.println(reportLine.errorMessage() + " on " + reportLine.position().toString());
 		}
 	}
 
-	private static void format(ASTNode ast, String config) throws Exception {
+	private static String format(ASTNode ast, String config) throws Exception {
 		Map<String, Rule> rules = JsonReader.readRulesFromJson(config);
 		Formatter formatter = new Formatter(rules);
-		System.out.println(formatter.format((Program) ast));
+		return formatter.format((Program) ast);
+	}
+
+	private static Map parseConfig(String jsonConfig) throws Exception {
+		ObjectMapper objectMapper = new ObjectMapper();
+		return objectMapper.readValue(jsonConfig, Map.class);
 	}
 }

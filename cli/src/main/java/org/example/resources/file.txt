@@ -1,4 +1,2 @@
-if (true) {
-const a: number = 2;
-println(a - 3);
-}
+const a: string = readInput("what's your name?");
+println("Hello " + a + "!");
