@@ -81,6 +81,8 @@ public class LinterVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(ConstDeclaration constDeclaration) throws Exception {
-
+        for (ASTVisitor visitor : visitors) {
+            visitor.visit(constDeclaration);
+        }
 	}
 }

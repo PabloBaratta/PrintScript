@@ -67,7 +67,11 @@ public class IdentifierRules implements ASTVisitor {
 
 	@Override
 	public void visit(ConstDeclaration constDeclaration) throws Exception {
-
+        Identifier identifier = constDeclaration.getIdentifier();
+        Matcher matcher = caseToCheck.getRegex().matcher(identifier.getName());
+        if (!matcher.matches()) {
+            report.addLine(identifier.getPosition(), message);
+        }
 	}
 
 	private void visitBlock(List<ASTNode> block) throws Exception {
