@@ -49,7 +49,6 @@ public class CallExpressionNodeConstructor implements NodeConstructor {
 				&& tokenBuffer.lookaheadType(1, LEFT_PARENTHESIS));
 	}
 
-	//TODO refactor
 	private NodeResponse handleCallExpression(Token identifier, Token leftPar, TokenBuffer tokenBuffer) {
 		// ( --> +1 , ) --> -1
 		int parenthesisCount = 1;
@@ -57,8 +56,8 @@ public class CallExpressionNodeConstructor implements NodeConstructor {
 
 		List<Expression> listOfArguments = new LinkedList<>();
 		List<Token> tokenAcc = new LinkedList<>();
-		String message1 = "not part or the desired expression as argument";
-		String mess = "not an expression";
+		String errorParsingExpression = "not part or the desired expression as argument";
+		String expressionError = "not an expression";
 		while (parenthesisCount > 0) {
 
 			if (!tokenBuffer.hasAnyTokensLeft()) {
@@ -92,25 +91,9 @@ public class CallExpressionNodeConstructor implements NodeConstructor {
 					return response(error, tokenBuffer);
 				}
 
-				Accumulator accumulator = new Accumulator(tokenAcc);
-				NodeResponse build = expConst.build(new TokenBuffer(accumulator));
-
-				if (build.possibleNode().isFail()){
-					return build;
-				}
-				else if (build.possibleBuffer().hasAnyTokensLeft()){
-					Token token = build.possibleBuffer().getToken().getSuccess().get();
-					SemanticErrorException exception = new SemanticErrorException(token, message1);
-					return response(exception, tokenBuffer);
-				}
-				else if (build.possibleNode().getSuccess().isEmpty()) {
-					Token errorToken = build.possibleBuffer().getToken().getSuccess().get();
-					SemanticErrorException ex = new SemanticErrorException(errorToken, mess);
-					return response(ex, tokenBuffer);
-				}
-
-				listOfArguments.add( (Expression) build.possibleNode().getSuccess().get().get());
-				tokenAcc.clear();
+				NodeResponse build = buildExpression(tokenBuffer,
+                        tokenAcc, errorParsingExpression, expressionError, listOfArguments);
+				if (build != null) return build;
 			}
 			else {
 				Try<Token> token = tokenBuffer.getToken();
@@ -126,24 +109,9 @@ public class CallExpressionNodeConstructor implements NodeConstructor {
 
 		// f(a,b) --> build the b
 		if (!tokenAcc.isEmpty()) {
-			Accumulator accumulator = new Accumulator(tokenAcc);
-			NodeResponse build = expConst.build(new TokenBuffer(accumulator));
-
-			if (build.possibleNode().isFail()){
-				return build;
-			}
-			else if (build.possibleBuffer().hasAnyTokensLeft()){
-				//safe because is a buffer with already proven right nodes
-				Token errorToken = build.possibleBuffer().getToken().getSuccess().get();
-				return response(new SemanticErrorException(errorToken, message1), tokenBuffer);
-			}
-			else if (build.possibleNode().getSuccess().isEmpty()) {
-				Token errorToken = build.possibleBuffer().getToken().getSuccess().get();
-				return response(new SemanticErrorException(errorToken, mess), tokenBuffer);
-			}
-
-			listOfArguments.add( (Expression) build.possibleNode().getSuccess().get().get());
-			tokenAcc.clear();
+			NodeResponse build = buildExpression(tokenBuffer, tokenAcc,
+                    errorParsingExpression, expressionError, listOfArguments);
+			if (build != null) return build;
 		}
 
 		if (terminal) {
@@ -155,6 +123,33 @@ public class CallExpressionNodeConstructor implements NodeConstructor {
 		}
 
 		return response(createMethodNode(identifier, listOfArguments), tokenBuffer);
+	}
+
+	private NodeResponse buildExpression(TokenBuffer tokenBuffer,
+                                         List<Token> tokenAcc,
+                                         String message1,
+                                         String mess,
+                                         List<Expression> listOfArguments) {
+		Accumulator accumulator = new Accumulator(tokenAcc);
+		NodeResponse build = expConst.build(new TokenBuffer(accumulator));
+
+		if (build.possibleNode().isFail()){
+			return build;
+		}
+		else if (build.possibleBuffer().hasAnyTokensLeft()){
+			Token token = build.possibleBuffer().getToken().getSuccess().get();
+			SemanticErrorException exception = new SemanticErrorException(token, message1);
+			return response(exception, tokenBuffer);
+		}
+		else if (build.possibleNode().getSuccess().isEmpty()) {
+			Token errorToken = build.possibleBuffer().getToken().getSuccess().get();
+			SemanticErrorException ex = new SemanticErrorException(errorToken, mess);
+			return response(ex, tokenBuffer);
+		}
+
+		listOfArguments.add( (Expression) build.possibleNode().getSuccess().get().get());
+		tokenAcc.clear();
+		return null;
 	}
 
 	private static Method createMethodNode(Token identifier, List<Expression> listOfArguments) {
