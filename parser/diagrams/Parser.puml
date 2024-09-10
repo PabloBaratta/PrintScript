@@ -1,0 +1,67 @@
+@startuml
+
+class Parser implements PrintScriptIterator<ASTNode>{
+-ScopeNodeConstructor
+-TokenBuffer
++Parser(List<NodeConstructor> nodeConstructors,
+List<BlockNodeConstructor> blockConstructors, TokenBuffer buffer)
+}
+
+interface NodeConstructor {
++NodeResponse build(TokenBuffer buffer)
+}
+
+interface BlockNodeConstructor extends NodeConstructor{
++acceptScopeNodeConstructor(ScopeNodeConstructor)
+}
+
+class ScopeNodeConstructor implements NodeConstructor {
+-List<NodeConstructor> nodeConstructors
++NodeResponse buildAll(TokenBuffer buffer)
+}
+
+class NodeResponse {
+Try<Optional<ASTNode>>
+TokenBuffer
+}
+
+class CallExpressionNodeConstructor implements NodeConstructor {
+-boolean terminal
+-NodeConstructor expressionNodeConstructor
+-List<TokenType> nativeFunctions;
++List<TokenType> functions()
++CallExpressionNodeConstructor setExpressionParser()
+}
+
+class AssignationNodeConstructor implements NodeConstructor {
+NodeConstructor expressionNodeConstructor;
+}
+
+class ConstNodeConstructor implements NodeConstructor {
+NodeConstructor expressionNodeConstructor;
+List<TokenType> literalTypes;
+}
+
+class VariableDeclarationNodeConstructor implements NodeConstructor {
+NodeConstructor expressionNodeConstructor;
+List<TokenType> literalTypes;
+}
+
+class IfNodeConstructor implements BlockNodeConstructor {
+ScopeNodeConstructor innerNodeConstructor;
+}
+
+class TokenBuffer {
+}
+
+class ExpressionNodeConstructor implements NodeConstructor {
+}
+
+Parser --> ScopeNodeConstructor
+Parser ..> NodeConstructor
+ScopeNodeConstructor *-- NodeConstructor
+BlockNodeConstructor ..> ScopeNodeConstructor
+NodeConstructor ..> NodeResponse
+Parser --> TokenBuffer
+NodeConstructor ..> TokenBuffer
+@enduml
