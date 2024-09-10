@@ -7,6 +7,7 @@ dependencies {
     implementation project(':ast')
     implementation project(':lexer')
     implementation project(':utils')
+    implementation project(':token')
     // Jackson Core
     implementation 'com.fasterxml.jackson.core:jackson-core:2.15.0'
 

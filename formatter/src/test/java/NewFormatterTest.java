@@ -1,5 +1,5 @@
 import org.example.*;
-import org.example.lexer.token.Position;
+import org.token.Position;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

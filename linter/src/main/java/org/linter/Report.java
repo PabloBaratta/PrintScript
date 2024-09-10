@@ -1,6 +1,6 @@
 package org.linter;
 
-import org.example.lexer.token.Position;
+import org.token.Position;
 
 import java.util.LinkedList;
 import java.util.List;

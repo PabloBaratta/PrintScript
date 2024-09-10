@@ -4,10 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.Parser;
 import org.example.ParserProvider;
-import org.example.Program;
 import org.example.lexer.Lexer;
 import org.example.lexer.StreamReader;
-import org.example.lexer.token.Token;
+import org.token.Token;
 import org.linter.*;
 
 import java.io.ByteArrayInputStream;
@@ -17,10 +16,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import static org.example.Runner.parse;
+
 import static org.example.lexer.LexerProvider.provideV10;
 
 public class AnalyzingBuilder implements CommandBuilder{

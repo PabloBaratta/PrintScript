@@ -3,8 +3,8 @@ package org.example.nodeconstructors;
 import org.example.ASTNode;
 import org.example.Assignation;
 import org.example.TokenBuffer;
-import org.example.lexer.token.NativeTokenTypes;
-import org.example.lexer.token.Token;
+import org.token.NativeTokenTypes;
+import org.token.Token;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.example.TokenTestUtil.getTokens;
 import static org.example.TokenTestUtil.getaTokenFromTokenType;
-import static org.example.lexer.token.NativeTokenTypes.*;
+import static org.token.NativeTokenTypes.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AssignationNodeConstructorTest {

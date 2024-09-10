@@ -1,7 +1,7 @@
 package org.linter;
 
 import org.example.*;
-import org.example.lexer.token.Position;
+import org.token.Position;
 import org.junit.jupiter.api.Test;
 import org.linter.configurator.IdentifierConfiguration;
 import org.linter.configurator.OneArgFunctionConfiguration;

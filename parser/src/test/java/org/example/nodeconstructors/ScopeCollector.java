@@ -2,7 +2,7 @@ package org.example.nodeconstructors;
 
 import org.example.Program;
 import org.example.TokenBuffer;
-import org.example.lexer.token.Token;
+import org.token.Token;
 import functional.Try;
 
 import java.util.LinkedList;

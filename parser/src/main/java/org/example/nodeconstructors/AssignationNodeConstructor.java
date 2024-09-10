@@ -3,12 +3,13 @@ package org.example.nodeconstructors;
 
 import org.example.*;
 
-import org.example.lexer.token.Token;
+import org.token.Token;
 import functional.Try;
+import static org.token.NativeTokenTypes.*;
+
 
 import java.util.List;
 
-import static org.example.lexer.token.NativeTokenTypes.*;
 import static org.example.nodeconstructors.NodeResponse.response;
 
 //TODO refactor

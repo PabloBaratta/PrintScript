@@ -2,8 +2,8 @@ package org.example.nodeconstructors;
 
 import org.example.TextLiteral;
 import org.example.TokenBuffer;
-import org.example.lexer.token.Position;
-import org.example.lexer.token.Token;
+import org.token.Position;
+import org.token.Token;
 import functional.Try;
 
 import java.util.LinkedList;

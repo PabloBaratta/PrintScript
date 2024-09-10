@@ -1,8 +1,7 @@
 package org.example.interpreter;
 
 import org.example.*;
-import org.example.lexer.token.Position;
-
+import org.token.Position;
 import java.util.*;
 
 public class Executor implements ASTVisitor {

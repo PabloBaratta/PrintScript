@@ -3,7 +3,7 @@ package org.example;
 import org.example.interpreter.Interpreter;
 import org.example.lexer.Lexer;
 import org.example.lexer.StreamReader;
-import org.example.lexer.token.Token;
+import org.token.Token;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

@@ -4,11 +4,11 @@ package org.example;
 
 import functional.Try;
 
-import org.example.lexer.token.Token;
 import org.example.nodeconstructors.BlockNodeConstructor;
 import org.example.nodeconstructors.NodeResponse;
 import org.example.nodeconstructors.NodeConstructor;
 import org.example.nodeconstructors.ScopeNodeConstructor;
+import org.token.Token;
 
 import java.util.LinkedList;
 import java.util.List;

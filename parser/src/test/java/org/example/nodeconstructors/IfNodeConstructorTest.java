@@ -4,8 +4,8 @@ import org.example.ASTNode;
 import org.example.IfStatement;
 import org.example.TokenBuffer;
 import org.example.TokenTestUtil;
-import org.example.lexer.token.NativeTokenTypes;
-import org.example.lexer.token.Token;
+import org.token.NativeTokenTypes;
+import org.token.Token;
 import functional.Try;
 import org.junit.jupiter.api.Test;
 
@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.example.TokenTestUtil.getaTokenFromTokenType;
-import static org.example.lexer.token.NativeTokenTypes.*;
-import static org.example.lexer.token.NativeTokenTypes.SEMICOLON;
+import static org.token.NativeTokenTypes.*;
+import static org.token.NativeTokenTypes.SEMICOLON;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class IfNodeConstructorTest {

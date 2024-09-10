@@ -1,14 +1,16 @@
 package org.example.nodeconstructors;
 
 import org.example.*;
-import org.example.lexer.token.Token;
+import org.token.Position;
+import org.token.Token;
+import org.token.TokenType;
+import static org.token.NativeTokenTypes.*;
 import functional.Try;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.example.lexer.token.NativeTokenTypes.*;
 
 public class IfNodeConstructor implements BlockNodeConstructor{
 	private final ExpressionNodeConstructor expressionNodeConstructor;

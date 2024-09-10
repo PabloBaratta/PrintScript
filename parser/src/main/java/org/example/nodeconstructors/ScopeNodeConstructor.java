@@ -1,7 +1,7 @@
 package org.example.nodeconstructors;
 
 import org.example.*;
-import org.example.lexer.token.Token;
+import org.token.Token;
 import functional.Try;
 
 import java.util.LinkedList;
