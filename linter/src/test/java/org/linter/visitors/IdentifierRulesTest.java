@@ -66,37 +66,37 @@ class IdentifierRulesTest {
 
 	@Test
 	public void successfulSnakeCaseScenarios() throws Exception {
-        List<String> identifierStrings = Arrays.asList(
-                "variable_name",
-                "variable_name_with_numbers_123",
-                "a",
-                "snake_case",
-                "another_test_case"
-        );
+		List<String> identifierStrings = Arrays.asList(
+				"variable_name",
+				"variable_name_with_numbers_123",
+				"a",
+				"snake_case",
+				"another_test_case"
+		);
 
-        for (String identifierString : identifierStrings) {
-            assertConstSnakeCase(identifierString);
-            assertVarDeclSnakeCase(identifierString);
-        }
+		for (String identifierString : identifierStrings) {
+			assertConstSnakeCase(identifierString);
+			assertVarDeclSnakeCase(identifierString);
+		}
 
 	}
 
 	@Test
 	public void unsuccessfulSnakeCaseScenarios() throws Exception {
 
-        List<String> identifierStrings = Arrays.asList(
-                "_leading_underscore",
-                "trailing_underscore_",
-                "multiple__underscores",
-                "123_variable",
-                "mixedCASE",
-                "variable-name",
-                " variable_with_space"
-        );
-        for (String identifierString : identifierStrings) {
-          assertConstSnakeCaseFalse(identifierString);
-          assertVarDeclSnakeCaseFalse(identifierString);
-        }
+		List<String> identifierStrings = Arrays.asList(
+				"_leading_underscore",
+				"trailing_underscore_",
+				"multiple__underscores",
+				"123_variable",
+				"mixedCASE",
+				"variable-name",
+				" variable_with_space"
+		);
+		for (String identifierString : identifierStrings) {
+		assertConstSnakeCaseFalse(identifierString);
+		assertVarDeclSnakeCaseFalse(identifierString);
+		}
 	}
 
 	@Test
@@ -154,11 +154,11 @@ class IdentifierRulesTest {
 	}
 
 
-    private static void assertVarDeclCamelCase(String identifierString)
-            throws Exception {
-        Report report = getReportFromVarDecl(identifierString, Case.CAMEL_CASE);
+	private static void assertVarDeclCamelCase(String identifierString)
+			throws Exception {
+		Report report = getReportFromVarDecl(identifierString, Case.CAMEL_CASE);
 
-        assertTrue(report.getReportLines().isEmpty());
+		assertTrue(report.getReportLines().isEmpty());
 	}
 
 
@@ -194,34 +194,34 @@ class IdentifierRulesTest {
 		return report;
 	}
 
-    private static Report getReportFromConstDecl(String identifierString, Case identifierCase) throws Exception {
-        int length = identifierString.length();
+	private static Report getReportFromConstDecl(String identifierString, Case identifierCase) throws Exception {
+		int length = identifierString.length();
 
-        // Crear una instancia de ConstDeclaration
-        ConstDeclaration constDeclaration = new ConstDeclaration(
-                new Identifier(identifierString, new Position(4, length, 1, 4)),
-                new Type("string", new Position(5 + length, 6, 1, 5 + length)),
-                new TextLiteral("america", new Position(14 + length, 7, 1, 14 + length))
-        );
+		// Crear una instancia de ConstDeclaration
+		ConstDeclaration constDeclaration = new ConstDeclaration(
+				new Identifier(identifierString, new Position(4, length, 1, 4)),
+				new Type("string", new Position(5 + length, 6, 1, 5 + length)),
+				new TextLiteral("america", new Position(14 + length, 7, 1, 14 + length))
+		);
 
-        Report report = new Report();
-        IdentifierRules identifierRules = new IdentifierRules(identifierCase, report);
+		Report report = new Report();
+		IdentifierRules identifierRules = new IdentifierRules(identifierCase, report);
 
-        // Pasar la ConstDeclaration al visitor
-        identifierRules.visit(constDeclaration);
-        return report;
-    }
+		// Pasar la ConstDeclaration al visitor
+		identifierRules.visit(constDeclaration);
+		return report;
+	}
 
 
-    private static void assertConstSnakeCaseFalse(String identifierString) throws Exception {
-        Report report = getReportFromConstDecl(identifierString, Case.SNAKE_CASE);
-        assertFalse(report.getReportLines().isEmpty());
-    }
+	private static void assertConstSnakeCaseFalse(String identifierString) throws Exception {
+		Report report = getReportFromConstDecl(identifierString, Case.SNAKE_CASE);
+		assertFalse(report.getReportLines().isEmpty());
+	}
 
-    private static void assertConstSnakeCase(String identifierString) throws Exception {
-        Report report = getReportFromConstDecl(identifierString, Case.SNAKE_CASE);
-        assertTrue(report.getReportLines().isEmpty());
-    }
+	private static void assertConstSnakeCase(String identifierString) throws Exception {
+		Report report = getReportFromConstDecl(identifierString, Case.SNAKE_CASE);
+		assertTrue(report.getReportLines().isEmpty());
+	}
 
 
 }

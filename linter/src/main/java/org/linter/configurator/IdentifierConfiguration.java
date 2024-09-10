@@ -19,12 +19,12 @@ public class IdentifierConfiguration implements Configurator {
 			mapOptionCase.keySet().toArray(new String[0]), "camel");
 
 	public IdentifierConfiguration() {}
-    @Override
+	@Override
 	public boolean isThisRule(String ruleName) {
 		return this.ruleName.equals(ruleName);
 	}
 
-    @Override
+	@Override
 	public boolean isValidRuleOption(String ruleOption) {
 		return config.isThisOption(ruleOption);
 	}
@@ -38,7 +38,7 @@ public class IdentifierConfiguration implements Configurator {
 		return config.options();
 	}
 
-    @Override
+	@Override
 	public ASTVisitor getLinterRule(Report report, String ruleOption)
 			throws WrongConfigurationException {
 		if (!isValidRuleOption(ruleOption)) {
@@ -46,7 +46,7 @@ public class IdentifierConfiguration implements Configurator {
 		}
 		return new IdentifierRules(mapOptionCase.get(ruleOption), report);
 	}
-    @Override
+	@Override
 	public ASTVisitor getLinterRule(Report report) {
 		return new IdentifierRules(mapOptionCase.get(config.defaultValue()), report);
 	}
