@@ -2,6 +2,8 @@ package org.example.builders;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.Parser;
+import org.example.ParserProvider;
 import org.example.Program;
 import org.example.lexer.Lexer;
 import org.example.lexer.StreamReader;
@@ -34,9 +36,9 @@ public class AnalyzingBuilder implements CommandBuilder{
         InputStream inputStream = new ByteArrayInputStream(code.getBytes());
         StreamReader reader = new StreamReader(inputStream);
         Lexer lexer = provideV10(reader);
-        Program program = parse(lexer);
+        Parser parser = ParserProvider.provide10(lexer);
         Linter linter = LinterProvider.getLinterV10();
-        Report report = linter.analyze(program, getConfigurators(pathConfig));
+        Report report = linter.analyze(parser, getConfigurators(pathConfig));
         for (ReportLine reportLine : report.getReportLines()) {
             System.out.println(reportLine.errorMessage() + " on " + reportLine.position().toString());
         }
