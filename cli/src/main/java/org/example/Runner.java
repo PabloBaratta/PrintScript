@@ -4,21 +4,17 @@ import org.example.interpreter.Interpreter;
 import org.example.lexer.Lexer;
 import org.example.lexer.StreamReader;
 import org.example.lexer.token.Token;
-import org.example.lexer.utils.Try;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.example.lexer.LexerProvider.provideV10;
-import static org.example.lexer.LexerProvider.provideV11;
 import static org.example.resources.Util.*;
 
 public class Runner {

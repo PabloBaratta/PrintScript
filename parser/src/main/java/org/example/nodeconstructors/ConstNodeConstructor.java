@@ -4,9 +4,8 @@ import org.example.*;
 import org.example.lexer.token.NativeTokenTypes;
 import org.example.lexer.token.Token;
 import org.example.lexer.token.TokenType;
-import org.example.lexer.utils.Try;
+import functional.Try;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,56 +27,44 @@ public class ConstNodeConstructor implements NodeConstructor {
 
 	@Override
 	public NodeResponse build(TokenBuffer tokenBuffer) {
-		if (!tokenBuffer.isNextTokenOfType(CONST.toTokenType())){
+		if (!tokenBuffer.peekTokenType(CONST)){
 			return new NodeResponse(new Try<>(Optional.empty()), tokenBuffer);
 		}
-
 		try {
-			String errorMessage = "Const should be followed by a valid identifier";
-			Token identifierToken = extractNextToken(tokenBuffer, IDENTIFIER.toTokenType(), errorMessage);
+			extractNextToken(tokenBuffer, CONST);
+			Token identifierToken = extractNextToken(tokenBuffer, IDENTIFIER);
+			extractNextToken(tokenBuffer, COLON);
+			Token typeToken = extractNextToken(tokenBuffer, literalTypes);
+			Token equalsToken = extractNextToken(tokenBuffer, EQUALS);
 
-			errorMessage = "Identifier should be followed by type assignation ':'";
-			extractNextToken(tokenBuffer, COLON.toTokenType(), errorMessage);
-
-			errorMessage = "Was expecting a valid type";
-			Token typeToken = extractNextToken(tokenBuffer, literalTypes, errorMessage);
-
-			errorMessage = "Was expecting equals '=' for const declaration";
-			Token equalsToken = extractNextToken(tokenBuffer, EQUALS.toTokenType(), errorMessage);
-
-			TokenBuffer tokenBufferWithoutEquals = tokenBuffer.consumeToken();
-			return handleEqualsToken(identifierToken, equalsToken, typeToken, tokenBufferWithoutEquals);
+			return handleEqualsToken(identifierToken, equalsToken, typeToken, tokenBuffer);
 		}
 		catch (Exception e) {
 			return NodeResponse.response(e, tokenBuffer);
 		}
-
-
 	}
 
-	//assumes there is a token in the buffer
-	private Token extractNextToken(TokenBuffer buffer, TokenType expectedType, String errorMessage)
+
+	private Token extractNextToken(TokenBuffer buffer, NativeTokenTypes expectedType)
 			throws Exception {
 
-		Token lastToken = buffer.getToken().get();
-		buffer = buffer.consumeToken();
-
-		if (!buffer.isNextTokenOfType(expectedType)) {
-			throw new SemanticErrorException(lastToken, errorMessage);
+		Try<Token> tokenTry = buffer.consumeToken(expectedType);
+		if (tokenTry.isFail()) {
+			throw tokenTry.getFail().get();
 		}
-		return buffer.getToken().get();
+
+		return tokenTry.getSuccess().get();
 	}
 
-	private Token extractNextToken(TokenBuffer buffer, List<TokenType> expectedTypes, String errorMessage)
+	private Token extractNextToken(TokenBuffer buffer, List<TokenType> expectedTypes)
 			throws Exception {
 
-		Token lastToken = buffer.getToken().get();
-		buffer = buffer.consumeToken();
-
-		if (!buffer.isNextTokenOfAnyOfThisTypes(expectedTypes)) {
-			throw new SemanticErrorException(lastToken, errorMessage);
+		Try<Token> tokenTry = buffer.consumeToken(expectedTypes);
+		if (tokenTry.isFail()) {
+			throw tokenTry.getFail().get();
 		}
-		return buffer.getToken().get();
+
+		return tokenTry.getSuccess().get();
 	}
 
 	private NodeResponse handleEqualsToken(Token id, Token eq, Token type, TokenBuffer tb) throws Exception {
