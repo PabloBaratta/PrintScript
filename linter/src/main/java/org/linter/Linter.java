@@ -1,5 +1,7 @@
 package org.linter;
 
+import org.example.ASTNode;
+import org.example.PrintScriptIterator;
 import org.example.Program;
 import org.linter.visitors.LinterVisitor;
 
@@ -13,13 +15,12 @@ public class Linter {
 		this.configurator = configurator;
 	}
 
-	public Report analyze (Program program, Map<String, String> conf)
-			throws WrongConfigurationException, Exception {
+	public Report analyze (PrintScriptIterator<ASTNode> iterator, Map<String, String> conf)
+			throws Exception {
 
 		Report report = new Report();
 		LinterVisitor linterFromConfig = configurator.getLinterFromConfig(conf, report);
-		linterFromConfig.visit(program);
-
+		linterFromConfig.visitAll(iterator);
 		return report;
 	}
 }
