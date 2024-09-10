@@ -1,0 +1,50 @@
+@startuml
+
+class Formatter {
+    - Map<String, Rule> rules
+    - PrintScriptIterator<ASTNode> nodes
+    + Formatter(Map<String, Rule> rules, PrintScriptIterator<ASTNode> nodes)
+    + format(): String
+    - formatNode(child: ASTNode, result: StringBuilder, nestingLevel: int): void
+    - formatIfStatement(ifStatement: IfStatement, nestingLevel: int): StringBuilder
+    - formatConstDec(constDeclaration: ConstDeclaration): StringBuilder
+    - formatMethod(method: Method): StringBuilder
+    - formatAssignation(assignation: Assignation): StringBuilder
+    - formatVarDec(varDec: VariableDeclaration): StringBuilder
+    - formatChildren()
+    - formatArguments()
+    - checkNewLines()
+    - checkSpaces()
+    - checkRule()
+}
+
+class Rule {
+    - boolean rule
+    - Optional<Integer> qty
+    + Rule(boolean rule, Optional<Integer> qty)
+    + getRule(): boolean
+    + getQty(): Optional<Integer>
+}
+
+class Ruler {
+    + readRulesFromJson(jsonString: String): Map<String, Rule>
+    + rulesV10(): Map<String, Rule>
+    + rulesV11(): Map<String, Rule>
+}
+
+class PrintScriptIterator<T> {
+    + hasNext(): boolean
+    + getNext(): T
+}
+
+class FormatterProvider {
+    + provideV10(nodes: PrintScriptIterator<ASTNode>): Formatter
+    + provideV11(nodes: PrintScriptIterator<ASTNode>): Formatter
+}
+
+Formatter --> Rule
+Formatter --> PrintScriptIterator
+FormatterProvider --> Formatter
+Ruler --> Rule
+
+@enduml
