@@ -1,4 +1,3 @@
-/*
 package org.example;
 
 import org.example.builders.*;
@@ -48,4 +47,3 @@ public class Cli {
 		return List.of(content.split("\n"));
 	}
 }
-*/

@@ -1,0 +1,17 @@
+plugins {
+    id 'buildlogic.java-library-conventions'
+}
+
+dependencies {
+    implementation project(':lexer')
+    implementation project(':parser')
+    implementation project(':interpreter')
+    implementation project(':formatter')
+    implementation project(':linter')
+    implementation project(':ast')
+    implementation project(':utils')
+    implementation project(':token')
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.12.3'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.3'
+}

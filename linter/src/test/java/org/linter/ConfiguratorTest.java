@@ -15,18 +15,17 @@ public class ConfiguratorTest {
 		IdentifierConfiguration identifierConfiguration = new IdentifierConfiguration();
 		Report report = new Report();
 
-		assertEquals("case", identifierConfiguration.getProp());
-		assertTrue(identifierConfiguration.isThisRule("case"));
-		assertTrue(identifierConfiguration.isValidRuleOption("snake"));
-		assertTrue(identifierConfiguration.isValidRuleOption("camel"));
-
+		assertEquals("identifier_format", identifierConfiguration.getProp());
+		assertTrue(identifierConfiguration.isThisRule("identifier_format"));
+		assertTrue(identifierConfiguration.isValidRuleOption("snake case"));
+		assertTrue(identifierConfiguration.isValidRuleOption("camel case"));
 
 		assertDoesNotThrow(() -> {
-			identifierConfiguration.getLinterRule(report, "camel");
+			identifierConfiguration.getLinterRule(report, "camel case");
 		});
 
 		assertDoesNotThrow(() -> {
-			identifierConfiguration.getLinterRule(report, "snake");
+			identifierConfiguration.getLinterRule(report, "snake case");
 		});
 
 		assertThrows(WrongConfigurationException.class,() -> {
@@ -47,7 +46,6 @@ public class ConfiguratorTest {
 		assertTrue(oneArgFunctionConfiguration.isThisRule("printWithIdentifiers"));
 		assertTrue(oneArgFunctionConfiguration.isValidRuleOption("true"));
 		assertTrue(oneArgFunctionConfiguration.isValidRuleOption("false"));
-
 
 		assertDoesNotThrow(() -> {
 			oneArgFunctionConfiguration.getLinterRule(report, "true");

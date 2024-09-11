@@ -11,10 +11,10 @@ import java.util.Map;
 
 public class IdentifierConfiguration implements Configurator {
 
-	private final String ruleName = "case";
+	private final String ruleName = "identifier_format";
 	private final Map<String, Case> mapOptionCase = Map.of(
-			"camel", Case.CAMEL_CASE,
-			"snake", Case.SNAKE_CASE);
+			"camel case", Case.CAMEL_CASE,
+			"snake case", Case.SNAKE_CASE);
 	private final RuleBasicConfig config = RuleBasicConfig.rule(
 			mapOptionCase.keySet().toArray(new String[0]), "camel");
 

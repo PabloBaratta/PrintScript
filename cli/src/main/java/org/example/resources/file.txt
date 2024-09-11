@@ -1,3 +1,2 @@
-let holaSi: number = (((10 + 10)));
-println(("hola" + holaSi));
-holaSi = 20;
+const a: string = readInput("what's your name?");
+println("Hello " + a + "!");

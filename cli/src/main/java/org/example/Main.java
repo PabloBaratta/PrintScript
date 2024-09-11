@@ -1,4 +1,3 @@
-/*
 package org.example;
 
 import java.nio.file.Paths;
@@ -11,4 +10,3 @@ public class Main {
 		cli.run();
 	}
 }
-*/
