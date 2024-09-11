@@ -1,7 +1,7 @@
 package org.linter.visitors;
 
 import org.example.*;
-import org.example.lexer.token.Position;
+import org.token.Position;
 import org.junit.jupiter.api.Test;
 import org.linter.Report;
 
@@ -42,7 +42,6 @@ class LinterVisitorTests {
 	public void doesNotChangeWithOtherNodes() throws Exception {
 		Position position = new Position(0, 0, 0,0 );
 		Identifier identifier = new Identifier("hi", position);
-		Assignation assignation = new Assignation(identifier, identifier, position);
 		TextLiteral lit = new TextLiteral("a", position);
 		NumericLiteral num = new NumericLiteral(1.0, position);
 		BinaryExpression bin = new BinaryExpression(identifier, "+", identifier);

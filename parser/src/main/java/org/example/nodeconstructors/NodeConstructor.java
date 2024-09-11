@@ -8,6 +8,6 @@ public interface NodeConstructor {
 	a new token buffer and a node if it matches the pattern it is supposed to check or an exception
 	if has been a syntax error
 	 **/
-	NodeResponse build(TokenBuffer tokenBuffer) throws Exception;
+	NodeResponse build(TokenBuffer tokenBuffer);
 
 }

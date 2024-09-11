@@ -58,6 +58,14 @@ public class LinterVisitor implements ASTVisitor {
 		}
 	}
 
+	public void visitAll(PrintScriptIterator<ASTNode> iterator) throws Exception {
+
+		while (iterator.hasNext()) {
+			ASTNode node = iterator.getNext();
+			node.accept(this);
+		}
+	}
+
 	@Override
 	public void visit(Parenthesis parenthesis) throws Exception {}
 
@@ -73,6 +81,8 @@ public class LinterVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(ConstDeclaration constDeclaration) throws Exception {
-
+		for (ASTVisitor visitor : visitors) {
+			visitor.visit(constDeclaration);
+		}
 	}
 }

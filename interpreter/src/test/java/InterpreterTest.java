@@ -1,92 +1,173 @@
 import org.example.*;
-import org.example.interpreter.Executor;
 import org.example.interpreter.Interpreter;
 import org.example.interpreter.InterpreterException;
-import org.example.interpreter.Validator;
+import org.example.interpreter.handlers.ASTNodeHandler;
+import org.example.interpreter.handlers.HandlerFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.*;
 
-import org.example.lexer.token.Position;
+import org.token.Position;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class InterpreterTest {
 
-	Position pos = new Position(0, 0, 0, 0);
+	Position pos = new Position(0,0,0,0);
 
-	// VARIABLE DECLARATION
+	Map<String, ASTNodeHandler> handlers = HandlerFactory.createHandlers("1.1");
+	Map<String, ASTNodeHandler> handlers10 = HandlerFactory.createHandlers("1.0");
+	Map<String, ASTNodeHandler> handlers0 = new HashMap<>();
 
 	@Test
 	void testVariableDeclaration() throws Exception {
-		Interpreter interpreter = new Interpreter();
-
-		// let a: string;
-		Identifier identifier = new Identifier("a", new Position(0, 0,0, 0));
-		Type type = new Type("string", new Position(0, 0,0, 0));
+		Identifier identifier = new Identifier("a", pos);
+		Type type = new Type("string", pos);
 		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
 
-		interpreter.visit(variableDeclaration);
+		List<ASTNode> astNodes = new ArrayList<>();
+		astNodes.add(variableDeclaration);
 
-		assertTrue(interpreter.getEnvironment().containsKey("a"));
-		assertEquals(interpreter.getEnvironment().get("a").getType().getTypeName(), "string");
-		assertTrue(interpreter.getEnvironment().get("a").getLiteral().isEmpty());
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+		Interpreter interpreter = new Interpreter(iterator, handlers);
+
+		interpreter.execute();
+		interpreter.validate();
+
+		assertTrue(interpreter.getExecutorEnvironment().containsKey("a"));
+		assertEquals(interpreter.getExecutorEnvironment().get("a").getType().getTypeName(), "string");
+		assertTrue(interpreter.getExecutorEnvironment().get("a").getLiteral().isEmpty());
+	}
+
+	@Test
+	void testVariableDeclarationMismatchVersionExe() throws Exception {
+		Identifier identifier = new Identifier("a", pos);
+		Type type = new Type("string", pos);
+		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
+
+		List<ASTNode> astNodes = new ArrayList<>();
+		astNodes.add(variableDeclaration);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+		Interpreter interpreter = new Interpreter(iterator, handlers0);
+
+		try {
+			interpreter.execute();
+			fail("Expected InterpreterException");
+		} catch (InterpreterException e) {
+			assertEquals("No handler found for node type: Variable declaration", e.getMessage());
+		}
+	}
+
+	@Test
+	void testVariableDeclarationMismatchVersionVal() throws Exception {
+		Identifier identifier = new Identifier("a", pos);
+		Type type = new Type("string", pos);
+		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
+
+		List<ASTNode> astNodes = new ArrayList<>();
+		astNodes.add(variableDeclaration);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+		Interpreter interpreter = new Interpreter(iterator, handlers0);
+
+		try {
+			interpreter.validate();
+			fail("Expected InterpreterException");
+		} catch (InterpreterException e) {
+			assertEquals("No handler found for node type: Variable declaration", e.getMessage());
+		}
+	}
+
+	@Test
+	void testVariableDeclarationValidation() throws Exception {
+
+		Identifier identifier = new Identifier("a", pos);
+		Type type = new Type("string", pos);
+		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
+
+		List<ASTNode> astNodes = new ArrayList<>();
+		astNodes.add(variableDeclaration);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+		Interpreter interpreter = new Interpreter(iterator, handlers);
+
+		assertDoesNotThrow(() -> interpreter.validate());
+
 	}
 
 	@Test
 	void testVariableDeclarationWithAssignment() throws Exception {
-		Interpreter interpreter = new Interpreter();
-
 		// let a: string = "hola";
 		Identifier identifier = new Identifier("a", new Position(0, 0,0, 0));
 		Type type = new Type("string", new Position(0, 0,0, 0));
 		Expression expression = new TextLiteral("hola", new Position(0, 0,0, 0));
 		VariableDeclaration variableDecl = new VariableDeclaration(identifier, type, Optional.of(expression));
 
-		interpreter.visit(variableDecl);
+		List<ASTNode> astNodes = new ArrayList<>();
+		astNodes.add(variableDecl);
 
-		assertTrue(interpreter.getEnvironment().containsKey("a"));
-		Optional<Literal> optionalExpression = interpreter.getEnvironment().get("a").getLiteral();
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+		Interpreter interpreter = new Interpreter(iterator, handlers);
+
+		interpreter.execute();
+		interpreter.validate();
+
+		assertTrue(interpreter.getExecutorEnvironment().containsKey("a"));
+		Optional<Literal> optionalExpression = interpreter.getExecutorEnvironment().get("a").getLiteral();
 
 		assertTrue(optionalExpression.isPresent());
 		assertEquals("hola", optionalExpression.get().getValue());
 	}
 
 	@Test
-	void testVariableDeclarationWithAssignmentAndTypeMismatch() {
-		Interpreter interpreter = new Interpreter();
-
+	void testVariableDeclarationWithAssignmentAndTypeMismatch() throws Exception {
 		// let a: string = 42;
 		Identifier identifier = new Identifier("a", new Position(0, 0,0, 0));
 		Type type = new Type("string", new Position(0, 0,0, 0));
 		Expression expression = new NumericLiteral(42.0, new Position(0, 0,0, 0));
 		VariableDeclaration variableDecl = new VariableDeclaration(identifier, type, Optional.of(expression));
 
+		List<ASTNode> astNodes = new ArrayList<>();
+		astNodes.add(variableDecl);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+		Interpreter interpreter = new Interpreter(iterator, handlers);
+
 		Exception exception = assertThrows(Exception.class, () -> {
-			interpreter.visit(variableDecl);
+			interpreter.execute();
 		});
 
-		assertEquals("Type mismatch", exception.getMessage()); // cambiar el mensaje mas adelante
+		assertEquals("Type mismatch", exception.getMessage());
 	}
 
 	@Test
 	void testVariableRedeclarationThrowsError() throws Exception {
-		Interpreter interpreter = new Interpreter();
-
 		Identifier identifier = new Identifier("a", new Position(0, 0,0, 0));
 		Type type = new Type("string", new Position(0, 0,0, 0));
 		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
 
-		interpreter.visit(variableDeclaration);
+		List<ASTNode> astNodes = new ArrayList<>();
+		astNodes.add(variableDeclaration);
+
+		astNodes.add(new VariableDeclaration(identifier, type, Optional.empty()));
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
 		Exception exception = assertThrows(Exception.class, () -> {
-			interpreter.visit(new VariableDeclaration(identifier, type, Optional.empty()));
+			interpreter.validate();
 		});
 
 		assertEquals("Variable already declared", exception.getMessage());
@@ -96,15 +177,21 @@ public class InterpreterTest {
 
 	@Test
 	void testAssignationVariableNotDeclared() {
-		Interpreter interpreter = new Interpreter();
 
 		// a = "hola";
 		Identifier identifier = new Identifier("a", new Position(0, 0,0, 0));
 		Expression expression = new TextLiteral("hola", new Position(0, 0,0, 0));
 		Assignation assignation = new Assignation(identifier, expression, new Position(0, 0,0, 0));
+		List<ASTNode> astNodes = new ArrayList<>();
+
+		astNodes.add(assignation);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
 		Exception exception = assertThrows(Exception.class, () -> {
-			interpreter.visit(assignation);
+			interpreter.validate();
 		});
 
 		assertEquals("Variable not declared", exception.getMessage());
@@ -112,40 +199,97 @@ public class InterpreterTest {
 
 	@Test
 	void testAssignationToExistingVariable() throws Exception {
-		Interpreter interpreter = new Interpreter();
+		List<ASTNode> astNodes = new ArrayList<>();
 
-		Identifier identifier = new Identifier("a", new Position(0, 0,0, 0));
-		Type type = new Type("string", new Position(0, 0,0, 0));
+		Identifier identifier = new Identifier("a", pos);
+		Type type = new Type("string", pos);
 		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
+		astNodes.add(variableDeclaration);
 
-		interpreter.visit(variableDeclaration);
+		Expression expression = new TextLiteral("hola", pos);
+		Assignation assignation = new Assignation(identifier, expression, pos);
+		astNodes.add(assignation);
 
-		Expression expression = new TextLiteral("hola", new Position(0, 0,0, 0));
-		Assignation assignation = new Assignation(identifier, expression, new Position(0, 0,0, 0));
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		interpreter.visit(assignation);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
-		Optional<Literal> optionalExpression = interpreter.getEnvironment().get("a").getLiteral();
+		interpreter.execute();
+		interpreter.validate();
+
+		Optional<Literal> optionalExpression = interpreter.getExecutorEnvironment().get("a").getLiteral();
 		assertTrue(optionalExpression.isPresent());
 
 		assertEquals("hola", optionalExpression.get().getValue());
 	}
 
 	@Test
-	void testAssignationWithTypeMismatch() throws Exception {
-		Interpreter interpreter = new Interpreter();
+	void testAssignationMismatchVersionVal() throws Exception {
+		List<ASTNode> astNodes = new ArrayList<>();
 
 		Identifier identifier = new Identifier("a", pos);
 		Type type = new Type("string", pos);
 		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
 
-		interpreter.visit(variableDeclaration);
+		Expression expression = new TextLiteral("hola", pos);
+		Assignation assignation = new Assignation(identifier, expression, pos);
+		astNodes.add(assignation);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+		Interpreter interpreter = new Interpreter(iterator, handlers0);
+
+		try {
+			interpreter.validate();
+			fail("Expected InterpreterException");
+		} catch (InterpreterException e) {
+			assertEquals("No handler found for node type: Assignation", e.getMessage());
+		}
+	}
+
+	@Test
+	void testAssignationMismatchVersionExe() throws Exception {
+		List<ASTNode> astNodes = new ArrayList<>();
+
+		Identifier identifier = new Identifier("a", pos);
+		Type type = new Type("string", pos);
+		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
+
+		Expression expression = new TextLiteral("hola", pos);
+		Assignation assignation = new Assignation(identifier, expression, pos);
+		astNodes.add(assignation);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+		Interpreter interpreter = new Interpreter(iterator, handlers0);
+
+		try {
+			interpreter.execute();
+			fail("Expected InterpreterException");
+		} catch (InterpreterException e) {
+			assertEquals("No handler found for node type: Assignation", e.getMessage());
+		}
+	}
+
+	@Test
+	void testAssignationWithTypeMismatch() throws Exception {
+		List<ASTNode> astNodes = new ArrayList<>();
+
+		Identifier identifier = new Identifier("a", pos);
+		Type type = new Type("string", pos);
+		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
+		astNodes.add(variableDeclaration);
 
 		Expression expression = new NumericLiteral(42.0, pos);
 		Assignation assignation = new Assignation(identifier, expression, pos);
+		astNodes.add(assignation);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
 		Exception exception = assertThrows(Exception.class, () -> {
-			interpreter.visit(assignation);
+			interpreter.validate();
 		});
 
 		assertEquals("Type mismatch", exception.getMessage());
@@ -155,65 +299,128 @@ public class InterpreterTest {
 
 	@Test
 	void testAssignationWithExpressionTwoPlusThree() throws Exception {
-		Interpreter interpreter = new Interpreter();
-
+		List<ASTNode> astNodes = new ArrayList<>();
 		Identifier identifier = new Identifier("result", pos);
 		Type type = new Type("number", pos);
 		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
-		interpreter.visit(variableDeclaration);
+		astNodes.add(variableDeclaration);
 
 		Expression left = new NumericLiteral(2.0, pos);
 		Expression right = new NumericLiteral(3.0, pos);
 		BinaryExpression expression = new BinaryExpression(left, "+", right);
 		Assignation assignation = new Assignation(identifier, expression, pos);
+		astNodes.add(assignation);
 
-		interpreter.visit(assignation);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Optional<Literal> optionalExpression = interpreter.getEnvironment().get("result").getLiteral();
+		Interpreter interpreter = new Interpreter(iterator, handlers);
+
+		interpreter.execute();
+		interpreter.validate();
+
+		Optional<Literal> optionalExpression = interpreter.getExecutorEnvironment().get("result").getLiteral();
 		assertTrue(optionalExpression.isPresent());
 		assertEquals(5.0, optionalExpression.get().getValue());
 	}
 
 	@Test
+	void testBinaryExpressionMismatchVersion() throws Exception {
+		List<ASTNode> astNodes = new ArrayList<>();
+		Identifier identifier = new Identifier("result", pos);
+
+		Expression left = new NumericLiteral(2.0, pos);
+		Expression right = new NumericLiteral(3.0, pos);
+		BinaryExpression expression = new BinaryExpression(left, "+", right);
+		astNodes.add(expression);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+		Interpreter interpreter = new Interpreter(iterator, handlers0);
+
+		try {
+			interpreter.execute();
+			fail("Expected InterpreterException");
+		} catch (InterpreterException e) {
+			assertEquals("No handler found for node type: Binary expression", e.getMessage());
+		}
+	}
+
+	@Test
+	void testBinaryExpressionMismatchVersionVal() throws Exception {
+		List<ASTNode> astNodes = new ArrayList<>();
+		Identifier identifier = new Identifier("result", pos);
+
+		Expression left = new NumericLiteral(2.0, pos);
+		Expression right = new NumericLiteral(3.0, pos);
+		BinaryExpression expression = new BinaryExpression(left, "+", right);
+		astNodes.add(expression);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+		Interpreter interpreter = new Interpreter(iterator, handlers0);
+
+		try {
+			interpreter.validate();
+			fail("Expected InterpreterException");
+		} catch (InterpreterException e) {
+			assertEquals("No handler found for node type: Binary expression", e.getMessage());
+		}
+	}
+
+	@Test
 	void testAssignationWithStringAndNumberAddition() throws Exception {
-		Interpreter interpreter = new Interpreter();
+		List<ASTNode> astNodes = new ArrayList<>();
 
 		Position pos = new Position(0, 0, 0, 0);
 		Identifier stringIdentifier = new Identifier("a", pos);
 		Type stringType = new Type("string", pos);
 		VariableDeclaration stringDec = new VariableDeclaration(stringIdentifier, stringType, Optional.empty());
-		interpreter.visit(stringDec);
+		astNodes.add(stringDec);
 
 		TextLiteral text = new TextLiteral("Hello ", pos);
 		Assignation stringAssignation = new Assignation(stringIdentifier, text, pos);
-		interpreter.visit(stringAssignation);
+		astNodes.add(stringAssignation);
 
 		Identifier resId = new Identifier("result", pos);
 		VariableDeclaration res = new VariableDeclaration(resId, stringType, Optional.empty());
-		interpreter.visit(res);
+		astNodes.add(res);
 
 		BinaryExpression ex = new BinaryExpression(new Identifier("a", pos), "+", new NumericLiteral(2.0, pos));
 		Assignation assignation = new Assignation(resId, ex, pos);
+		astNodes.add(assignation);
 
-		interpreter.visit(assignation);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Optional<Literal> optionalExpression = interpreter.getEnvironment().get("result").getLiteral();
+		Interpreter interpreter = new Interpreter(iterator, handlers);
+
+		interpreter.execute();
+		interpreter.validate();
+
+
+		Optional<Literal> optionalExpression = interpreter.getExecutorEnvironment().get("result").getLiteral();
 		assertTrue(optionalExpression.isPresent());
 		assertEquals("Hello 2.0", optionalExpression.get().getValue());
 	}
 
 	@Test
 	void testVariableDeclarationWithExpressionDivision() throws Exception {
-		Interpreter interpreter = new Interpreter();
+		List<ASTNode> astNodes = new ArrayList<>();
 
 		Identifier resId = new Identifier("result", pos);
 		Type numType = new Type("number", pos);
 		NumericLiteral num = new NumericLiteral(3.0, pos);
 		Expression exp = new BinaryExpression(new NumericLiteral(2.0, pos), "/", num);
 		VariableDeclaration varDecl = new VariableDeclaration(resId, numType, Optional.of(exp));
-		interpreter.visit(varDecl);
+		astNodes.add(varDecl);
 
-		Optional<Literal> optionalExpression = interpreter.getEnvironment().get("result").getLiteral();
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+		Interpreter interpreter = new Interpreter(iterator, handlers);
+
+		interpreter.execute();
+		interpreter.validate();
+
+		Optional<Literal> optionalExpression = interpreter.getExecutorEnvironment().get("result").getLiteral();
 		assertTrue(optionalExpression.isPresent());
 
 		assertEquals(2.0 / 3.0, optionalExpression.get().getValue());
@@ -221,12 +428,12 @@ public class InterpreterTest {
 
 	@Test
 	void testAssignationWithComplexExpression() throws Exception {
-		Interpreter interpreter = new Interpreter();
+		List<ASTNode> astNodes = new ArrayList<>();
 
 		Identifier identifier = new Identifier("result", pos);
 		Type type = new Type("number", pos);
 		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
-		interpreter.visit(variableDeclaration);
+		astNodes.add(variableDeclaration);
 
 		NumericLiteral num = new NumericLiteral(2.0, pos);
 		BinaryExpression firstPart = new BinaryExpression(num, "*", num);
@@ -234,32 +441,19 @@ public class InterpreterTest {
 		BinaryExpression secondPart = new BinaryExpression(num2, "*", num2);
 		BinaryExpression expression = new BinaryExpression(firstPart, "+", secondPart);
 		Assignation assignation = new Assignation(identifier, expression, pos);
+		astNodes.add(assignation);
 
-		interpreter.visit(assignation);
-		Optional<Literal> optionalExpression = interpreter.getEnvironment().get("result").getLiteral();
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+		Interpreter interpreter = new Interpreter(iterator, handlers);
+
+
+		interpreter.execute();
+		interpreter.validate();
+
+		Optional<Literal> optionalExpression = interpreter.getExecutorEnvironment().get("result").getLiteral();
 		assertTrue(optionalExpression.isPresent());
 		assertEquals(13.0, optionalExpression.get().getValue());
-	}
-
-	@Test
-	void testVisitBinaryExpressionMultiplication() throws Exception {
-		Validator validator = new Validator();
-		Identifier identifier = new Identifier("x", null);
-		Type type = new Type("number", null);
-		validator.visit(new VariableDeclaration(identifier, type, Optional.of(new NumericLiteral(5.0, null))));
-
-		Expression left = new Identifier("x", null);
-		Expression right = new NumericLiteral(2.0, null);
-		BinaryExpression binaryExpression = new BinaryExpression(left, "*", right);
-
-		validator.visit(binaryExpression);
-
-		Literal result = validator.getStack().pop();
-		assertTrue(result instanceof NumericLiteral);
-
-		assertTrue(left instanceof Identifier);
-		assertTrue(right instanceof NumericLiteral);
-
 	}
 
 	// PRINT LN ------------------------------------------------------------------------------------
@@ -279,101 +473,159 @@ public class InterpreterTest {
 
 	@Test
 	public void testPrintTextLiteral() throws Exception {
-		Interpreter interpreter = new Interpreter();
-		List<Expression> text = Collections.singletonList(new TextLiteral("hola", pos));
-		Method printMethod = new Method(new Identifier("println", pos), text);
+		List<Expression> arguments = Collections.singletonList(new TextLiteral("hola", pos));
+		List<ASTNode> astNodes = Collections.singletonList(
+				new Method(new Identifier("println", pos), arguments)
+		);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
-		printMethod.accept(interpreter.getExecutionVisitor());
+		interpreter.execute();
+		interpreter.validate();
 
 		assertEquals("hola", outputStream.toString().trim());
 	}
 
-	@Test
-	public void testPrintBinaryExpression() throws Exception {
-		Interpreter interpreter = new Interpreter();
-
-		NumericLiteral leftOperand = new NumericLiteral(2.0, pos);
-		NumericLiteral rightOperand = new NumericLiteral(2.0, pos);
-		BinaryExpression expression = new BinaryExpression(leftOperand, "+", rightOperand);
-
-		List<Expression> arguments = Collections.singletonList(expression);
-		Method print = new Method(new Identifier("println", pos), arguments);
-
-		print.accept(interpreter.getExecutionVisitor());
-
-		assertEquals("4.0", outputStream.toString().trim());
-	}
+//	@Test
+//	public void testPrintBinaryExpression() throws Exception {
+//        List<ASTNode> astNodes = Arrays.asList(
+//                new Method(new Identifier("println", pos), Collections.singletonList(
+//                        new BinaryExpression(new NumericLiteral(2.0, pos), "+", new NumericLiteral(2.0, pos))
+//                ))
+//        );
+//        PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+//        Interpreter interpreter = new Interpreter(iterator, handlers);
+//
+//        interpreter.execute();
+//        interpreter.validate();
+//
+//        assertEquals("4.0", outputStream.toString().trim());
+//	}
 
 	@Test
 	public void testPrintIdentifier() throws Exception {
-		Interpreter interpreter = new Interpreter();
+		Optional<Expression> ex = Optional.of(new NumericLiteral(10.0, pos));
+		Type type = new Type("number", pos);
+		List<Expression> arguments = Collections.singletonList(new Identifier("a", pos));
+		List<ASTNode> astNodes = Arrays.asList(
+				new VariableDeclaration(new Identifier("a", pos), type, ex),
+				new Method(new Identifier("println", pos), arguments)
+		);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
+		interpreter.execute();
+		interpreter.validate();
 
-		Identifier identifier = new Identifier("a", pos);
-		Type type = new Type("number",pos);
-		NumericLiteral value = new NumericLiteral(10.0, pos);
-		VariableDeclaration declaration = new VariableDeclaration(identifier, type, Optional.of(value));
-
-		declaration.accept(interpreter.getExecutionVisitor());
-
-		List<Expression> ident = Collections.singletonList(identifier);
-		Method printMethod = new Method(new Identifier("println", pos), ident);
-
-		printMethod.accept(interpreter.getExecutionVisitor());
 
 		assertEquals("10.0", outputStream.toString().trim());
 	}
 
 	@Test
+	public void testPrintlnWithMultipleArguments() {
+		List<Expression> arguments = Arrays.asList(
+				new TextLiteral("hola", pos),
+				new TextLiteral("mundo", pos)
+		);
+
+		Method printlnMethod = new Method(new Identifier("println", pos), arguments);
+
+		List<ASTNode> astNodes = Collections.singletonList(printlnMethod);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
+
+		try {
+			interpreter.validate();
+			fail("Expected InterpreterException due to multiple arguments for println");
+		} catch (InterpreterException e) {
+			assertEquals("println expects exactly one argument", e.getMessage());
+		} catch (Exception e) {
+			fail("Unexpected exception: " + e.getMessage());
+		}
+	}
+
+	@Test
+	public void testReadEnvWithMultipleArguments() {
+		List<Expression> arguments = Arrays.asList(
+				new TextLiteral("hola", pos),
+				new TextLiteral("mundo", pos)
+		);
+
+		Method readEnvMethod = new Method(new Identifier("readEnv", pos), arguments);
+
+		List<ASTNode> astNodes = Collections.singletonList(readEnvMethod);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
+
+		try {
+			interpreter.validate();
+			fail("Expected InterpreterException due to multiple arguments for readEnv");
+		} catch (InterpreterException e) {
+			assertEquals("readEnv expects exactly one TextLiteral argument", e.getMessage());
+		} catch (Exception e) {
+			fail("Unexpected exception: " + e.getMessage());
+		}
+	}
+
+	@Test
+	public void testPrintlnWithInvalidArgumentType() {
+
+		List<Expression> arguments = Collections.singletonList(
+				new NumericLiteral(42.0, pos)
+		);
+
+		Method printlnMethod = new Method(new Identifier("println", pos), arguments);
+
+		List<ASTNode> astNodes = Collections.singletonList(printlnMethod);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
+
+		try {
+			interpreter.validate();
+			fail("Expected InterpreterException due to invalid argument type for println");
+		} catch (InterpreterException e) {
+			assertEquals("println expects a TextLiteral or Identifier", e.getMessage());
+		} catch (Exception e) {
+			fail("Unexpected exception: " + e.getMessage());
+		}
+	}
+
+	@Test
 	public void testProgramExecution() throws Exception {
-		setUp();
+		Optional<Expression> ex = Optional.of(new NumericLiteral(10.0, pos));
+		BinaryExpression a = new BinaryExpression(new Identifier("a", pos), "+", new NumericLiteral(5.0, pos));
+		Type type = new Type("string", pos);
+		List<Expression> arguments = Collections.singletonList(new Identifier("b", pos));
+		List<ASTNode> astNodes = Arrays.asList(
+				new VariableDeclaration(new Identifier("a", pos), new Type("number", pos), ex),
+				new Assignation(new Identifier("a", pos), a, pos),
+				new VariableDeclaration(new Identifier("b", pos), type, Optional.empty()),
+				new Assignation(new Identifier("b", pos), new TextLiteral("Hola", pos), pos),
+				new Method(new Identifier("println", pos), arguments)
+		);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
-		Interpreter interpreter = new Interpreter();
-
-		// let a: number = 10;
-		Identifier identA  = new Identifier("a", pos);
-		Type typeNumber = new Type("number", pos);
-		NumericLiteral value10 = new NumericLiteral(10.0, pos);
-		VariableDeclaration declA = new VariableDeclaration(identA, typeNumber, Optional.of(value10));
-
-		// a = a + 5;
-		NumericLiteral value5 = new NumericLiteral(5.0, pos);
-		BinaryExpression sum = new BinaryExpression(identA, "+", value5);
-		Assignation assignation = new Assignation(identA, sum, pos);
-
-		// let b: string;
-		Identifier identifierB = new Identifier("b", pos);
-		Type typeString = new Type("string", pos);
-		VariableDeclaration declarationB = new VariableDeclaration(identifierB, typeString, Optional.empty());
-
-		// b = "Hola";
-		TextLiteral helloText = new TextLiteral("Hola", pos);
-		Assignation assignationB = new Assignation(identifierB, helloText, pos);
-
-		// println(b);
-		List<Expression> ident = Collections.singletonList(new Identifier("b", pos));
-		Method printMethod = new Method(new Identifier("println", pos), ident);
-
-		// armo program
-		Program prog = new Program(Arrays.asList(declA, assignation, declarationB, assignationB, printMethod));
-
-		prog.accept(interpreter.getExecutionVisitor());
+		interpreter.execute();
+		interpreter.validate();
 
 		assertEquals("Hola", outputStream.toString().trim());
-
-		tearDown();
 	}
 
 	@Test
 	void testVariableDeclarationWithAssignmentAndTypeMismatchValidation() {
-		Interpreter interpreter = new Interpreter();
-
-		Identifier identifier = new Identifier("a", pos);
+		Optional<Expression> ex = Optional.of(new NumericLiteral(42.0, pos));
 		Type type = new Type("string", pos);
-		Expression expression = new NumericLiteral(42.0, pos);
-		VariableDeclaration variableDecl = new VariableDeclaration(identifier, type, Optional.of(expression));
+		List<ASTNode> astNodes = Collections.singletonList(
+				new VariableDeclaration(new Identifier("a", pos), type, ex)
+		);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
 		Exception exception = assertThrows(Exception.class, () -> {
-			interpreter.validate(variableDecl);
+			interpreter.validate();
 		});
 
 		assertEquals("Type mismatch", exception.getMessage());
@@ -381,16 +633,17 @@ public class InterpreterTest {
 
 	@Test
 	void testVariableRedeclarationValidation() throws Exception {
-		Interpreter interpreter = new Interpreter();
+		Identifier a = new Identifier("a", pos);
+		List<ASTNode> astNodes = Arrays.asList(
+				new VariableDeclaration(a, new Type("string", pos), Optional.empty()),
+				new VariableDeclaration(a, new Type("string", pos), Optional.empty())
+		);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
-		Identifier identifier = new Identifier("a", pos);
-		Type type = new Type("string", pos);
-		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
-
-		interpreter.validate(variableDeclaration);
 
 		Exception exception = assertThrows(Exception.class, () -> {
-			interpreter.validate(new VariableDeclaration(identifier, type, Optional.empty()));
+			interpreter.validate();
 		});
 
 		assertEquals("Variable already declared", exception.getMessage());
@@ -398,14 +651,14 @@ public class InterpreterTest {
 
 	@Test
 	void testAssignationVariableNotDeclaredValidation() {
-		Interpreter interpreter = new Interpreter();
-
-		Identifier identifier = new Identifier("a", pos);
-		Expression expression = new TextLiteral("hola", pos);
-		Assignation assignation = new Assignation(identifier, expression, pos);
+		List<ASTNode> astNodes = Collections.singletonList(
+				new Assignation(new Identifier("a", pos), new TextLiteral("hola", pos), pos)
+		);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
 		Exception exception = assertThrows(Exception.class, () -> {
-			interpreter.validate(assignation);
+			interpreter.validate();
 		});
 
 		assertEquals("Variable not declared", exception.getMessage());
@@ -413,19 +666,16 @@ public class InterpreterTest {
 
 	@Test
 	void testAssignationWithTypeMismatchValidation() throws Exception {
-		Interpreter interpreter = new Interpreter();
-
-		Identifier identifier = new Identifier("a", pos);
-		Type type = new Type("string", pos);
-		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
-
-		interpreter.validate(variableDeclaration);
-
-		Expression expression = new NumericLiteral(42.0, pos);
-		Assignation assignation = new Assignation(identifier, expression, pos);
+		Identifier a = new Identifier("a", pos);
+		List<ASTNode> astNodes = Arrays.asList(
+				new VariableDeclaration(a, new Type("string", pos), Optional.empty()),
+				new Assignation(a, new NumericLiteral(42.0, pos), pos)
+		);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
 		Exception exception = assertThrows(Exception.class, () -> {
-			interpreter.validate(assignation);
+			interpreter.validate();
 		});
 
 		assertEquals("Type mismatch", exception.getMessage());
@@ -433,26 +683,30 @@ public class InterpreterTest {
 
 	@Test
 	void testVisitAssignationValid() throws Exception {
-		Validator validator = new Validator();
+		Optional<Expression> ex = Optional.of(new NumericLiteral(5.0, pos));
+		Type type = new Type("number", pos);
+		VariableDeclaration var = new VariableDeclaration(new Identifier("x", pos), type, ex);
+		NumericLiteral expression = new NumericLiteral(10.0, pos);
+		List<ASTNode> astNodes = Arrays.asList(var, new Assignation(new Identifier("x", pos), expression, pos));
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
-		Identifier identifier = new Identifier("x", null);
-		Type type = new Type("number", null);
-		validator.visit(new VariableDeclaration(identifier, type, Optional.of(new NumericLiteral(5.0, null))));
+		interpreter.execute();
+		interpreter.validate();
 
-		Assignation assignation = new Assignation(identifier, new NumericLiteral(10.0, null), null);
-		validator.visit(assignation);
-
-		assertEquals(10.0, validator.getEnvironment().get("x").getLiteral().get().getValue());
+		assertEquals(10.0, interpreter.getExecutorEnvironment().get("x").getLiteral().get().getValue());
 	}
 
 	@Test
 	void testVisitAssignationUndeclaredVariable() {
-		Validator validator = new Validator();
-		Identifier identifier = new Identifier("x", null);
-		Assignation assignation = new Assignation(identifier, new NumericLiteral(10.0, null), null);
+		List<ASTNode> astNodes = Collections.singletonList(
+				new Assignation(new Identifier("x", pos), new NumericLiteral(10.0, pos), pos)
+		);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
 		Exception exception = assertThrows(Exception.class, () -> {
-			validator.visit(assignation);
+			interpreter.validate();
 		});
 
 		assertEquals("Variable not declared", exception.getMessage());
@@ -460,16 +714,16 @@ public class InterpreterTest {
 
 	@Test
 	void testVisitAssignationTypeMismatch() throws Exception {
-		Validator validator = new Validator();
-
-		Identifier identifier = new Identifier("x", null);
-		Type type = new Type("number", null);
-		validator.visit(new VariableDeclaration(identifier, type, Optional.of(new NumericLiteral(5.0, null))));
-
-		Assignation assignation = new Assignation(identifier, new TextLiteral("Hello", null), null);
+		Optional<Expression> ex = Optional.of(new NumericLiteral(5.0, pos));
+		List<ASTNode> astNodes = Arrays.asList(
+				new VariableDeclaration(new Identifier("x", pos), new Type("number", pos), ex),
+				new Assignation(new Identifier("x", pos), new TextLiteral("Hello", pos), pos)
+		);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
 		Exception exception = assertThrows(Exception.class, () -> {
-			validator.visit(assignation);
+			interpreter.validate();
 		});
 
 		assertEquals("Type mismatch", exception.getMessage());
@@ -477,16 +731,14 @@ public class InterpreterTest {
 
 	@Test
 	void testVisitBinaryExpressionTypeMismatch() {
-		Validator validator = new Validator();
-
-		BinaryExpression binaryExpression = new BinaryExpression(
-				new TextLiteral("Hello", null),
-				"-",
-				new NumericLiteral(10.0, null)
+		List<ASTNode> astNodes = Collections.singletonList(
+				new BinaryExpression(new TextLiteral("Hello", pos), "-", new NumericLiteral(10.0, pos))
 		);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
 		Exception exception = assertThrows(Exception.class, () -> {
-			validator.visit(binaryExpression);
+			interpreter.validate();
 		});
 
 		assertEquals("Type mismatch for operator", exception.getMessage());
@@ -494,75 +746,149 @@ public class InterpreterTest {
 
 	@Test
 	void testVisitMethodUndeclaredVariable() throws Exception {
-		Validator validator = new Validator();
-
-		Method method = new Method(new Identifier("myMethod", null), List.of(new Identifier("x", null)));
+		List<ASTNode> astNodes = Collections.singletonList(
+				new Method(new Identifier("println", pos), List.of(new Identifier("x", pos)))
+		);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
 		Exception exception = assertThrows(Exception.class, () -> {
-			validator.visit(method);
+			interpreter.validate();
 		});
 
-		assertEquals("undeclared variable", exception.getMessage());
+		assertEquals("Undeclared variable", exception.getMessage());
 	}
 
 	@Test
 	void testVisitIdentifierDeclaredAndAssignedVariable() throws Exception {
-		Validator validator = new Validator();
+		Optional<Expression> ex = Optional.of(new NumericLiteral(5.0, pos));
+		List<ASTNode> astNodes = Arrays.asList(
+				new VariableDeclaration(new Identifier("x", pos), new Type("number", pos), ex),
+				new Method(new Identifier("println", pos), List.of(new Identifier("x", pos)))
+		);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
-		Identifier identifier = new Identifier("x", null);
-		Type type = new Type("number", null);
-		validator.visit(new VariableDeclaration(identifier, type, Optional.of(new NumericLiteral(5.0, null))));
+		interpreter.execute();
+		interpreter.validate();
 
-		validator.visit(identifier);
-
-		assertEquals(5.0, validator.getStack().pop().getValue());
+		assertEquals(5.0, interpreter.getExecutorEnvironment().get("x").getLiteral().get().getValue());
 	}
 
 	// UNARY EXPRESSIONS ------------------------------------------
 
 	@Test
 	public void testUnaryExpressionAssignNegativeNumber() throws Exception {
-		Interpreter interpreter = new Interpreter();
-
-		Position pos = new Position(0, 0, 0, 0);
+		List<ASTNode> astNodes = new ArrayList<>();
 		Identifier identifier = new Identifier("i", pos);
 		Type type = new Type("number", pos);
 		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
-		interpreter.visit(variableDeclaration);
 
-		NumericLiteral positiveFive = new NumericLiteral(5.0, pos);
-
-		UnaryExpression negativeFiveExpression = new UnaryExpression(positiveFive, "-", pos);
-
+		UnaryExpression negativeFiveExpression = new UnaryExpression(new NumericLiteral(5.0, pos), "-", pos);
 		Assignation assignation = new Assignation(identifier, negativeFiveExpression, pos);
-		interpreter.visit(assignation);
+		astNodes.add(variableDeclaration);
+		astNodes.add(assignation);
 
-		Optional<Literal> resultExpression = interpreter.getEnvironment().get("i").getLiteral();
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
+
+		interpreter.execute();
+
+		Optional<Literal> resultExpression = interpreter.getExecutorEnvironment().get("i").getLiteral();
 		assertTrue(resultExpression.isPresent());
 		assertEquals(-5.0, resultExpression.get().getValue());
 	}
 
 	@Test
+	public void testUnaryExpressionMismatchVersion() throws Exception {
+		List<ASTNode> astNodes = new ArrayList<>();
+		Identifier identifier = new Identifier("i", pos);
+		Type type = new Type("number", pos);
+		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
+
+		UnaryExpression negativeFiveExpression = new UnaryExpression(new NumericLiteral(5.0, pos), "-", pos);
+		astNodes.add(negativeFiveExpression);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers0);
+
+		try {
+			interpreter.execute();
+			fail("Expected InterpreterException");
+		} catch (InterpreterException e) {
+			assertEquals("No handler found for node type: Unary expression", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testUnaryExpressionMismatchVersionVal() throws Exception {
+		List<ASTNode> astNodes = new ArrayList<>();
+		Identifier identifier = new Identifier("i", pos);
+		Type type = new Type("number", pos);
+		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
+
+		UnaryExpression negativeFiveExpression = new UnaryExpression(new NumericLiteral(5.0, pos), "-", pos);
+		astNodes.add(negativeFiveExpression);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers0);
+
+		try {
+			interpreter.validate();
+			fail("Expected InterpreterException");
+		} catch (InterpreterException e) {
+			assertEquals("No handler found for node type: Unary expression", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testUnaryExpressionAssignNegativeNumberValidation() throws Exception {
+		List<ASTNode> astNodes = new ArrayList<>();
+		Identifier identifier = new Identifier("i", pos);
+		Type type = new Type("number", pos);
+		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
+
+		UnaryExpression negativeFiveExpression = new UnaryExpression(new NumericLiteral(5.0, pos), "-", pos);
+		Assignation assignation = new Assignation(identifier, negativeFiveExpression, pos);
+		astNodes.add(variableDeclaration);
+		astNodes.add(assignation);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
+
+		interpreter.validate();
+	}
+
+	@Test
 	public void testBinaryExpressionWithNegativeNumber() throws Exception {
 
-		Interpreter interpreter = new Interpreter();
+		List<ASTNode> astNodes = new ArrayList<>();
 
 		Identifier identifier = new Identifier("result", new Position(0,0, 0, 0));
+
 		Type type = new Type("number", new Position(0,0, 0, 0));
+
 		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
-		interpreter.visit(variableDeclaration);
+		astNodes.add(variableDeclaration);
 
 		NumericLiteral positiveTwo = new NumericLiteral(2.0, new Position(0,0, 0, 0));
-
 		NumericLiteral positiveFive = new NumericLiteral(5.0, new Position(0,0, 0, 0));
+
 		UnaryExpression negativeFive = new UnaryExpression(positiveFive, "-", new Position(0,0, 0, 0));
 
 		BinaryExpression binaryExpression = new BinaryExpression(positiveTwo, "+", negativeFive);
 
 		Assignation assignation = new Assignation(identifier, binaryExpression, new Position(0,0, 0, 0));
-		interpreter.visit(assignation);
+		astNodes.add(assignation);
 
-		Optional<Literal> resultExpression = interpreter.getEnvironment().get("result").getLiteral();
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+		Interpreter interpreter = new Interpreter(iterator, handlers);
+
+		interpreter.execute();
+		interpreter.validate();
+
+		Optional<Literal> resultExpression = interpreter.getExecutorEnvironment().get("result").getLiteral();
 		assertTrue(resultExpression.isPresent());
 		assertEquals(-3.0, resultExpression.get().getValue());
 	}
@@ -576,8 +902,8 @@ public class InterpreterTest {
 		System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
 
 		try {
-
 			Position position = new Position(1, 1, 1, 1);
+
 			VariableDeclaration variableDeclaration = new VariableDeclaration(
 					new Identifier("a", position),
 					new Type("number", position),
@@ -595,20 +921,23 @@ public class InterpreterTest {
 					position
 			);
 
-			Executor executor = new Executor();
-			executor.visit(variableDeclaration);
-			executor.visit(assignment);
+			List<ASTNode> astNodes = List.of(variableDeclaration, assignment);
+			PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-			assertEquals("number", executor.getEnvironment().get("a").getType().getTypeName());
+			Interpreter interpreter = new Interpreter(iterator, handlers);
 
-			Literal aValue = executor.getEnvironment().get("a").getLiteral().get();
+			interpreter.execute();
+			interpreter.validate();
+
+			assertEquals("number", interpreter.getExecutorEnvironment().get("a").getType().getTypeName());
+
+			Literal aValue = interpreter.getExecutorEnvironment().get("a").getLiteral().get();
 			assertInstanceOf(NumericLiteral.class, aValue, "El valor de 'a' debe ser un NumericLiteral.");
 			assertEquals(42, ((NumericLiteral) aValue).getValue());
 
-
 		} catch (InterpreterException e) {
-			fail("Error en la interpretacion: " + e.getMessage() +
-					" (Linea: " + e.getLine() + ", Columna: " + e.getColumn() + ")");
+			fail("Error en la interpretación: " + e.getMessage() +
+					" (Línea: " + e.getLine() + ", Columna: " + e.getColumn() + ")");
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Ocurrió una excepción inesperada.");
@@ -642,11 +971,13 @@ public class InterpreterTest {
 					position
 			);
 
-			Executor executor = new Executor();
+			List<ASTNode> astNodes = List.of(variableDeclaration, assignment);
+			PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-			executor.visit(variableDeclaration);
+			Interpreter interpreter = new Interpreter(iterator, handlers);
 
-			executor.visit(assignment);
+			interpreter.execute();
+			interpreter.validate();
 
 			fail("Se esperaba un error");
 
@@ -681,8 +1012,7 @@ public class InterpreterTest {
 			);
 
 			BinaryExpression concatenation = new BinaryExpression(
-					holaLiteral, "+",
-					readInputMethod
+					holaLiteral, "+", readInputMethod
 			);
 
 			Assignation assignment = new Assignation(
@@ -691,15 +1021,17 @@ public class InterpreterTest {
 					position
 			);
 
-			Executor executor = new Executor();
+			List<ASTNode> astNodes = List.of(variableDeclaration, assignment);
+			PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-			executor.visit(variableDeclaration);
+			Interpreter interpreter = new Interpreter(iterator, handlers);
 
-			executor.visit(assignment);
+			interpreter.execute();
+			interpreter.validate();
 
-			assertEquals("string", executor.getEnvironment().get("a").getType().getTypeName());
+			assertEquals("string", interpreter.getExecutorEnvironment().get("a").getType().getTypeName());
 
-			Literal aValue = executor.getEnvironment().get("a").getLiteral().get();
+			Literal aValue = interpreter.getExecutorEnvironment().get("a").getLiteral().get();
 			assertInstanceOf(TextLiteral.class, aValue, "El valor de 'a' debe ser un TextLiteral.");
 			assertEquals("hola Ana", ((TextLiteral) aValue).getValue());
 
@@ -715,26 +1047,50 @@ public class InterpreterTest {
 	@Test
 	public void testBooleanVariableDeclaration() throws Exception {
 
-		Executor executor = new Executor();
+		List<ASTNode> astNodes = new ArrayList<>();
 
 		Identifier identifier = new Identifier("a", new Position(1, 4,1,1));
 		BooleanLiteral booleanLiteral = new BooleanLiteral(true, new Position(1, 15, 1, 1));
 		Position pos = new Position(0, 0, 0, 0);
-		Optional<Expression> booleanLiteral1 = Optional.of(booleanLiteral);
+		Optional<Expression> booleanLiteralExpr = Optional.of(booleanLiteral);
 		Type type = new Type("boolean", pos);
-		VariableDeclaration vardecl = new VariableDeclaration(identifier, type, booleanLiteral1);
+		VariableDeclaration vardecl = new VariableDeclaration(identifier, type, booleanLiteralExpr);
+		astNodes.add(vardecl);
 
-		executor.visit(vardecl);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
-		Variable variable = executor.getEnvironment().get("a");
+		interpreter.execute();
+		interpreter.validate();
+		Variable variable = interpreter.getExecutorEnvironment().get("a");
 		assertEquals("boolean", variable.getType().getTypeName());
 		assertEquals(true, ((BooleanLiteral) variable.getLiteral().get()).getValue());
 	}
 
 	@Test
+	public void testBooleanVariableDeclarationValidation() throws Exception {
+
+		List<ASTNode> astNodes = new ArrayList<>();
+
+		Identifier identifier = new Identifier("a", new Position(1, 4,1,1));
+		BooleanLiteral booleanLiteral = new BooleanLiteral(true, new Position(1, 15, 1, 1));
+		Position pos = new Position(0, 0, 0, 0);
+		Optional<Expression> booleanLiteralExpr = Optional.of(booleanLiteral);
+		Type type = new Type("boolean", pos);
+		VariableDeclaration vardecl = new VariableDeclaration(identifier, type, booleanLiteralExpr);
+		astNodes.add(vardecl);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
+
+		interpreter.validate();
+	}
+
+	@Test
 	public void testIfStatementTrueCondition() throws Exception {
 
-		Executor executor = new Executor();
+		List<ASTNode> astNodes = new ArrayList<>();
+
 		BooleanLiteral condition = new BooleanLiteral(true, new Position(1, 4,0,0));
 		Identifier identifier = new Identifier("a", new Position(1, 9,0,0));
 		Position pos = new Position(0, 0, 0, 0);
@@ -743,55 +1099,95 @@ public class InterpreterTest {
 		VariableDeclaration decl = new VariableDeclaration(identifier, type, cond);
 
 		IfStatement ifStatement = new IfStatement(condition, List.of(decl), List.of(), pos);
+		astNodes.add(ifStatement);
 
-		executor.visit(ifStatement);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
-		assertFalse(executor.getEnvironment().containsKey("a"));
+		interpreter.execute();
+
+		assertFalse(interpreter.getExecutorEnvironment().containsKey("a"));
+
+		interpreter.validate();
 	}
+
+	@Test
+	public void testIfStatementTrueConditionValidation() throws Exception {
+
+		List<ASTNode> astNodes = new ArrayList<>();
+
+		BooleanLiteral condition = new BooleanLiteral(true, new Position(1, 4,0,0));
+		Identifier identifier = new Identifier("a", new Position(1, 9,0,0));
+		Position pos = new Position(0, 0, 0, 0);
+		Type type = new Type("boolean", pos);
+		Optional<Expression> cond = Optional.of(condition);
+		VariableDeclaration decl = new VariableDeclaration(identifier, type, cond);
+
+		IfStatement ifStatement = new IfStatement(condition, List.of(decl), List.of(), pos);
+		astNodes.add(ifStatement);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
+
+		interpreter.validate();
+	}
+
 
 	@Test
 	public void testIfStatementFalseCondition() throws Exception {
 
-		Executor executor = new Executor();
+		List<ASTNode> astNodes = new ArrayList<>();
+
 		BooleanLiteral condition = new BooleanLiteral(false, new Position(1, 4, 0, 0));
 		Identifier identifier = new Identifier("a", new Position(1, 9, 0, 0));
-		Position pos1 = new Position(0, 0, 0, 0);
+		Position pos = new Position(0, 0, 0, 0);
 		Optional<Expression> bool = Optional.of(new BooleanLiteral(true, new Position(1, 10, 0, 0)));
-		VariableDeclaration elsedecl = new VariableDeclaration(identifier, new Type("boolean", pos1), bool);
+		VariableDeclaration elseDecl = new VariableDeclaration(identifier, new Type("boolean", pos), bool);
 
-		IfStatement ifStatement = new IfStatement(condition, List.of(), List.of(elsedecl), pos1);
+		IfStatement ifStatement = new IfStatement(condition, List.of(), List.of(elseDecl), pos);
+		astNodes.add(ifStatement);
 
-		executor.visit(ifStatement);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
-		assertFalse(executor.getEnvironment().containsKey("a"));
+		interpreter.execute();
+
+		assertFalse(interpreter.getExecutorEnvironment().containsKey("a"));
+
+		interpreter.validate();
 	}
 
 	@Test
 	public void testStackAfterUnaryExpression() throws Exception {
-		Executor executor = new Executor();
+		List<ASTNode> astNodes = new ArrayList<>();
 
 		NumericLiteral numericLiteral = new NumericLiteral(5.0, new Position(1, 2, 0, 0));
-		Position pos1 = new Position(1, 1, 0, 0);
-		UnaryExpression unaryExpression = new UnaryExpression( numericLiteral, "-", pos1);
+		Position pos = new Position(1, 1, 0, 0);
+		UnaryExpression unaryExpression = new UnaryExpression(numericLiteral, "-", pos);
+		astNodes.add(unaryExpression);
 
-		executor.visit(unaryExpression);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
-		Stack<Literal> stack = executor.getStack();
+		interpreter.execute();
+
+		Stack<Literal> stack = interpreter.getStack();
 		assertEquals(1, stack.size());
 		assertEquals(-5.0, ((NumericLiteral) stack.pop()).getValue());
+
+		interpreter.validate();
 	}
 
 	@Test
 	public void testIfStatementReassignExternalVariable() throws Exception {
-		Executor executor = new Executor();
+		List<ASTNode> astNodes = new ArrayList<>();
 
 		Identifier identifierB = new Identifier("b", new Position(1, 1, 0, 0));
 		Position pos = new Position(0, 0, 0, 0);
 		Type type = new Type("boolean", pos);
 		Optional<Expression> initialAssignment = Optional.of(new BooleanLiteral(false, pos));
 		VariableDeclaration declB = new VariableDeclaration(identifierB, type, initialAssignment);
-
-		declB.accept(executor);
+		astNodes.add(declB);
 
 		BooleanLiteral condition = new BooleanLiteral(true, new Position(1, 4, 0, 0));
 
@@ -799,90 +1195,124 @@ public class InterpreterTest {
 		Assignation reassignB = new Assignation(identifierB, newAssignment, pos);
 
 		IfStatement ifStatement = new IfStatement(condition, List.of(reassignB), List.of(), pos);
+		astNodes.add(ifStatement);
 
-		executor.visit(ifStatement);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
-		Variable variable = executor.getEnvironment().get("b");
+		interpreter.execute();
+
+		Variable variable = interpreter.getExecutorEnvironment().get("b");
 		assertEquals("boolean", variable.getType().getTypeName());
 		assertEquals(true, ((BooleanLiteral) variable.getLiteral().get()).getValue());
+
+		interpreter.validate();
 	}
 
 	// CONST DECLARATION ------------------------------------------------------------------
 
 	@Test
 	public void testConstDeclarationIsStoredCorrectly() throws Exception {
-		Executor executor = new Executor();
-		Identifier identifier = new Identifier("constVar", new Position(1, 1,0,0));
-		Type type = new Type("number", new Position(0,0,0,0));
-		Expression expression = new NumericLiteral(10.0, new Position(1, 10,0,0));
+		List<ASTNode> astNodes = new ArrayList<>();
+
+		Identifier identifier = new Identifier("constVar", new Position(1, 1, 0, 0));
+		Type type = new Type("number", new Position(0, 0, 0, 0));
+		Expression expression = new NumericLiteral(10.0, new Position(1, 10, 0, 0));
 		ConstDeclaration constDeclaration = new ConstDeclaration(identifier, type, expression);
+		astNodes.add(constDeclaration);
 
-		constDeclaration.accept(executor);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
-		Variable variable = executor.getEnvironment().get("constVar");
+		interpreter.execute();
+
+		Variable variable = interpreter.getExecutorEnvironment().get("constVar");
 
 		assertNotNull(variable);
 		assertTrue(variable.isConst());
 		assertEquals("number", variable.getType().getTypeName());
 		assertEquals(10.0, ((NumericLiteral) variable.getLiteral().get()).getValue());
+
+		interpreter.validate();
+	}
+
+	@Test
+	public void testConstDeclarationValidation() throws Exception {
+		List<ASTNode> astNodes = new ArrayList<>();
+
+		Identifier identifier = new Identifier("constVar", new Position(1, 1, 0, 0));
+		Type type = new Type("number", new Position(0, 0, 0, 0));
+		Expression expression = new NumericLiteral(10.0, new Position(1, 10, 0, 0));
+		ConstDeclaration constDeclaration = new ConstDeclaration(identifier, type, expression);
+		astNodes.add(constDeclaration);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
+
+		interpreter.validate();
 	}
 
 	@Test
 	public void testConstReassignmentThrowsError() {
-		Executor executor = new Executor();
-		assertThrows(InterpreterException.class, () -> {
+		List<ASTNode> astNodes = new ArrayList<>();
 
-			Identifier identifier = new Identifier("constVar", new Position(1, 1,0,0));
-			Type type = new Type("number", new Position(0,0,0,0));
-			Expression expression = new NumericLiteral(10.0, new Position(1, 10,0,0));
-			ConstDeclaration constDeclaration = new ConstDeclaration(identifier, type, expression);
+		Identifier identifier = new Identifier("constVar", new Position(1, 1, 0, 0));
+		Type type = new Type("number", new Position(0, 0, 0, 0));
+		Expression expression = new NumericLiteral(10.0, new Position(1, 10, 0, 0));
+		ConstDeclaration constDeclaration = new ConstDeclaration(identifier, type, expression);
+		astNodes.add(constDeclaration);
 
-			constDeclaration.accept(executor);
+		Expression newExpression = new NumericLiteral(20.0, new Position(2, 10, 0, 0));
+		Assignation assignation = new Assignation(identifier, newExpression, new Position(0, 0, 0, 0));
+		astNodes.add(assignation);
 
-			Expression newExpression = new NumericLiteral(20.0, new Position(2, 10,0,0));
-			Assignation assignation = new Assignation(identifier, newExpression, new Position(0,0,0,0));
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
-			assignation.accept(executor);
-		});
+		assertThrows(InterpreterException.class, interpreter::execute);
 	}
 
 	@Test
 	public void testDuplicateConstDeclarationThrowsError() {
-		Executor executor = new Executor();
-		assertThrows(InterpreterException.class, () -> {
+		List<ASTNode> astNodes = new ArrayList<>();
 
-			Identifier identifier = new Identifier("constVar", new Position(1, 1,0,0));
-			Type type = new Type("number", new Position(0,0,0,0));
-			Expression expression = new NumericLiteral(10.0, new Position(1, 10,0,0));
-			ConstDeclaration constDeclaration = new ConstDeclaration(identifier, type, expression);
+		Identifier identifier = new Identifier("constVar", new Position(1, 1, 0, 0));
+		Type type = new Type("number", new Position(0, 0, 0, 0));
+		Expression expression = new NumericLiteral(10.0, new Position(1, 10, 0, 0));
+		ConstDeclaration constDeclaration = new ConstDeclaration(identifier, type, expression);
+		astNodes.add(constDeclaration);
 
-			constDeclaration.accept(executor);
+		Expression anotherExpression = new NumericLiteral(20.0, new Position(2, 10, 0, 0));
+		ConstDeclaration duplicateDec = new ConstDeclaration(identifier, type, anotherExpression);
+		astNodes.add(duplicateDec);
 
-			Expression anotherExpression = new NumericLiteral(20.0, new Position(2, 10, 0, 0));
-			ConstDeclaration duplicateDec = new ConstDeclaration(identifier, type, anotherExpression);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
-			duplicateDec.accept(executor);
-		});
+		assertThrows(InterpreterException.class, interpreter::execute);
 	}
 
 	@Test
 	public void testConstDeclarationTypeMismatchThrowsError() {
-		Executor executor = new Executor();
-		assertThrows(InterpreterException.class, () -> {
-			Identifier identifier = new Identifier("constVar", new Position(1, 1,0,0));
-			Type type = new Type("number", new Position(0,0,0,0));
-			Expression expression = new TextLiteral("text", new Position(1, 10,0,0));
-			ConstDeclaration constDeclaration = new ConstDeclaration(identifier, type, expression);
+		List<ASTNode> astNodes = new ArrayList<>();
 
-			constDeclaration.accept(executor);
-		});
+		Identifier identifier = new Identifier("constVar", new Position(1, 1, 0, 0));
+		Type type = new Type("number", new Position(0, 0, 0, 0));
+		Expression expression = new TextLiteral("text", new Position(1, 10, 0, 0));
+		ConstDeclaration constDeclaration = new ConstDeclaration(identifier, type, expression);
+		astNodes.add(constDeclaration);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
+
+		assertThrows(InterpreterException.class, interpreter::execute);
 	}
 
 	// READ ENV -----------------------------------------------------------------
 
 	@Test
 	void testReadEnvString() throws Exception {
-		Executor executor = new Executor();
+		List<ASTNode> astNodes = new ArrayList<>();
 
 		String name = "MY_VAR";
 
@@ -891,7 +1321,7 @@ public class InterpreterTest {
 				new Type("string", new Position(0, 0, 0, 0)),
 				Optional.empty()
 		);
-		executor.visit(declaration);
+		astNodes.add(declaration);
 
 		Assignation assignation = new Assignation(
 				new Identifier("myVar", new Position(1, 0, 0, 0)),
@@ -901,13 +1331,309 @@ public class InterpreterTest {
 				),
 				new Position(0, 0, 0, 0)
 		);
+		astNodes.add(assignation);
 
-		executor.visit(assignation);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
 
-		Literal result = executor.getEnvironment().get("myVar").getLiteral().get();
+		interpreter.execute();
+
+		Literal result = interpreter.getExecutorEnvironment().get("myVar").getLiteral().get();
 		assertTrue(result instanceof TextLiteral, "El valor debe ser un TextLiteral.");
 		assertEquals("Hello", ((TextLiteral) result).getValue(), "Los valores no coinciden");
 	}
 
+	@Test
+	void testReadEnvStringVal() throws Exception {
+		List<ASTNode> astNodes = new ArrayList<>();
 
+		String name = "MY_VAR";
+
+		VariableDeclaration declaration = new VariableDeclaration(
+				new Identifier("myVar", new Position(1, 0, 0, 0)),
+				new Type("string", new Position(0, 0, 0, 0)),
+				Optional.empty()
+		);
+		astNodes.add(declaration);
+
+		Assignation assignation = new Assignation(
+				new Identifier("myVar", new Position(1, 0, 0, 0)),
+				new Method(
+						new Identifier("readEnv", new Position(1, 1, 0, 0)),
+						List.of(new TextLiteral(name, new Position(1, 10, 0, 0)))
+				),
+				new Position(0, 0, 0, 0)
+		);
+		astNodes.add(assignation);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers);
+
+		interpreter.validate();
+	}
+
+	// VERSION MISMATCH
+	@Test
+	public void testIfStatementWithVersionMismatch() {
+
+		BooleanLiteral condition = new BooleanLiteral(true, pos);
+		Identifier identifier = new Identifier("a", pos);
+		Position pos = new Position(0, 0, 0, 0);
+		Type type = new Type("boolean", pos);
+		Optional<Expression> cond = Optional.of(condition);
+		VariableDeclaration decl = new VariableDeclaration(identifier, type, cond);
+
+		IfStatement ifStatement = new IfStatement(condition, List.of(decl), List.of(), pos);
+
+		List<ASTNode> astNodes = new ArrayList<>();
+		astNodes.add(ifStatement);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+		Interpreter interpreter = new Interpreter(iterator, handlers10);
+
+		try {
+			interpreter.validate();
+			fail("Expected InterpreterException due to missing IfStatement handler");
+		} catch (InterpreterException e) {
+			assertEquals("No handler found for node type: If Statement", e.getMessage());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Test
+	public void testIfStatementWithVersionMismatchExe() {
+
+		BooleanLiteral condition = new BooleanLiteral(true, pos);
+		Identifier identifier = new Identifier("a", pos);
+		Position pos = new Position(0, 0, 0, 0);
+		Type type = new Type("boolean", pos);
+		Optional<Expression> cond = Optional.of(condition);
+		VariableDeclaration decl = new VariableDeclaration(identifier, type, cond);
+
+		IfStatement ifStatement = new IfStatement(condition, List.of(decl), List.of(), pos);
+
+		List<ASTNode> astNodes = new ArrayList<>();
+		astNodes.add(ifStatement);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+		Interpreter interpreter = new Interpreter(iterator, handlers10);
+
+		try {
+			interpreter.execute();
+			fail("Expected InterpreterException due to missing IfStatement handler");
+		} catch (InterpreterException e) {
+			assertEquals("No handler found for node type: If Statement", e.getMessage());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+
+	@Test
+	public void testBooleanVariableDeclarationWithVersionMismatch() {
+
+		Identifier identifier = new Identifier("a", pos);
+		BooleanLiteral booleanLiteral = new BooleanLiteral(true, pos);
+		Position pos = new Position(0, 0, 0, 0);
+		Optional<Expression> booleanLiteralExpr = Optional.of(booleanLiteral);
+		Type type = new Type("boolean", pos);
+		VariableDeclaration vardecl = new VariableDeclaration(identifier, type, booleanLiteralExpr);
+
+		List<ASTNode> astNodes = new ArrayList<>();
+		astNodes.add(vardecl);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers10);
+
+		try {
+			interpreter.validate();
+			fail("Expected InterpreterException due to missing BooleanLiteral handler");
+		} catch (InterpreterException e) {
+			assertEquals("No handler found for node type: BooleanLiteral", e.getMessage());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Test
+	public void testBooleanVariableDeclarationWithVersionMismatchExe() {
+
+		Identifier identifier = new Identifier("a", pos);
+		BooleanLiteral booleanLiteral = new BooleanLiteral(true, pos);
+		Position pos = new Position(0, 0, 0, 0);
+		Optional<Expression> booleanLiteralExpr = Optional.of(booleanLiteral);
+		Type type = new Type("boolean", pos);
+		VariableDeclaration vardecl = new VariableDeclaration(identifier, type, booleanLiteralExpr);
+
+		List<ASTNode> astNodes = new ArrayList<>();
+		astNodes.add(vardecl);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers10);
+
+		try {
+			interpreter.execute();
+			fail("Expected InterpreterException due to missing BooleanLiteral handler");
+		} catch (InterpreterException e) {
+			assertEquals("No handler found for node type: BooleanLiteral", e.getMessage());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+
+	@Test
+	public void testReadInputWithVersionMismatch() {
+
+		String simulatedInput = "42\n";
+		System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
+		try {
+			Position position = new Position(1, 1, 1, 1);
+
+			VariableDeclaration variableDeclaration = new VariableDeclaration(
+					new Identifier("a", position),
+					new Type("number", position),
+					Optional.empty()
+			);
+			Method readInputMethod = new Method(
+					new Identifier("readInput", position),
+					List.of(new TextLiteral("Escribe un numero:", position))
+			);
+			Assignation assignment = new Assignation(
+					new Identifier("a", position),
+					readInputMethod,
+					position
+			);
+			List<ASTNode> astNodes = List.of(variableDeclaration, assignment);
+			PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+			Interpreter interpreter = new Interpreter(iterator, handlers10);
+			try {
+				interpreter.validate();
+				fail("Expected InterpreterException due to missing readInput handler");
+			} catch (InterpreterException e) {
+				assertEquals("No handler found for node type: readInput", e.getMessage());
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("Ocurrió una excepción inesperada.");
+		}
+	}
+	@Test
+	public void testReadInputWithVersionMismatchExecute() {
+
+		String simulatedInput = "42\n";
+		System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
+		try {
+			Position position = new Position(1, 1, 1, 1);
+
+			VariableDeclaration variableDeclaration = new VariableDeclaration(
+					new Identifier("a", position),
+					new Type("number", position),
+					Optional.empty()
+			);
+			Method readInputMethod = new Method(
+					new Identifier("readInput", position),
+					List.of(new TextLiteral("Escribe un numero:", position))
+			);
+			Assignation assignment = new Assignation(
+					new Identifier("a", position),
+					readInputMethod,
+					position
+			);
+			List<ASTNode> astNodes = List.of(variableDeclaration, assignment);
+			PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+			Interpreter interpreter = new Interpreter(iterator, handlers10);
+			try {
+				interpreter.execute();
+				fail("Expected InterpreterException due to missing readInput handler");
+			} catch (InterpreterException e) {
+				assertEquals("No handler found for node type: readInput", e.getMessage());
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("Ocurrió una excepción inesperada.");
+		}
+	}
+
+	@Test
+	public void testConstDeclarationMismatchVersion() throws Exception {
+		List<ASTNode> astNodes = new ArrayList<>();
+
+		Identifier identifier = new Identifier("constVar", new Position(1, 1, 0, 0));
+		Type type = new Type("number", new Position(0, 0, 0, 0));
+		Expression expression = new NumericLiteral(10.0, new Position(1, 10, 0, 0));
+		ConstDeclaration constDeclaration = new ConstDeclaration(identifier, type, expression);
+		astNodes.add(constDeclaration);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers10);
+
+		try {
+			interpreter.validate();
+			fail("Expected InterpreterException due to missing readInput handler");
+		} catch (InterpreterException e) {
+			assertEquals("No handler found for node type: Const declaration", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testConstDeclarationMismatchVersionExecute() throws Exception {
+		List<ASTNode> astNodes = new ArrayList<>();
+
+		Identifier identifier = new Identifier("constVar", new Position(1, 1, 0, 0));
+		Type type = new Type("number", new Position(0, 0, 0, 0));
+		Expression expression = new NumericLiteral(10.0, new Position(1, 10, 0, 0));
+		ConstDeclaration constDeclaration = new ConstDeclaration(identifier, type, expression);
+		astNodes.add(constDeclaration);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers10);
+
+		try {
+			interpreter.execute();
+			fail("Expected InterpreterException");
+		} catch (InterpreterException e) {
+			assertEquals("No handler found for node type: Const declaration", e.getMessage());
+		}
+	}
+
+	@Test
+	void testReadEnvStringVersionMismatchVal() throws Exception {
+		List<ASTNode> astNodes = new ArrayList<>();
+
+		String name = "MY_VAR";
+
+		VariableDeclaration declaration = new VariableDeclaration(
+				new Identifier("myVar", new Position(1, 0, 0, 0)),
+				new Type("string", new Position(0, 0, 0, 0)),
+				Optional.empty()
+		);
+		astNodes.add(declaration);
+		Assignation assignation = new Assignation(
+				new Identifier("myVar", new Position(1, 0, 0, 0)),
+				new Method(
+						new Identifier("readEnv", new Position(1, 1, 0, 0)),
+						List.of(new TextLiteral(name, new Position(1, 10, 0, 0)))
+				),
+				new Position(0, 0, 0, 0)
+		);
+		astNodes.add(assignation);
+
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers10);
+
+		try {
+			interpreter.execute();
+			fail("Expected InterpreterException");
+		} catch (InterpreterException e) {
+			assertEquals("No handler found for node type: readEnv", e.getMessage());
+		}
+	}
 }

@@ -1,7 +1,9 @@
 package org.example.lexer;
 
+
+
 import org.example.PrintScriptIterator;
-import org.example.lexer.token.Token;
+import org.token.Token;
 
 import java.util.*;
 

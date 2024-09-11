@@ -1,16 +1,15 @@
 package org.example;
 
 import org.example.lexer.PrintScriptTokenConfig;
-import org.example.lexer.token.NativeTokenTypes;
-import org.example.lexer.token.Token;
-import org.example.lexer.token.TokenType;
 import org.example.nodeconstructors.*;
+import org.token.Token;
+import org.token.TokenType;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static org.example.lexer.token.NativeTokenTypes.*;
+import static org.token.NativeTokenTypes.*;
 
 public class ParserProvider {
 

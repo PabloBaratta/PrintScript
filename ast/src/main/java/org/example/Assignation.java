@@ -1,7 +1,7 @@
 package org.example;
 
 
-import org.example.lexer.token.Position;
+import org.token.Position;
 
 public class Assignation implements ASTNode {
 

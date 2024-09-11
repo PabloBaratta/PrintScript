@@ -1,8 +1,8 @@
 package org.example;
 
-import org.example.lexer.token.NativeTokenTypes;
-import org.example.lexer.token.Token;
-import org.example.lexer.token.TokenType;
+import org.token.NativeTokenTypes;
+import org.token.Token;
+import org.token.TokenType;
 import org.example.nodeconstructors.Accumulator;
 import org.example.nodeconstructors.CallExpressionNodeConstructor;
 import org.example.nodeconstructors.CollectorNodeConstructor;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.example.TokenTestUtil.getaTokenFromTokenType;
-import static org.example.lexer.token.NativeTokenTypes.*;
+import static org.token.NativeTokenTypes.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CallExpressionTest {
@@ -34,16 +34,13 @@ public class CallExpressionTest {
 				{
 					List<Token> tokens = List.of(getaTokenFromTokenType(type));
 					Accumulator accumulator = new Accumulator(tokens);
-					assertDoesNotThrow(() -> new TokenBuffer(accumulator));
 					TokenBuffer tokenBuffer = null;
 					try {
 						tokenBuffer = new TokenBuffer(accumulator);
 					} catch (Exception e) {
 						throw new RuntimeException(e);
 					}
-					TokenBuffer finalTokenBuffer = tokenBuffer;
-					assertDoesNotThrow(() -> builder.build(finalTokenBuffer));
-					NodeResponse build = null;
+					NodeResponse build;
 					try {
 						build = builder.build(tokenBuffer);
 					} catch (Exception e) {

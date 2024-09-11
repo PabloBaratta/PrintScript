@@ -1,14 +1,11 @@
-package org.example.lexer.token;
-
-import org.example.lexer.token.TokenType;
-
+package org.token;
 
 public record Token(TokenType type,
 					String associatedString, Position position) {
 
 	@Override
 	public String toString() {
-		return "Token " +
+		return "org.token.Token " +
 				"type=" + type +
 				", associatedString='" + associatedString + '\'' +
 				", offset=" + position.getOffset() +

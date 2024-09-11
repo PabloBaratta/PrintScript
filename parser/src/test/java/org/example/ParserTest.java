@@ -1,16 +1,15 @@
 package org.example;
-import org.example.lexer.token.NativeTokenTypes;
-import org.example.lexer.token.Position;
-import org.example.lexer.token.Token;
-import org.example.lexer.token.TokenType;
-import org.example.lexer.utils.Try;
+import org.token.NativeTokenTypes;
+import org.token.Position;
+import org.token.Token;
+import org.token.TokenType;
+import functional.Try;
 import org.example.nodeconstructors.*;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static org.example.lexer.token.NativeTokenTypes.*;
+import static org.token.NativeTokenTypes.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -31,7 +30,7 @@ public class ParserTest {
 		Accumulator accumulator = new Accumulator(tokens);
 		TokenBuffer tokenBuffer = new TokenBuffer(accumulator);
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
-		Try<ASTNode, Exception> res = parser.parseExpression();
+		Try<ASTNode> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
 		assertEquals("1.0 + 2.0", node.toString());
 	}
@@ -53,7 +52,7 @@ public class ParserTest {
 		Accumulator accumulator = new Accumulator(tokens);
 		TokenBuffer tokenBuffer = new TokenBuffer(accumulator);
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
-		Try<ASTNode, Exception> res = parser.parseExpression();
+		Try<ASTNode> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
 		assertEquals("1.0 + 2.0 * hola", node.toString());
 	}
@@ -71,7 +70,7 @@ public class ParserTest {
 		Accumulator accumulator = new Accumulator(tokens);
 		TokenBuffer tokenBuffer = new TokenBuffer(accumulator);
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
-		Try<ASTNode, Exception> res = parser.parseExpression();
+		Try<ASTNode> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
 		assertEquals("1.0", node.toString());
 	}
@@ -91,7 +90,7 @@ public class ParserTest {
 		Accumulator accumulator = new Accumulator(tokens);
 		TokenBuffer tokenBuffer = new TokenBuffer(accumulator);
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
-		Try<ASTNode, Exception> res = parser.parseExpression();
+		Try<ASTNode> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
 		assertEquals("hola buenas tardes", node.toString());
 	}
@@ -118,7 +117,7 @@ public class ParserTest {
 		Accumulator accumulator = new Accumulator(tokens);
 		TokenBuffer tokenBuffer = new TokenBuffer(accumulator);
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
-		Try<ASTNode, Exception> res = parser.parseExpression();
+		Try<ASTNode> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
 		assertEquals("si", node.toString());
 	}
@@ -149,7 +148,7 @@ public class ParserTest {
 		Parser parser = new Parser(new LinkedList<>(List.of(e1)), new ArrayList<>(), tokenBuffer);
 
 		// Parsear la expresión
-		Try<ASTNode, Exception> res = parser.parseExpression();
+		Try<ASTNode> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
 
 		// Verifica que la expresión se haya parseado correctamente
@@ -170,7 +169,7 @@ public class ParserTest {
 
 		Accumulator accumulator = new Accumulator(tokens);
 		Parser parser = ParserProvider.provide10(accumulator);
-		Try<ASTNode, Exception> res = parser.parseExpression();
+		Try<ASTNode> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
 		assertInstanceOf(Method.class, node);
 		Method method = (Method) node;
@@ -196,7 +195,7 @@ public class ParserTest {
 		Accumulator accumulator = new Accumulator(tokens);
 		Parser parser = ParserProvider.provide10(accumulator);
 
-		Try<ASTNode, Exception> astNodeExceptionTry = parser.parseExpression();
+		Try<ASTNode> astNodeExceptionTry = parser.parseExpression();
 		assertTrue(astNodeExceptionTry.isSuccess());
 		ASTNode astNode = astNodeExceptionTry.getSuccess().get();
 		assertInstanceOf(Method.class, astNode);
@@ -228,14 +227,14 @@ public class ParserTest {
 		Parser parser = ParserProvider.provide11(accumulator);
 
 		assertTrue(parser.hasNext());
-		Try<ASTNode, Exception> astNodeExceptionTry = parser.parseExpression();
+		Try<ASTNode> astNodeExceptionTry = parser.parseExpression();
 		assertTrue(astNodeExceptionTry.isSuccess());
 		ASTNode astNode = astNodeExceptionTry.getSuccess().get();
 		assertInstanceOf(VariableDeclaration.class, astNode);
 
 		assertTrue(parser.hasNext());
 
-		Try<ASTNode, Exception> methodOrTry = parser.parseExpression();
+		Try<ASTNode> methodOrTry = parser.parseExpression();
 		assertTrue(methodOrTry.isSuccess());
 		ASTNode method = methodOrTry.getSuccess().get();
 
@@ -243,7 +242,7 @@ public class ParserTest {
 
 		assertTrue(parser.hasNext());
 
-		Try<ASTNode, Exception> ifOrTry = parser.parseExpression();
+		Try<ASTNode> ifOrTry = parser.parseExpression();
 		assertTrue(ifOrTry.isSuccess());
 		ASTNode ifStatement = ifOrTry.getSuccess().get();
 
@@ -272,7 +271,7 @@ public class ParserTest {
 		Accumulator accumulator = new Accumulator(TokenTestUtil.getTokens(tokenTypes));
 		Parser parser = ParserProvider.provide11(accumulator);
 
-		Try<ASTNode, Exception> astNodeExceptionTry = parser.parseExpression();
+		Try<ASTNode> astNodeExceptionTry = parser.parseExpression();
 		assertTrue(astNodeExceptionTry.isSuccess());
 		ASTNode astNode = astNodeExceptionTry.getSuccess().get();
 		assertInstanceOf(IfStatement.class, astNode);
@@ -303,7 +302,7 @@ public class ParserTest {
 		Accumulator accumulator = new Accumulator(TokenTestUtil.getTokens(tokenTypes));
 		Parser parser = ParserProvider.provide11(accumulator);
 
-		Try<ASTNode, Exception> astNodeExceptionTry = parser.parseExpression();
+		Try<ASTNode> astNodeExceptionTry = parser.parseExpression();
 		assertTrue(astNodeExceptionTry.isSuccess());
 		ASTNode astNode = astNodeExceptionTry.getSuccess().get();
 		assertInstanceOf(IfStatement.class, astNode);
@@ -332,7 +331,7 @@ public class ParserTest {
 		Accumulator accumulator = new Accumulator(TokenTestUtil.getTokens(tokenTypes));
 		Parser parser = ParserProvider.provide11(accumulator);
 
-		Try<ASTNode, Exception> astNodeExceptionTry = parser.parseExpression();
+		Try<ASTNode> astNodeExceptionTry = parser.parseExpression();
 		assertTrue(astNodeExceptionTry.isSuccess());
 		ASTNode astNode = astNodeExceptionTry.getSuccess().get();
 		assertInstanceOf(Method.class, astNode);
@@ -354,7 +353,7 @@ public class ParserTest {
 		Parser parser = ParserProvider.provide11(accumulator);
 
 		assertTrue(parser.hasNext());
-		Try<ASTNode, Exception> astNodeExceptionTry = parser.parseExpression();
+		Try<ASTNode> astNodeExceptionTry = parser.parseExpression();
 		assertTrue(astNodeExceptionTry.isSuccess());
 		ASTNode astNode = astNodeExceptionTry.getSuccess().get();
 		assertInstanceOf(VariableDeclaration.class, astNode);

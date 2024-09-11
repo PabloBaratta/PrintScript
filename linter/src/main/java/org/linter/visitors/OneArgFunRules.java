@@ -108,7 +108,7 @@ public class OneArgFunRules implements ASTVisitor {
 
 	@Override
 	public void visit(ConstDeclaration constDeclaration) throws Exception {
-
+		constDeclaration.getExpression().accept(this);
 	}
 
 	private void visitBlock(List<ASTNode> block) throws Exception {

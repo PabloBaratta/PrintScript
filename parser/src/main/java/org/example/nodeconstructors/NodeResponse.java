@@ -2,12 +2,12 @@ package org.example.nodeconstructors;
 
 import org.example.ASTNode;
 import org.example.TokenBuffer;
-import org.example.lexer.utils.Try;
+import functional.Try;
 
 import java.util.Optional;
 
 public record NodeResponse(
-		Try<Optional<ASTNode>, Exception> possibleNode,
+		Try<Optional<ASTNode>> possibleNode,
 		TokenBuffer possibleBuffer
 ) {
 

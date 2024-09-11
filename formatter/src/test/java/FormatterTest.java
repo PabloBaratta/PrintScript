@@ -1,6 +1,6 @@
 /*
 import org.example.*;
-import org.example.lexer.token.Position;
+import org.token.Position;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -32,7 +32,7 @@ public class FormatterTest {
 				}
 		""";
 
-	Position position = new Position(0, 0, 0, 0);
+	org.token.Position position = new org.token.Position(0, 0, 0, 0);
 
 	@Test
 	public void testVariableDeclaration() throws Exception {
