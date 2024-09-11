@@ -10,9 +10,9 @@ public interface ASTVisitor {
 
 	void visit(Identifier identifier) throws Exception;
 
-	void visit(TextLiteral textLiteral);
+	void visit(TextLiteral textLiteral) throws Exception;
 
-	void visit(NumericLiteral numericLiteral);
+	void visit(NumericLiteral numericLiteral) throws Exception;
 
 	void visit(Method method) throws Exception;
 

@@ -1,5 +1,6 @@
 package org.example.resources;
 
+import org.example.ASTNode;
 import org.example.Parser;
 import org.example.ParserProvider;
 import org.example.PrintScriptIterator;
@@ -14,8 +15,8 @@ public class Util {
 		return ParserProvider.provide10(tokens);
 	}
 
-	public static Interpreter createInterpreter() {
-		return new Interpreter();
-	}
+	//public static Interpreter createInterpreter(PrintScriptIterator<ASTNode> nodes) {
+//		return InterpreterProvider.provide10(nodes);
+//	}
 
 }
