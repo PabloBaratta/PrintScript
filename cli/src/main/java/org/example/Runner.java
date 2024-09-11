@@ -1,3 +1,4 @@
+/*
 package org.example;
 
 import org.example.interpreter.Interpreter;
@@ -46,10 +47,10 @@ public class Runner {
 		}
 		return new Program(nodes);
 	}
-	public static void interpret(Program ast) throws Exception {
-		Interpreter interpreter = createInterpreter();
-		interpreter.visit(ast);
-	}
+//	public static void interpret(Program ast) throws Exception {
+//		Interpreter interpreter = createInterpreter();
+//		interpreter.visit(ast);
+//	}
 
 	private static String readFileAsString(String filePath) throws IOException {
 		return Files.lines(Paths.get(filePath))
@@ -57,3 +58,4 @@ public class Runner {
 	}
 
 }
+*/

@@ -1,3 +1,4 @@
+/*
 package org.example.builders;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -58,3 +59,4 @@ public class AnalyzingBuilder implements CommandBuilder{
     }
 
 }
+*/
