@@ -11,7 +11,9 @@ import org.linter.ReportLine;
 import org.token.Token;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import static org.example.lexer.LexerProvider.provideV10;
@@ -31,9 +33,14 @@ public class Runner {
 		interpreter.validate();
 	}
 
-	public static void lint(InputStream inputStream, String version, String config) throws Exception {
+	public static List<String> lint(InputStream inputStream, String version, String config) throws Exception {
 		PrintScriptIterator<ASTNode> parser = lnp(inputStream, version);
-		lint(parser, version, config);
+		List<ReportLine> reportLines = lint(parser, version, config).getReportLines();
+		List<String> errors = new ArrayList<>();
+		for (ReportLine reportLine : reportLines) {
+			errors.add(reportLine.errorMessage() + " on " + reportLine.position().toString());
+		}
+		return errors;
 	}
 
 	public static String format(InputStream inputStream, String version, String config) throws Exception {
@@ -73,7 +80,7 @@ public class Runner {
 		return formatter.format();
 	}
 
-	private static Map parseConfig(String jsonConfig) throws Exception {
+	private static Map<String, String> parseConfig(String jsonConfig) throws Exception {
 		ObjectMapper objectMapper = new ObjectMapper();
 		return objectMapper.readValue(jsonConfig, Map.class);
 	}
