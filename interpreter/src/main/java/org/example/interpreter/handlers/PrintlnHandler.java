@@ -20,18 +20,18 @@ public class PrintlnHandler implements ASTNodeHandler{
 			throw new InterpreterException(message, position.getLine(), position.getColumn());
 		}
 
-		Expression argument = arguments.get(0);
+		Literal evaluatedArgument = executor.evaluateExpression(arguments.getFirst());
 
-		if (!(argument instanceof TextLiteral) && !(argument instanceof Identifier)) {
-			String message = "println expects a TextLiteral or Identifier";
+		if (!(evaluatedArgument instanceof TextLiteral)
+				&& !(evaluatedArgument instanceof NumericLiteral)
+				&& !(evaluatedArgument instanceof BooleanLiteral)){
+			String message = "println expects a Literal";
 			int line = position.getLine();
 			int column = position.getColumn();
 			throw new InterpreterException(message, line, column);
 		}
 
-		executor.evaluate(arguments.getFirst());
-		Literal value = executor.getStack().pop();
-		System.out.println(value.getValue());
+		executor.getOutputCapture().capture(evaluatedArgument.toString());
 	}
 
 	@Override
@@ -47,17 +47,14 @@ public class PrintlnHandler implements ASTNodeHandler{
 			throw new InterpreterException(message, line, column);
 		}
 
-		Expression argument = arguments.getFirst();
+		Literal evaluatedArgument = validator.evaluateExpression(arguments.getFirst());
 
-		if (!(argument instanceof TextLiteral) && !(argument instanceof Identifier)) {
+		if (!(evaluatedArgument instanceof TextLiteral)
+				&& !(evaluatedArgument instanceof NumericLiteral)
+				&& !(evaluatedArgument instanceof BooleanLiteral)){
 			int line = position.getLine();
-			String message = "println expects a TextLiteral or Identifier";
+			String message = "println expects a Literal";
 			throw new InterpreterException(message, line, position.getColumn());
 		}
-
-
-		validator.evaluate(arguments.getFirst());
-		Literal value = validator.getStack().pop();
-		System.out.println(value.getValue());
 	}
 }

@@ -13,15 +13,14 @@ public class Validator implements ASTVisitor {
 
 	private final Stack<Map<String, Variable>> environments = new Stack<>();
 	private final Stack<Literal> stack = new Stack<>();
-
+	private final InputProvider inputProvider;
 	private final Map<String, ASTNodeHandler> handlers;
 
-
-	public Validator(Map<String, ASTNodeHandler> handlers) {
+	public Validator(Map<String, ASTNodeHandler> handlers, InputProvider inputProvider) {
 		environments.push(new HashMap<>());
 		this.handlers = handlers;
+		this.inputProvider = inputProvider;
 	}
-
 
 	@Override
 	public void visit(Assignation assignation) throws Exception {
@@ -219,6 +218,18 @@ public class Validator implements ASTVisitor {
 		}
 	}
 
+	public Literal convertInputToLiteral(String input, Position position) {
+		if (input.equalsIgnoreCase("true") || input.equalsIgnoreCase("false")) {
+			boolean boolValue = Boolean.parseBoolean(input);
+			return new BooleanLiteral(boolValue, position);
+		} else if (input.matches("-?\\d+(\\.\\d+)?")) {
+			double numberValue = Double.parseDouble(input);
+			return new NumericLiteral(numberValue, position);
+		} else {
+			return new TextLiteral(input, position);
+		}
+	}
+
 	public Stack<Map<String, Variable>> getEnvironments() {
 		return environments;
 	}
@@ -233,5 +244,9 @@ public class Validator implements ASTVisitor {
 
 	public Stack<Literal> getStack() {
 		return stack;
+	}
+
+	public InputProvider getInputProvider() {
+		return inputProvider;
 	}
 }

@@ -14,6 +14,7 @@ public class ParenthesisHandler implements ASTNodeHandler{
 
 	@Override
 	public void handleValidation(ASTNode node, Validator validator) throws Exception {
-
+		Parenthesis parenthesis = (Parenthesis) node;
+		validator.evaluate(parenthesis.getExpression());
 	}
 }
