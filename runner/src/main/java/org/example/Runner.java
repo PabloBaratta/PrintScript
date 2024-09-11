@@ -44,7 +44,7 @@ public class Runner {
 	}
 
 	public static String format(InputStream inputStream, String version, String config) throws Exception {
-		return format(lnp(inputStream, version), config);
+		return format(lnp(inputStream, version), config, version);
 	}
 
 	private static PrintScriptIterator<ASTNode> lnp(InputStream inputStream, String version) throws Exception {
@@ -75,8 +75,13 @@ public class Runner {
 		return report;
 	}
 
-	private static String format(PrintScriptIterator<ASTNode> parser, String config) throws Exception {
-		Formatter formatter = FormatterProvider.provideV10(parser, config);
+	private static String format(PrintScriptIterator<ASTNode> parser, String config, String version)
+			throws Exception {
+		Formatter formatter = switch (version){
+			case "1.0" -> FormatterProvider.provideV10(parser, config);
+			case "1.1" -> FormatterProvider.provideV11(parser, config);
+			default -> throw new Exception("Invalid version");
+		};
 		return formatter.format();
 	}
 
