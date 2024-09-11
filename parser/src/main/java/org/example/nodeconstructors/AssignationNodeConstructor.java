@@ -3,13 +3,12 @@ package org.example.nodeconstructors;
 
 import org.example.*;
 
-import org.example.lexer.token.NativeTokenTypes;
-import org.example.lexer.token.Token;
-import org.example.lexer.utils.Try;
+import org.token.Token;
+import functional.Try;
+import static org.token.NativeTokenTypes.*;
 
-import java.util.LinkedList;
+
 import java.util.List;
-import java.util.Optional;
 
 import static org.example.nodeconstructors.NodeResponse.response;
 
@@ -24,79 +23,60 @@ public class AssignationNodeConstructor implements NodeConstructor{
 	}
 	@Override
 	public NodeResponse build(TokenBuffer tokenBuffer) {
-		boolean hasIdentifier = tokenBuffer.isNextTokenOfType(NativeTokenTypes.IDENTIFIER.toTokenType());
-
-		Token identifierToken = tokenBuffer.getToken().get();
-		TokenBuffer tokenBufferWithoutIdentifier = tokenBuffer.consumeToken();
-
-		NodeResponse tokenBufferWithoutIdentifier1 = hasEquals(hasIdentifier, tokenBufferWithoutIdentifier);
-		if (tokenBufferWithoutIdentifier1 != null) return tokenBufferWithoutIdentifier1;
 
 
-		Token equals = tokenBufferWithoutIdentifier.getToken().get();
-		TokenBuffer tokenBufferWithoutEquals = tokenBufferWithoutIdentifier.consumeToken();
-
-		NodeResponse equals1 = isEnding(tokenBufferWithoutEquals, equals);
-		if (equals1 != null) return equals1;
-
-		return handleEqualsToken(identifierToken, equals, tokenBufferWithoutEquals);
-	}
-
-	private static NodeResponse isEnding(TokenBuffer tokenBufferWithoutEquals, Token equals) {
-		if (!tokenBufferWithoutEquals.hasAnyTokensLeft()) {
-			return response(new SemanticErrorException(equals, "was expecting closing after"),
-					tokenBufferWithoutEquals);
+		if (!isAssignation(tokenBuffer)) {
+			return NodeResponse.emptyResponse(tokenBuffer);
 		}
-		return null;
+
+		Token identifierToken = tokenBuffer.getToken().getSuccess().get();
+		Token equals = tokenBuffer.getToken().getSuccess().get();
+
+		return handleEqualsToken(identifierToken, equals, tokenBuffer);
 	}
 
-	private static NodeResponse hasEquals(boolean hasIdentifier, TokenBuffer tokenBufferWithoutIdentifier) {
-		if (!(hasIdentifier &&
-			tokenBufferWithoutIdentifier.hasAnyTokensLeft() &&
-			tokenBufferWithoutIdentifier.isNextTokenOfType(NativeTokenTypes.EQUALS.toTokenType()))) {
-			return new NodeResponse(new Try<>(Optional.empty()), tokenBufferWithoutIdentifier);
-		}
-		return null;
+	private static boolean isAssignation(TokenBuffer tokenBuffer) {
+		return tokenBuffer.peekTokenType(IDENTIFIER)
+				&& tokenBuffer.lookaheadType(1, EQUALS);
 	}
+
+
 
 	private NodeResponse handleEqualsToken(Token identifierToken, Token equalsToken, TokenBuffer tokenBuffer) {
-		List<Token> tokens = new LinkedList<>();
 
-		Token currentToken = equalsToken;
-		while (!tokenBuffer.isNextTokenOfType(NativeTokenTypes.SEMICOLON.toTokenType())){
+		Try<List<Token>> listTry = tokenBuffer.consumeUntil(SEMICOLON);
 
-			NodeResponse currentToken1 = isEnding(tokenBuffer, currentToken);
-			if (currentToken1 != null) return currentToken1;
-
-			currentToken = tokenBuffer.getToken().get();
-			tokens.add(currentToken);
-			tokenBuffer = tokenBuffer.consumeToken();
+		if (listTry.isFail()) {
+			return response(listTry.getFail().get(), tokenBuffer);
 		}
+
+		List<Token> tokens = listTry.getSuccess().get();
 
 		boolean noTokensBetweenEqualsAndSemiColon = tokens.isEmpty();
 
-		NodeResponse equalsToken1 = isAssignation(equalsToken, tokenBuffer, noTokensBetweenEqualsAndSemiColon);
-		if (equalsToken1 != null) return equalsToken1;
+		if (noTokensBetweenEqualsAndSemiColon) {
+			return response(new SemanticErrorException(equalsToken, "was expecting assignation"),
+					tokenBuffer);
+		}
 
-		TokenBuffer expressionTokenBuffer = new TokenBuffer(tokens);
+		Accumulator accumulator = new Accumulator(tokens);
+		TokenBuffer expressionTokenBuffer = new TokenBuffer(accumulator);
 
 		NodeResponse buildResult = expressionNodeConstructor.build(expressionTokenBuffer);
 
 		if (buildResult.possibleNode().isFail()) {
 			return buildResult;
 		}
+		else if (buildResult.possibleBuffer().hasAnyTokensLeft()) {
+			TokenBuffer expressionBuffer = buildResult.possibleBuffer();
+			return response(new SemanticErrorException(expressionBuffer.getToken().getSuccess().get(),
+					"Expecting an expression after assignation"),
+					tokenBuffer);
+		}
 
 		ASTNode astNode = buildResult.possibleNode().getSuccess().get().get();
 
-		return response(getAssignation(identifierToken, (Expression) astNode), tokenBuffer.consumeToken());
-	}
-
-	private static NodeResponse isAssignation(Token equalsToken, TokenBuffer tokenBuffer, boolean noTokens) {
-		if (noTokens){
-			return response(new SemanticErrorException(equalsToken, "was expecting assignation"),
-					tokenBuffer);
-		}
-		return null;
+		return response(getAssignation(identifierToken, (Expression) astNode), tokenBuffer);
 	}
 
 	private static Assignation getAssignation(Token identifierToken, Expression expression) {

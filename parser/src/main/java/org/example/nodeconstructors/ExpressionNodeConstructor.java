@@ -1,17 +1,17 @@
 package org.example.nodeconstructors;
 
 import org.example.*;
-import org.example.lexer.token.Position;
-import org.example.lexer.token.Token;
-import org.example.lexer.token.TokenType;
-import org.example.lexer.utils.Try;
+import org.token.Position;
+import org.token.Token;
+import org.token.TokenType;
+import static org.token.NativeTokenTypes.*;
+import functional.Try;
 
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.example.lexer.token.NativeTokenTypes.*;
 import static org.example.nodeconstructors.NodeResponse.emptyResponse;
 import static org.example.nodeconstructors.NodeResponse.response;
 
@@ -30,14 +30,15 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 		this.callExpressionConstructor = callConstructor.setExpressionParser(this);
 	}
 
-	private List<Function<TokenBuffer, NodeResponse>> getFunctions(Map<TokenType, Integer> opsPrecedence) {
+	private List<Function<TokenBuffer, NodeResponse>> getFunctions(Map<TokenType, Integer> opsPrecedence){
 		Map<Integer, List<TokenType>> groupedByPrecedence = opsPrecedence.entrySet().stream()
 				.collect(Collectors.groupingBy(
 						Map.Entry::getValue,
 						() -> new TreeMap<>(Collections.reverseOrder()),
 						Collectors.mapping(Map.Entry::getKey, Collectors.toList())
 				));
-		List<Function<TokenBuffer, NodeResponse>> functions = new ArrayList<>(groupedByPrecedence.size());
+		int functionsSize = groupedByPrecedence.size();
+		List<Function<TokenBuffer, NodeResponse>> functions = new ArrayList<>(functionsSize);
 
 		Function<TokenBuffer, NodeResponse> func = this::unary;
 		Collection<List<TokenType>> values = groupedByPrecedence.values();
@@ -61,10 +62,10 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 	}
 
 	private boolean isThisExpression(TokenBuffer tokenBuffer) {
-		return tokenBuffer.isNextTokenOfAnyOfThisTypes(operators)
-				|| tokenBuffer.isNextTokenOfAnyOfThisTypes(expressions)
-				|| tokenBuffer.isNextTokenOfType(LEFT_PARENTHESIS.toTokenType())
-				|| tokenBuffer.isNextTokenOfAnyOfThisTypes(callExpressionConstructor.functions());
+		return tokenBuffer.peekTokenType(operators)
+				|| tokenBuffer.peekTokenType(expressions)
+				|| tokenBuffer.peekTokenType(LEFT_PARENTHESIS)
+				|| tokenBuffer.peekTokenType(callExpressionConstructor.functions());
 	}
 
 	private NodeResponse parseBE(TokenBuffer tb,
@@ -78,9 +79,8 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 		Expression expression = (Expression) possibleExpression.possibleNode().getSuccess().get().get();
 		TokenBuffer newTokenBuffer = possibleExpression.possibleBuffer();
 
-		while (newTokenBuffer.isNextTokenOfAnyOfThisTypes(operatorTypes)) {
-			Token operator = newTokenBuffer.getToken().get();
-			newTokenBuffer = newTokenBuffer.consumeToken();
+		while (newTokenBuffer.peekTokenType(operatorTypes)) {
+			Token operator = newTokenBuffer.getToken().getSuccess().get();
 
 			if (!newTokenBuffer.hasAnyTokensLeft()) {
 				String message = "expected expression after operator";
@@ -89,7 +89,7 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 			}
 
 			NodeResponse possibleRightExpression = hpp.apply(newTokenBuffer);
-			Try<Optional<ASTNode>, Exception> aTry = possibleRightExpression.possibleNode();
+			Try<Optional<ASTNode>> aTry = possibleRightExpression.possibleNode();
 			if (aTry.isFail()) {
 				return possibleRightExpression;
 			}
@@ -103,8 +103,7 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 	}
 	//TODO modify to accept post operators
 	private NodeResponse parseUnaryExpression(TokenBuffer tokenBuffer) {
-		Token operator = tokenBuffer.getToken().get();
-		tokenBuffer = tokenBuffer.consumeToken();
+		Token operator = tokenBuffer.getToken().getSuccess().get();
 
 		if (!tokenBuffer.hasAnyTokensLeft()) {
 			String message = "expected expression after operator";
@@ -113,6 +112,7 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 		}
 
 		NodeResponse possibleExpression = unary(tokenBuffer);
+
 		if (possibleExpression.possibleNode().isFail()) {
 			return possibleExpression;
 		}
@@ -125,15 +125,14 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 	}
 
 	private NodeResponse parseLiteral(TokenBuffer tb,
-									BiFunction<String, Position, Expression> ec) {
-		Token token = tb.getToken().get();
-		tb = tb.consumeToken();
+									BiFunction<String, Position, Expression> ec)
+									{
+		Token token = tb.getToken().getSuccess().get();
 		return response(ec.apply(token.associatedString(), token.position()), tb);
 	}
 
 	private NodeResponse parseParenthesisExpression(TokenBuffer tokenBuffer) {
-		Token leftParToken = tokenBuffer.getToken().get();
-		tokenBuffer = tokenBuffer.consumeToken();
+		Token leftParToken = tokenBuffer.getToken().getSuccess().get();
 
 		Function<TokenBuffer, NodeResponse> fun = getLeastPrecedenceFun();
 		NodeResponse possibleExpression = fun.apply(tokenBuffer);
@@ -145,12 +144,10 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 		tokenBuffer = possibleExpression.possibleBuffer();
 		Expression expression = (Expression) possibleExpression.possibleNode().getSuccess().get().get();
 
-		if (tokenBuffer.isNextTokenOfType(RIGHT_PARENTHESES.toTokenType())) {
-			tokenBuffer = tokenBuffer.consumeToken();
-		} else {
-			String message = "expecting closing of this parenthesis";
-			SemanticErrorException exception = new SemanticErrorException(leftParToken, message);
-			return response(exception, tokenBuffer);
+		Try<Token> tokenTry = tokenBuffer.consumeToken(RIGHT_PARENTHESES);
+
+		if (tokenTry.isFail()) {
+			return response(tokenTry.getFail().get(), tokenBuffer);
 		}
 
 		return response(new Parenthesis(expression), tokenBuffer);
@@ -161,44 +158,42 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 	}
 
 	private NodeResponse unary(TokenBuffer tokenBuffer) {
-		if (tokenBuffer.isNextTokenOfType(MINUS.toTokenType())) {
+		if (tokenBuffer.peekTokenType(MINUS)) {
 			return parseUnaryExpression(tokenBuffer);
 		}
 		return primary(tokenBuffer);
 	}
 
 	// number, string, identifier and left parenthesis
-	private NodeResponse primary(TokenBuffer tokenBuffer) {
-		if (tokenBuffer.isNextTokenOfType(NUMBER.toTokenType())) {
+	private NodeResponse primary(TokenBuffer tokenBuffer)  {
+		if (tokenBuffer.peekTokenType(NUMBER)) {
 			return parseLiteral(tokenBuffer, (s, position) -> {
 				NumericLiteral numericLiteral = new NumericLiteral(Double.parseDouble(s), position);
 				return numericLiteral;
 			});
-		} else if (tokenBuffer.isNextTokenOfType(STRING.toTokenType())) {
+		} else if (tokenBuffer.peekTokenType(STRING)) {
 			return parseLiteral(tokenBuffer, (s, position) -> {
 				TextLiteral textLiteral = new TextLiteral(s.substring(1, s.length() - 1), position);
 				return textLiteral;
 			});
-		} else if (tokenBuffer.isNextTokenOfType(BOOLEAN.toTokenType())) {
+		} else if (tokenBuffer.peekTokenType(BOOLEAN)) {
 			return parseLiteral(tokenBuffer, (s, position) -> {
 				BooleanLiteral booleanLiteral = new BooleanLiteral(Boolean.parseBoolean(s), position);
 				return booleanLiteral;
 			});
-		} else if (tokenBuffer.isNextTokenOfType(IDENTIFIER.toTokenType())) {
+		} else if (tokenBuffer.peekTokenType(IDENTIFIER)) {
 
-			TokenBuffer tokenBufferWithoutId = tokenBuffer.consumeToken();
-
-			if (tokenBufferWithoutId.isNextTokenOfType(LEFT_PARENTHESIS.toTokenType())) {
+			if (tokenBuffer.lookaheadType(1, LEFT_PARENTHESIS)) {
 				return callExpressionConstructor.build(tokenBuffer);
 			}
 
 			return parseLiteral(tokenBuffer, Identifier::new);
-		} else if (tokenBuffer.isNextTokenOfAnyOfThisTypes(callExpressionConstructor.functions())) {
+		} else if (tokenBuffer.peekTokenType(callExpressionConstructor.functions())) {
 			return callExpressionConstructor.build(tokenBuffer);
-		} else if (tokenBuffer.isNextTokenOfType(LEFT_PARENTHESIS.toTokenType())) {
+		} else if (tokenBuffer.peekTokenType(LEFT_PARENTHESIS)) {
 			return parseParenthesisExpression(tokenBuffer);
 		}
-		return response(new SemanticErrorException(tokenBuffer.getToken().get(),
+		return response(new SemanticErrorException(tokenBuffer.getToken().getSuccess().get(),
 				"expecting valid expression"), tokenBuffer);
 	}
 }

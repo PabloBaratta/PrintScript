@@ -1,7 +1,7 @@
 package org.example;
 
 import org.example.lexer.*;
-import org.example.lexer.token.Token;
+import org.token.Token;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;

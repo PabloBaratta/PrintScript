@@ -2,22 +2,20 @@ package org.example.nodeconstructors;
 
 
 import org.example.ASTNode;
-import org.example.ConstDeclaration;
 import org.example.TokenBuffer;
 import org.example.VariableDeclaration;
-import org.example.lexer.token.NativeTokenTypes;
-import org.example.lexer.token.Token;
-import org.example.lexer.token.TokenType;
+import org.token.NativeTokenTypes;
+import org.token.Token;
+import org.token.TokenType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 import static org.example.TokenTestUtil.getTokens;
 import static org.example.TokenTestUtil.getaTokenFromTokenType;
-import static org.example.lexer.token.NativeTokenTypes.*;
+import static org.token.NativeTokenTypes.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class VariableDeclarationNodeConstructorTest {
@@ -33,15 +31,29 @@ class VariableDeclarationNodeConstructorTest {
 				.forEach(type ->
 				{
 					List<Token> tokens = List.of(getaTokenFromTokenType(type));
-					TokenBuffer tokenBuffer = new TokenBuffer(tokens);
-					NodeResponse build = builder.build(tokenBuffer);
+					Accumulator accumulator = new Accumulator(tokens);
+					assertDoesNotThrow(() -> new TokenBuffer(accumulator));
+					TokenBuffer tokenBuffer = null;
+					try {
+						tokenBuffer = new TokenBuffer(accumulator);
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+					TokenBuffer finalTokenBuffer = tokenBuffer;
+					assertDoesNotThrow(() -> builder.build(finalTokenBuffer));
+					NodeResponse build = null;
+					try {
+						build = builder.build(tokenBuffer);
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
 					assertTrue(build.possibleNode().isSuccess());
 					assertTrue(build.possibleNode().getSuccess().get().isEmpty());
 				});
 	}
 
 	@Test
-	public void successfulStringVariableDeclarationAssignation() {
+	public void successfulStringVariableDeclarationAssignation() throws Exception {
 		NativeTokenTypes[] nativeTokenTypes = new NativeTokenTypes[]{
 				LET, IDENTIFIER, COLON, STRING_TYPE, EQUALS, STRING, SEMICOLON
 		};
@@ -61,7 +73,7 @@ class VariableDeclarationNodeConstructorTest {
 
 
 	@Test
-	public void alwaysMissingTokenTypes() {
+	public void alwaysMissingTokenTypes() throws Exception {
 		NativeTokenTypes[] nativeTokenTypes = new NativeTokenTypes[]{
 				LET, IDENTIFIER, COLON, STRING_TYPE, EQUALS, STRING, SEMICOLON
 		};
@@ -73,7 +85,8 @@ class VariableDeclarationNodeConstructorTest {
 		VariableDeclarationNodeConstructor builder = getVDNodeConst(collector);
 		for (int i = 1; i < originalSize; i++) {
 			defaultCorrectSequence.removeLast();
-			TokenBuffer tokenBuffer = new TokenBuffer(defaultCorrectSequence);
+			Accumulator accumulator = new Accumulator(defaultCorrectSequence);
+			TokenBuffer tokenBuffer = new TokenBuffer(accumulator);
 			NodeResponse build = builder.build(tokenBuffer);
 			assertTrue(build.possibleNode().isFail());
 			System.out.println(build.possibleNode().getFail().get().getMessage());
@@ -81,7 +94,7 @@ class VariableDeclarationNodeConstructorTest {
 	}
 
 	@Test
-	public void incorrectSituations() {
+	public void incorrectSituations() throws Exception {
 		NativeTokenTypes[] nativeTokenTypes = new NativeTokenTypes[]{
 				LET, IDENTIFIER, STRING_TYPE, EQUALS, STRING, SEMICOLON
 		};
@@ -94,25 +107,27 @@ class VariableDeclarationNodeConstructorTest {
 		assertIncorrectSituations(nativeTokenTypes);
 	}
 
-	private static void assertIncorrectSituations(NativeTokenTypes[] nativeTokenTypes) {
+	private static void assertIncorrectSituations(NativeTokenTypes[] nativeTokenTypes) throws Exception {
 		List<Token> defaultCorrectSequence = getTokens(nativeTokenTypes);
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
 
 		VariableDeclarationNodeConstructor builder = getVDNodeConst(collector);
 
-		NodeResponse build = builder.build(new TokenBuffer(defaultCorrectSequence));
+		Accumulator accumulator = new Accumulator(defaultCorrectSequence);
+		NodeResponse build = builder.build(new TokenBuffer(accumulator));
 
 		assertTrue(build.possibleNode().isFail());
 	}
 
 	@Test
-	public void successfulVariableDeclaration() {
+	public void successfulVariableDeclaration() throws Exception {
 		List<Token> tokens = getDefaultCorrectSequenceForVarDecl();
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
 
 		NodeConstructor variableDeclarationNodeConstructor = getVDNodeConst(collector);
 
-		NodeResponse build = variableDeclarationNodeConstructor.build(new TokenBuffer(tokens));
+		Accumulator accumulator = new Accumulator(tokens);
+		NodeResponse build = variableDeclarationNodeConstructor.build(new TokenBuffer(accumulator));
 
 
 		assertTrue(build.possibleNode().isSuccess());
@@ -138,15 +153,16 @@ class VariableDeclarationNodeConstructorTest {
 
 
 
-	private static void successfulVarDeclAss(List<Token> tokens,
-											int numberOfExpressionTokens) {
+	private static void successfulVarDeclAss(List<Token> tokens, int numberOfExpressionTokens)
+			throws Exception {
 
 
 		CollectorNodeConstructor collector = new CollectorNodeConstructor();
 
 		NodeConstructor constructor = getVDNodeConst(collector);
 
-		NodeResponse build = constructor.build(new TokenBuffer(tokens));
+		Accumulator accumulator = new Accumulator(tokens);
+		NodeResponse build = constructor.build(new TokenBuffer(accumulator));
 
 
 		assertTrue(build.possibleNode().isSuccess(), "Has Parsed Right");

@@ -1,17 +1,14 @@
 package org.linter;
 
 import org.example.*;
-import org.example.lexer.token.Position;
+import org.token.Position;
 import org.junit.jupiter.api.Test;
 import org.linter.configurator.IdentifierConfiguration;
 import org.linter.configurator.OneArgFunctionConfiguration;
 import org.linter.visitors.LinterVisitor;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -34,6 +31,10 @@ public class LinterConfiguratorTest {
 								Optional.of(hi))),
 						new ArrayList<>(), new Position(0, 0, 0, 0))));
 
+	}
+
+	public static PrintScriptIterator<ASTNode> iteratorProgramIf(String identifierString, TextLiteral hi) {
+		return new PrintScriptIteratorTest<>(getProgramIf(identifierString, hi).getChildren());
 	}
 
 	@Test
@@ -154,7 +155,9 @@ public class LinterConfiguratorTest {
 		return program;
 	}
 
-
+	public static PrintScriptIterator<ASTNode> iteratorProgram(String identifierString, TextLiteral hi) {
+		return new PrintScriptIteratorTest<>(getProgram(identifierString, hi).getChildren());
+	}
 
 	private static Expression getDefaultExpressionForTests() {
 		return new Identifier("a", new Position(31, 1,2, 31));

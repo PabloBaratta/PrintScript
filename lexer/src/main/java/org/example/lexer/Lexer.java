@@ -1,7 +1,9 @@
 package org.example.lexer;
 
+
+
 import org.example.PrintScriptIterator;
-import org.example.lexer.token.Token;
+import org.token.Token;
 
 import java.util.*;
 
@@ -28,15 +30,23 @@ public class Lexer implements PrintScriptIterator<Token> {
 
 	@Override
 	public boolean hasNext() {
-		// Check if the current line is empty or if the offset has reached the end of the current line
-		// and there are no more lines to read from the reader
+
+
 		if ((currentLine.isEmpty() || currentLine.length() == offset) && !reader.hasNext()) {
 			return false;
+		}
+
+		if (currentLine.length() == offset) {
+			currentLine = reader.next();
+			skipWhiteSpace();
+			line++;
+			offset = 0;
 		}
 
 		// If the current line is empty but there are more lines to read, advance to the next line
 		while (reader.hasNext() && currentLine.isEmpty()) {
 			currentLine = reader.next();
+			skipWhiteSpace();
 			line++;
 		}
 
@@ -47,9 +57,10 @@ public class Lexer implements PrintScriptIterator<Token> {
 	@Override
 	public Token getNext() throws Exception {
 
-		checkEndOfLine();
+		if (!hasNext()){
+			throw new NoMoreTokensAvailableException();
+		}
 		skipWhiteSpace();
-		checkEndOfLine();
 
 		char currentCharacter = currentLine.charAt(offset);
 
@@ -73,7 +84,7 @@ public class Lexer implements PrintScriptIterator<Token> {
 						.map(Optional::get)
 						.max(Comparator.comparingInt(Token::length)));
 	}
-
+/*
 	private void checkEndOfLine() throws NoMoreTokensAvailableException {
 		if (currentLine.length() == offset && reader.hasNext()) {
 			currentLine = reader.next();
@@ -84,7 +95,7 @@ public class Lexer implements PrintScriptIterator<Token> {
 			throw new NoMoreTokensAvailableException();
 		}
 	}
-
+*/
 	private void skipWhiteSpace() {
 		while (offset < currentLine.length() && whiteSpaces.contains(currentLine.charAt(offset))) {
 			offset++;

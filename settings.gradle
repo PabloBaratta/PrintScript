@@ -17,4 +17,5 @@ include 'cli'
 include 'formatter'
 include 'utils'
 include 'runner'
+include 'token'
 

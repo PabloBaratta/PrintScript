@@ -1,7 +1,8 @@
 package org.example.nodeconstructors;
 
 import org.example.*;
-import org.example.lexer.utils.Try;
+import org.token.Token;
+import functional.Try;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -16,19 +17,38 @@ public class ScopeNodeConstructor implements  NodeConstructor{
 	}
 	@Override
 	public NodeResponse build(TokenBuffer tokenBuffer) {
-		LinkedList<ASTNode> nodes = new LinkedList<>();
 
+		if (!tokenBuffer.hasAnyTokensLeft()) {
+			return NodeResponse.response(new NoMoreTokensException(), tokenBuffer);
+		}
+
+		Response response = getAstNodeExceptionTry(tokenBuffer);
+
+		Try<ASTNode> astNodeExceptionTry = response.result();
+
+		if (astNodeExceptionTry.isFail()){
+			return NodeResponse.response(astNodeExceptionTry.getFail().get(), tokenBuffer);
+		}
+
+		ASTNode astNode = astNodeExceptionTry.getSuccess().get();
+		tokenBuffer = response.newBuffer();
+
+
+		return NodeResponse.response(astNode, tokenBuffer);
+	}
+
+	public NodeResponse buildAll(TokenBuffer tokenBuffer) {
+
+		List<ASTNode> nodes = new LinkedList<>();
 		while (tokenBuffer.hasAnyTokensLeft()) {
-			Response response = getAstNodeExceptionTry(tokenBuffer);
+			NodeResponse build = build(tokenBuffer);
 
-			Try<ASTNode, Exception> astNodeExceptionTry = response.result();
-
-			if (astNodeExceptionTry.isFail()){
-				return NodeResponse.response(astNodeExceptionTry.getFail().get(), tokenBuffer);
+			if (build.possibleNode().isFail()) {
+				return build;
 			}
+			ASTNode astNode = build.possibleNode().getSuccess().get().get();
 
-			nodes.add(astNodeExceptionTry.getSuccess().get());
-			tokenBuffer = response.newBuffer();
+			nodes.add(astNode);
 		}
 
 		return NodeResponse.response(new Program(nodes), tokenBuffer);
@@ -39,7 +59,7 @@ public class ScopeNodeConstructor implements  NodeConstructor{
 		for (NodeConstructor nodeConstructor : constructors) {
 
 			NodeResponse build = nodeConstructor.build(tokens);
-			Try<Optional<ASTNode>, Exception> possibleNodeOrError = build.possibleNode();
+			Try<Optional<ASTNode>> possibleNodeOrError = build.possibleNode();
 
 			//if node construction sends exception return exception
 			if (possibleNodeOrError.isFail()) {
@@ -57,12 +77,19 @@ public class ScopeNodeConstructor implements  NodeConstructor{
 
 			//If node constructión doesnt give any token --> pass
 		}
-		return new Response(new Try<>(new SemanticErrorException(tokens.getToken().get())),
-				tokens);
+
+
+		Try<Token> token = tokens.getToken();
+
+		if (token.isFail()) {
+			return new Response(new Try<>(token.getFail().get()), tokens);
+		}
+
+		return new Response(new Try<>(new SemanticErrorException(token.getSuccess().get())), tokens);
 	}
 
 	private record Response(
-			Try<ASTNode, Exception> result,
+			Try<ASTNode> result,
 			TokenBuffer newBuffer
 	){}
 }

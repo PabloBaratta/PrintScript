@@ -2,10 +2,10 @@ package org.example.nodeconstructors;
 
 import org.example.*;
 
-import org.example.lexer.token.NativeTokenTypes;
-import org.example.lexer.token.Token;
-import org.example.lexer.token.TokenType;
-import org.example.lexer.utils.Try;
+import org.token.Token;
+import org.token.TokenType;
+import static org.token.NativeTokenTypes.*;
+import functional.Try;
 
 import java.util.*;
 
@@ -30,122 +30,66 @@ public class VariableDeclarationNodeConstructor implements NodeConstructor {
 	@Override
 	public NodeResponse build(TokenBuffer tokenBuffer) {
 
-		if (!tokenBuffer.isNextTokenOfAnyOfThisTypes(variableDeclarationTokenTypes)){
+		if (!tokenBuffer.peekTokenType(variableDeclarationTokenTypes)){
 			return new NodeResponse(new Try<>(Optional.empty()), tokenBuffer);
 		}
 
-		Token varDeclToken = tokenBuffer.getToken().get();
-		TokenBuffer tokenBufferWithoutVarDecl = tokenBuffer.consumeToken();
+		tokenBuffer.consumeToken(variableDeclarationTokenTypes);
 
-		String vdError = "was expecting variable declaration with an identifier";
-		if (!tokenBufferWithoutVarDecl.hasAnyTokensLeft()) {
-			SemanticErrorException exception = new SemanticErrorException(varDeclToken, vdError);
-			return response(exception,
-					tokenBufferWithoutVarDecl);
+		Try<Token> identifierTry = tokenBuffer.consumeToken(IDENTIFIER);
+
+		if (identifierTry.isFail()) {
+			return response(identifierTry.getFail().get(), tokenBuffer);
 		}
 
-		Token identifier = tokenBufferWithoutVarDecl.getToken().get();
+		Token identifier = identifierTry.getSuccess().get();
 
+		Try<Token> colonTry = tokenBuffer.consumeToken(COLON);
 
-		if (!tokenBufferWithoutVarDecl.isNextTokenOfType(NativeTokenTypes.IDENTIFIER.toTokenType())) {
-			SemanticErrorException exception = new SemanticErrorException(identifier, vdError);
-			return response(exception,
-					tokenBufferWithoutVarDecl);
+		if (colonTry.isFail()) {
+			return response(colonTry.getFail().get(), tokenBuffer);
 		}
 
-		TokenBuffer tokenBufferWithoutIdentifier = tokenBufferWithoutVarDecl.consumeToken();
+		Try<Token> typeTry = tokenBuffer.consumeToken(literalTypes);
 
-		String typeError = "was expecting type assignation operator";
-		if (!tokenBufferWithoutIdentifier.hasAnyTokensLeft()) {
-			SemanticErrorException exception = new SemanticErrorException(identifier, typeError);
-			return response(exception,
-					tokenBufferWithoutIdentifier);
+		if (typeTry.isFail()) {
+			return response(typeTry.getFail().get(), tokenBuffer);
 		}
 
-		Token typeAssignationOp = tokenBufferWithoutIdentifier.getToken().get();
-
-		if (!tokenBufferWithoutIdentifier.isNextTokenOfType(NativeTokenTypes.COLON.toTokenType())) {
-			return response(new SemanticErrorException(typeAssignationOp, typeError),
-					tokenBufferWithoutIdentifier);
-		}
-
-		TokenBuffer tokenBufferWithoutTypeAssig = tokenBufferWithoutIdentifier.consumeToken();
-
-		if (!tokenBufferWithoutTypeAssig.hasAnyTokensLeft()) {
-			return response(new SemanticErrorException(typeAssignationOp, "was expecting a valid type"),
-					tokenBufferWithoutTypeAssig);
-		}
-
-		Token type = tokenBufferWithoutTypeAssig.getToken().get();
-
-		if (!tokenBufferWithoutTypeAssig.isNextTokenOfAnyOfThisTypes(literalTypes)) {
-			return response(new SemanticErrorException(type, "was expecting a valid type"),
-					tokenBufferWithoutTypeAssig);
-		}
+		Token type = typeTry.getSuccess().get();
 
 
-		TokenBuffer tokenBufferWithoutType = tokenBufferWithoutTypeAssig.consumeToken();
+		if (tokenBuffer.peekTokenType(SEMICOLON)){
 
-		if (!tokenBufferWithoutType.hasAnyTokensLeft()){
-			return response(new SemanticErrorException(type, "was expecting assignation or closing"),
-					tokenBufferWithoutTypeAssig);
-		}
-
-		if (tokenBufferWithoutType.isNextTokenOfType(NativeTokenTypes.SEMICOLON.toTokenType())){
+			tokenBuffer.consumeToken(SEMICOLON);
 
 			return response(getVariableDeclaration(identifier, type, Optional.empty()),
-					tokenBufferWithoutType.consumeToken());
+					tokenBuffer);
 		}
-		else if (tokenBufferWithoutType.isNextTokenOfType(NativeTokenTypes.EQUALS.toTokenType())){
-			Token equalsToken = tokenBufferWithoutType.getToken().get();
-			return handleEqualsToken(identifier, equalsToken, type, tokenBufferWithoutType.consumeToken());
-
+		else if (tokenBuffer.peekTokenType(EQUALS)){
+			Token equalsToken = tokenBuffer.consumeToken(EQUALS).getSuccess().get();
+			return handleEqualsToken(identifier, equalsToken, type, tokenBuffer);
 		}
 		else {
 			return response(new SemanticErrorException(type, "was expecting assignation or closing"),
-					tokenBufferWithoutType);
+					tokenBuffer);
 		}
 	}
 
-	private NodeResponse handleEqualsToken(Token id, Token eq, Token type, TokenBuffer tb) {
-		List<Token> tokens = new LinkedList<>();
+	private NodeResponse handleEqualsToken(Token id, Token eq, Token type, TokenBuffer tokenBuffer) {
 
-		Token currentToken = eq;
-		while (!tb.isNextTokenOfType(NativeTokenTypes.SEMICOLON.toTokenType())){
+		try {
+			ParserUtil.ParseEqualsResult parseEqualsResult = ParserUtil.
+					handleEqualsWithTermination(expressionNodeConstructor, eq, tokenBuffer);
 
-			if (!tb.hasAnyTokensLeft()) {
-				return response(new SemanticErrorException(currentToken, "was expecting closing after"),
-						tb);
-			}
+			ASTNode astNode = parseEqualsResult.node();
 
-			currentToken = tb.getToken().get();
-			tb = tb.consumeToken();
-			tokens.add(currentToken);
+			Optional<Expression> optionalExpression = Optional.of((Expression) astNode);
+			return response(getVariableDeclaration(id, type, optionalExpression), tokenBuffer);
 		}
-
-		boolean noTokensBetweenEqualsAndSemiColon = tokens.isEmpty();
-		if (noTokensBetweenEqualsAndSemiColon){
-			return response(new SemanticErrorException(eq, "was expecting assignation"),
-					tb);
+		catch (Exception e) {
+			return response(e, tokenBuffer);
 		}
-
-		TokenBuffer expressionTokenBuffer = new TokenBuffer(tokens);
-
-		NodeResponse buildResult = expressionNodeConstructor.build(expressionTokenBuffer);
-
-		if (buildResult.possibleNode().isFail()) {
-			return buildResult;
-		}
-		else if (buildResult.possibleBuffer().hasAnyTokensLeft()){
-			Optional<Token> token = buildResult.possibleBuffer().getToken();
-			String message = "unexpected expression";
-			SemanticErrorException exception = new SemanticErrorException(token.get(), message);
-			return response(exception, buildResult.possibleBuffer());
-		}
-
-		ASTNode astNode = buildResult.possibleNode().getSuccess().get().get();
-
-		return response(getVariableDeclaration(id, type, Optional.of((Expression) astNode)), tb.consumeToken());
 	}
 
 

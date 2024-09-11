@@ -1,4 +1,4 @@
-package org.example.lexer.token;
+package org.token;
 
 public record Position (
 		int offset,

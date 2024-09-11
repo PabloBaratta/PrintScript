@@ -2,20 +2,21 @@ package org.example;
 
 
 
-import org.example.lexer.utils.Try;
+import functional.Try;
 
 import org.example.nodeconstructors.BlockNodeConstructor;
 import org.example.nodeconstructors.NodeResponse;
 import org.example.nodeconstructors.NodeConstructor;
 import org.example.nodeconstructors.ScopeNodeConstructor;
+import org.token.Token;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-public class Parser {
+public class Parser implements PrintScriptIterator<ASTNode>{
 	private final ScopeNodeConstructor scopeConstructor;
-	private TokenBuffer tokens;
+	private final TokenBuffer tokens;
 
 	public Parser(List<NodeConstructor> nodeConstructors,
 				List<BlockNodeConstructor> blockNodeConstructors,
@@ -28,7 +29,7 @@ public class Parser {
 
 	}
 
-	public Try<ASTNode, Exception> parseExpression() {
+	public Try<ASTNode> parseExpression() {
 		NodeResponse build = scopeConstructor.build(tokens);
 		if (build.possibleNode().isFail()) {
 			return new Try<>(build.possibleNode().getFail().get());
@@ -37,8 +38,29 @@ public class Parser {
 		Optional<ASTNode> optionalASTNode = build.possibleNode().getSuccess().get();
 
 		return optionalASTNode.map(Try::new)
-				.orElseGet(() -> new Try<>(
-						new SemanticErrorException(build.possibleBuffer().getToken().get())));
+				.orElseGet(() -> {
+					Token errorToken = build.possibleBuffer().getToken().getSuccess().get();
+					return new Try<>(
+							new SemanticErrorException(errorToken));
+				});
 	}
 
+	@Override
+	public boolean hasNext() {
+		return this.tokens.hasAnyTokensLeft();
+	}
+
+	@Override
+	public ASTNode getNext() throws Exception {
+
+		if (!hasNext()) {
+			throw new NoMoreTokensException();
+		}
+
+		Try<ASTNode> astNodeExceptionTry = parseExpression();
+		if (astNodeExceptionTry.isFail()){
+			throw astNodeExceptionTry.getFail().get();
+		}
+		return astNodeExceptionTry.getSuccess().get();
+	}
 }

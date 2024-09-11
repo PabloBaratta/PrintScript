@@ -9,4 +9,6 @@ plugins {
 dependencies {
     implementation project(':lexer')
     implementation project(':ast')
+    implementation project(':utils')
+    implementation project(':token')
 }

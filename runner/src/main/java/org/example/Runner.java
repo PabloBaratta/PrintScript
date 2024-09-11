@@ -2,18 +2,15 @@ package org.example;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.interpreter.Interpreter;
-import org.example.lexer.Lexer;
 import org.example.lexer.StreamReader;
-import org.example.lexer.token.Token;
-import org.example.lexer.utils.Try;
 import org.linter.Linter;
 import org.linter.LinterProvider;
 import org.linter.Report;
 import org.linter.ReportLine;
+import org.token.Token;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 
 import static org.example.lexer.LexerProvider.provideV10;
@@ -22,51 +19,37 @@ import static org.example.lexer.LexerProvider.provideV11;
 public class Runner {
 
 	public static void run(InputStream inputStream, String version) throws Exception {
-		interpret(lexAndParse(inputStream, version));
+		PrintScriptIterator<ASTNode> parser = lnp(inputStream, version);
+		Interpreter interpreter = new Interpreter();
+
 	}
 
 	public static void validate(InputStream inputStream, String version) throws Exception {
-		validate(lexAndParse(inputStream, version));
+		PrintScriptIterator<ASTNode> parser = lnp(inputStream, version);
+		Interpreter interpreter = new Interpreter();
 	}
 
 	public static void lint(InputStream inputStream, String version, String config) throws Exception {
-		ASTNode ast = lexAndParse(inputStream, version);
-		boolean isV10 = version.equals("1.0");
-		lint(ast, isV10, config);
+		PrintScriptIterator<ASTNode> parser = lnp(inputStream, version);
+		lint(parser, version, config);
 	}
 
 	public static String format(InputStream inputStream, String version, String config) throws Exception {
-		ASTNode ast = lexAndParse(inputStream, version);
-		return format(ast, config);
+		return format(lnp(inputStream, version), config);
 	}
 
-	private static ASTNode lexAndParse(InputStream inputStream, String version) throws Exception {
-		boolean is10 = version.equals("1.0");
-		List<Token> tokens = lex(inputStream, is10);
-		return parse(tokens, is10);
-	}
+	private static PrintScriptIterator<ASTNode> lnp(InputStream inputStream, String version) throws Exception {
+		Iterator<String> iterator = new StreamReader(inputStream);
+		switch (version){
+			case "1.0":
+				PrintScriptIterator<Token> lexerV10 = provideV10(iterator);
+				return ParserProvider.provide10(lexerV10);
 
-	private static List<Token> lex(InputStream inputStream, boolean isV10) throws Exception {
-		StreamReader reader = new StreamReader(inputStream);
-
-		Lexer lexer = isV10 ? provideV10(reader) : provideV11(reader);
-		List<Token> tokens = new ArrayList<>();
-
-		while (lexer.hasNext()) {
-			Token token = lexer.getNext();
-			tokens.add(token);
+			case "1.1":
+				PrintScriptIterator<Token> lexerV11 = provideV11(iterator);
+				return ParserProvider.provide11(lexerV11);
 		}
-		return tokens;
-	}
-
-	private static ASTNode parse(List<Token> tokens, boolean isV10) throws Exception {
-		Parser parser = isV10 ? ParserProvider.provide10(tokens) : ParserProvider.provide11(tokens);
-		Try<ASTNode, Exception> possibleAst = parser.parseExpression();
-
-		if (possibleAst.isFail()) {
-			throw possibleAst.getFail().get();
-		}
-		return possibleAst.getSuccess().get();
+		throw new Exception("Invalid version");
 	}
 
 	private static void interpret(ASTNode ast) throws Exception {
@@ -79,19 +62,30 @@ public class Runner {
 		interpreter.validate(ast);
 	}
 
-	private static void lint(ASTNode ast, boolean isV10, String config) throws Exception {
-		Linter linter = isV10 ? LinterProvider.getLinterV10() : LinterProvider.getLinterV11();
+	private static Report lint(PrintScriptIterator<ASTNode> ast, String version, String config) throws Exception {
+		Linter linter;
+		switch (version){
+			case "1.0":
+				linter = LinterProvider.getLinterV10();
+				break;
+			case "1.1":
+				linter = LinterProvider.getLinterV11();
+				break;
+			default:
+				throw new Exception("Invalid version");
+		}
 		Map<String, String> configuration = parseConfig(config);
-		Report report = linter.analyze((Program) ast, configuration);
+		Report report = linter.analyze(ast, configuration);
 		for (ReportLine reportLine : report.getReportLines()) {
 			System.out.println(reportLine.errorMessage() + " on " + reportLine.position().toString());
 		}
+		return report;
 	}
 
-	private static String format(ASTNode ast, String config) throws Exception {
-		Map<String, Rule> rules = JsonReader.readRulesFromJson(config);
-		Formatter formatter = new Formatter(rules);
-		return formatter.format((Program) ast);
+	private static String format(PrintScriptIterator<ASTNode> parser, String config) throws Exception {
+		//Map<String, Rule> rules = JsonReader.readRulesFromJson(config);
+		Formatter formatter = FormatterProvider.provideV10(parser);
+		return formatter.format();
 	}
 
 	private static Map parseConfig(String jsonConfig) throws Exception {

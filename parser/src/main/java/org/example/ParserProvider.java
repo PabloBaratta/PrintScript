@@ -1,27 +1,26 @@
 package org.example;
 
 import org.example.lexer.PrintScriptTokenConfig;
-import org.example.lexer.token.NativeTokenTypes;
-import org.example.lexer.token.Token;
-import org.example.lexer.token.TokenType;
 import org.example.nodeconstructors.*;
+import org.token.Token;
+import org.token.TokenType;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static org.example.lexer.token.NativeTokenTypes.*;
+import static org.token.NativeTokenTypes.*;
 
 public class ParserProvider {
 
-	public static Parser provide10(List<Token> tokens) {
+	public static Parser provide10(PrintScriptIterator<Token> tokens) throws Exception {
 		List<NodeConstructor> nodeConstructors = getNodeConstructors10();
 		List<BlockNodeConstructor> blockNodeConstructors = new LinkedList<>();
 		TokenBuffer tokenBuffer = new TokenBuffer(tokens);
 		return new Parser(nodeConstructors, blockNodeConstructors, tokenBuffer);
 	}
 
-	public static Parser provide11(List<Token> tokens) {
+	public static Parser provide11(PrintScriptIterator<Token> tokens) throws Exception {
 		List<TokenType> operands = List.copyOf(PrintScriptTokenConfig.literalTokenTypeMapV11().values());
 		List<TokenType> nativeFunctions = List.of(PRINTLN.toTokenType(),
 				READENV.toTokenType(),

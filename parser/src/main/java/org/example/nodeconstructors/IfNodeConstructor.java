@@ -1,13 +1,16 @@
 package org.example.nodeconstructors;
 
 import org.example.*;
-import org.example.lexer.token.Token;
+import org.token.Position;
+import org.token.Token;
+import org.token.TokenType;
+import static org.token.NativeTokenTypes.*;
+import functional.Try;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.example.lexer.token.NativeTokenTypes.*;
 
 public class IfNodeConstructor implements BlockNodeConstructor{
 	private final ExpressionNodeConstructor expressionNodeConstructor;
@@ -25,8 +28,7 @@ public class IfNodeConstructor implements BlockNodeConstructor{
 		}
 
 		try {
-			Token ifToken = tokenBuffer.getToken().get();
-			tokenBuffer = tokenBuffer.consumeToken();
+			Token ifToken = tokenBuffer.getToken().getSuccess().get();
 
 			ExpressionAndBuffer condition = parseExpression(tokenBuffer, ifToken);
 
@@ -52,12 +54,11 @@ public class IfNodeConstructor implements BlockNodeConstructor{
 
 	private Optional<BlockAndBuffer> parseElse(TokenBuffer tokenBuffer) throws Exception {
 
-		if (!tokenBuffer.isNextTokenOfType(ELSE.toTokenType())) {
+		if (!tokenBuffer.peekTokenType(ELSE)) {
 			return Optional.empty();
 		}
 
-		Token elseToken = tokenBuffer.getToken().get();
-		tokenBuffer = tokenBuffer.consumeToken();
+		Token elseToken = tokenBuffer.getToken().getSuccess().get();
 
 		return Optional.of(parseBody(tokenBuffer, elseToken));
 	}
@@ -65,31 +66,33 @@ public class IfNodeConstructor implements BlockNodeConstructor{
 	private BlockAndBuffer parseBody(TokenBuffer tokenBuffer, Token token) throws Exception {
 		int bracesCount = 0;
 
-		if (!tokenBuffer.isNextTokenOfType(LEFT_BRACE.toTokenType())) {
-			throw new SemanticErrorException(token, "If condition should be continued by a '{'");
+		Try<Token> leftBraceTry = tokenBuffer.consumeToken(LEFT_BRACE);
+
+		if (leftBraceTry.isFail()) {
+			throw leftBraceTry.getFail().get();
 		}
 
+		Token leftBrace = leftBraceTry.getSuccess().get();
+
 		bracesCount++;
-		Token leftBrace = tokenBuffer.getToken().get();
-		tokenBuffer = tokenBuffer.consumeToken();
+
 		List<Token> acummulatedTokens = new LinkedList<>();
 
 		while (bracesCount != 0) {
 			if (!tokenBuffer.hasAnyTokensLeft()) {
 				throw new SemanticErrorException(leftBrace, "unclosed brace");
-			} else if (tokenBuffer.isNextTokenOfType(RIGHT_BRACE.toTokenType())) {
+			} else if (tokenBuffer.peekTokenType(RIGHT_BRACE)) {
 				bracesCount--;
-				if (bracesCount == 0) {tokenBuffer = tokenBuffer.consumeToken(); continue;}
-			} else if (tokenBuffer.isNextTokenOfType(LEFT_BRACE.toTokenType())) {
+				if (bracesCount == 0) {tokenBuffer.consumeToken(RIGHT_BRACE); continue;}
+			} else if (tokenBuffer.peekTokenType(LEFT_BRACE)) {
 				bracesCount++;
 			}
-
-			Token accToken = tokenBuffer.getToken().get();
+			Token accToken = tokenBuffer.getToken().getSuccess().get();
 			acummulatedTokens.add(accToken);
-			tokenBuffer = tokenBuffer.consumeToken();
 		}
 
-		NodeResponse build = innerConstructor.build(new TokenBuffer(acummulatedTokens));
+		Accumulator accumulator = new Accumulator(acummulatedTokens);
+		NodeResponse build = innerConstructor.buildAll(new TokenBuffer(accumulator));
 
 		if (build.possibleNode().isFail()) {
 			throw build.possibleNode().getFail().get();
@@ -103,31 +106,44 @@ public class IfNodeConstructor implements BlockNodeConstructor{
 	private ExpressionAndBuffer parseExpression(TokenBuffer tokenBuffer, Token ifToken) throws Exception {
 		int parenthesisCount = 0;
 
-		if (!tokenBuffer.isNextTokenOfType(LEFT_PARENTHESIS.toTokenType())) {
-			throw new SemanticErrorException(ifToken, "If should be continued by a '('");
+		Try<Token> leftParTry = tokenBuffer.consumeToken(LEFT_PARENTHESIS);
+
+		if (leftParTry.isFail()) {
+			throw leftParTry.getFail().get();
 		}
+
+		Token leftPar = leftParTry.getSuccess().get();
+
 		parenthesisCount++;
-		Token leftPar = tokenBuffer.getToken().get();
-		tokenBuffer = tokenBuffer.consumeToken();
+
 		List<Token> acummulatedTokens = new LinkedList<>();
 
 		while (parenthesisCount != 0) {
 
 			if (!tokenBuffer.hasAnyTokensLeft()) {
 				throw new SemanticErrorException(leftPar, "unclosed parenthesis");
-			} else if (tokenBuffer.isNextTokenOfType(RIGHT_PARENTHESES.toTokenType())) {
+			} else if (tokenBuffer.peekTokenType(RIGHT_PARENTHESES)) {
 				parenthesisCount--;
-				if (parenthesisCount == 0) {tokenBuffer = tokenBuffer.consumeToken(); continue;}
-			} else if (tokenBuffer.isNextTokenOfType(LEFT_PARENTHESIS.toTokenType())) {
+				if (parenthesisCount == 0) {
+					tokenBuffer.consumeToken(RIGHT_PARENTHESES);
+					continue;}
+			} else if (tokenBuffer.peekTokenType(LEFT_PARENTHESIS)) {
 				parenthesisCount++;
 			}
 
-			Token token = tokenBuffer.getToken().get();
+			Token token = tokenBuffer.getToken().getSuccess().get();
 			acummulatedTokens.add(token);
-			tokenBuffer = tokenBuffer.consumeToken();
 		}
 
-		NodeResponse build = expressionNodeConstructor.build(new TokenBuffer(acummulatedTokens));
+		if (acummulatedTokens.isEmpty()) {
+			throw new SemanticErrorException(
+					leftPar,
+					"If condition is not an expression");
+		}
+
+
+		Accumulator accumulator = new Accumulator(acummulatedTokens);
+		NodeResponse build = expressionNodeConstructor.build(new TokenBuffer(accumulator));
 
 		if (build.possibleNode().isFail()) {
 			throw build.possibleNode().getFail().get();
@@ -138,7 +154,7 @@ public class IfNodeConstructor implements BlockNodeConstructor{
 
 		if (notRecognizedAsExpression) {
 			throw new SemanticErrorException(
-					build.possibleBuffer().getToken().get(),
+					build.possibleBuffer().getToken().getSuccess().get(),
 					"If condition is not an expression");
 		}
 
@@ -146,7 +162,7 @@ public class IfNodeConstructor implements BlockNodeConstructor{
 	}
 
 	private static boolean isNotThisExpression(TokenBuffer tokenBuffer) {
-		return !tokenBuffer.isNextTokenOfType(IF.toTokenType());
+		return !tokenBuffer.peekTokenType(IF);
 	}
 
 	@Override

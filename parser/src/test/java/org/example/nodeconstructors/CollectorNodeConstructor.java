@@ -1,11 +1,10 @@
 package org.example.nodeconstructors;
 
-import org.example.Program;
 import org.example.TextLiteral;
 import org.example.TokenBuffer;
-import org.example.lexer.token.Position;
-import org.example.lexer.token.Token;
-import org.example.lexer.utils.Try;
+import org.token.Position;
+import org.token.Token;
+import functional.Try;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -17,8 +16,7 @@ public class CollectorNodeConstructor implements NodeConstructor{
 	@Override
 	public NodeResponse build(TokenBuffer tokenBuffer) {
 		while (tokenBuffer.hasAnyTokensLeft()) {
-			collectedTokens.add(tokenBuffer.getToken().get());
-			tokenBuffer = tokenBuffer.consumeToken();
+			collectedTokens.add(tokenBuffer.getToken().getSuccess().get());
 		}
 
 		return new NodeResponse(
