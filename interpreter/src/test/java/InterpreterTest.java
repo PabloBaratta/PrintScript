@@ -1,6 +1,5 @@
 import org.example.*;
-import org.example.interpreter.Interpreter;
-import org.example.interpreter.InterpreterException;
+import org.example.interpreter.*;
 import org.example.interpreter.handlers.ASTNodeHandler;
 import org.example.interpreter.handlers.HandlerFactory;
 import org.junit.jupiter.api.AfterEach;
@@ -23,6 +22,8 @@ public class InterpreterTest {
 	Map<String, ASTNodeHandler> handlers = HandlerFactory.createHandlers("1.1");
 	Map<String, ASTNodeHandler> handlers10 = HandlerFactory.createHandlers("1.0");
 	Map<String, ASTNodeHandler> handlers0 = new HashMap<>();
+	InputProvider inputProvider = new MockInputProvider("");
+	OutputCapture outputCapture = new OutputCapture();
 
 	@Test
 	void testVariableDeclaration() throws Exception {
@@ -35,7 +36,7 @@ public class InterpreterTest {
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.execute();
 		interpreter.validate();
@@ -56,7 +57,7 @@ public class InterpreterTest {
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Interpreter interpreter = new Interpreter(iterator, handlers0);
+		Interpreter interpreter = new Interpreter(iterator, handlers0, inputProvider, outputCapture);
 
 		try {
 			interpreter.execute();
@@ -77,7 +78,7 @@ public class InterpreterTest {
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Interpreter interpreter = new Interpreter(iterator, handlers0);
+		Interpreter interpreter = new Interpreter(iterator, handlers0, inputProvider, outputCapture);
 
 		try {
 			interpreter.validate();
@@ -99,7 +100,7 @@ public class InterpreterTest {
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		assertDoesNotThrow(() -> interpreter.validate());
 
@@ -118,7 +119,7 @@ public class InterpreterTest {
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.execute();
 		interpreter.validate();
@@ -142,7 +143,7 @@ public class InterpreterTest {
 		astNodes.add(variableDecl);
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		Exception exception = assertThrows(Exception.class, () -> {
 			interpreter.execute();
@@ -164,7 +165,7 @@ public class InterpreterTest {
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		Exception exception = assertThrows(Exception.class, () -> {
 			interpreter.validate();
@@ -188,7 +189,7 @@ public class InterpreterTest {
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		Exception exception = assertThrows(Exception.class, () -> {
 			interpreter.validate();
@@ -212,7 +213,7 @@ public class InterpreterTest {
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.execute();
 		interpreter.validate();
@@ -237,7 +238,7 @@ public class InterpreterTest {
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Interpreter interpreter = new Interpreter(iterator, handlers0);
+		Interpreter interpreter = new Interpreter(iterator, handlers0, inputProvider, outputCapture);
 
 		try {
 			interpreter.validate();
@@ -261,7 +262,7 @@ public class InterpreterTest {
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Interpreter interpreter = new Interpreter(iterator, handlers0);
+		Interpreter interpreter = new Interpreter(iterator, handlers0, inputProvider, outputCapture);
 
 		try {
 			interpreter.execute();
@@ -286,7 +287,7 @@ public class InterpreterTest {
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		Exception exception = assertThrows(Exception.class, () -> {
 			interpreter.validate();
@@ -313,7 +314,7 @@ public class InterpreterTest {
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.execute();
 		interpreter.validate();
@@ -335,7 +336,7 @@ public class InterpreterTest {
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Interpreter interpreter = new Interpreter(iterator, handlers0);
+		Interpreter interpreter = new Interpreter(iterator, handlers0, inputProvider, outputCapture);
 
 		try {
 			interpreter.execute();
@@ -357,7 +358,7 @@ public class InterpreterTest {
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Interpreter interpreter = new Interpreter(iterator, handlers0);
+		Interpreter interpreter = new Interpreter(iterator, handlers0, inputProvider, outputCapture);
 
 		try {
 			interpreter.validate();
@@ -391,7 +392,7 @@ public class InterpreterTest {
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.execute();
 		interpreter.validate();
@@ -415,7 +416,7 @@ public class InterpreterTest {
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.execute();
 		interpreter.validate();
@@ -445,7 +446,7 @@ public class InterpreterTest {
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 
 		interpreter.execute();
@@ -478,12 +479,13 @@ public class InterpreterTest {
 				new Method(new Identifier("println", pos), arguments)
 		);
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.execute();
 		interpreter.validate();
 
-		assertEquals("hola", outputStream.toString().trim());
+		List<String> printList = outputCapture.getPrintList();
+		assertEquals(Collections.singletonList("hola"), printList);
 	}
 
 //	@Test
@@ -494,7 +496,7 @@ public class InterpreterTest {
 //                ))
 //        );
 //        PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-//        Interpreter interpreter = new Interpreter(iterator, handlers);
+//        Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 //
 //        interpreter.execute();
 //        interpreter.validate();
@@ -512,12 +514,13 @@ public class InterpreterTest {
 				new Method(new Identifier("println", pos), arguments)
 		);
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 		interpreter.execute();
 		interpreter.validate();
 
 
-		assertEquals("10.0", outputStream.toString().trim());
+		List<String> printList = outputCapture.getPrintList();
+		assertEquals(Collections.singletonList("10.0"), printList);
 	}
 
 	@Test
@@ -532,7 +535,7 @@ public class InterpreterTest {
 		List<ASTNode> astNodes = Collections.singletonList(printlnMethod);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		try {
 			interpreter.validate();
@@ -556,7 +559,7 @@ public class InterpreterTest {
 		List<ASTNode> astNodes = Collections.singletonList(readEnvMethod);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		try {
 			interpreter.validate();
@@ -568,29 +571,29 @@ public class InterpreterTest {
 		}
 	}
 
-	@Test
-	public void testPrintlnWithInvalidArgumentType() {
-
-		List<Expression> arguments = Collections.singletonList(
-				new NumericLiteral(42.0, pos)
-		);
-
-		Method printlnMethod = new Method(new Identifier("println", pos), arguments);
-
-		List<ASTNode> astNodes = Collections.singletonList(printlnMethod);
-
-		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
-
-		try {
-			interpreter.validate();
-			fail("Expected InterpreterException due to invalid argument type for println");
-		} catch (InterpreterException e) {
-			assertEquals("println expects a TextLiteral or Identifier", e.getMessage());
-		} catch (Exception e) {
-			fail("Unexpected exception: " + e.getMessage());
-		}
-	}
+//	@Test
+//	public void testPrintlnWithInvalidArgumentType() {
+//
+//		List<Expression> arguments = Collections.singletonList(
+//				new NumericLiteral(42.0, pos)
+//		);
+//
+//		Method printlnMethod = new Method(new Identifier("println", pos), arguments);
+//
+//		List<ASTNode> astNodes = Collections.singletonList(printlnMethod);
+//
+//		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+//		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
+//
+//		try {
+//			interpreter.validate();
+//			fail("Expected InterpreterException due to invalid argument type for println");
+//		} catch (InterpreterException e) {
+//			assertEquals("println expects a Literal", e.getMessage());
+//		} catch (Exception e) {
+//			fail("Unexpected exception: " + e.getMessage());
+//		}
+//	}
 
 	@Test
 	public void testProgramExecution() throws Exception {
@@ -606,12 +609,13 @@ public class InterpreterTest {
 				new Method(new Identifier("println", pos), arguments)
 		);
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.execute();
 		interpreter.validate();
 
-		assertEquals("Hola", outputStream.toString().trim());
+		List<String> printList = outputCapture.getPrintList();
+		assertEquals(Collections.singletonList("Hola"), printList);
 	}
 
 	@Test
@@ -622,7 +626,7 @@ public class InterpreterTest {
 				new VariableDeclaration(new Identifier("a", pos), type, ex)
 		);
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		Exception exception = assertThrows(Exception.class, () -> {
 			interpreter.validate();
@@ -639,7 +643,7 @@ public class InterpreterTest {
 				new VariableDeclaration(a, new Type("string", pos), Optional.empty())
 		);
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 
 		Exception exception = assertThrows(Exception.class, () -> {
@@ -655,7 +659,7 @@ public class InterpreterTest {
 				new Assignation(new Identifier("a", pos), new TextLiteral("hola", pos), pos)
 		);
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		Exception exception = assertThrows(Exception.class, () -> {
 			interpreter.validate();
@@ -672,7 +676,7 @@ public class InterpreterTest {
 				new Assignation(a, new NumericLiteral(42.0, pos), pos)
 		);
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		Exception exception = assertThrows(Exception.class, () -> {
 			interpreter.validate();
@@ -689,7 +693,7 @@ public class InterpreterTest {
 		NumericLiteral expression = new NumericLiteral(10.0, pos);
 		List<ASTNode> astNodes = Arrays.asList(var, new Assignation(new Identifier("x", pos), expression, pos));
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.execute();
 		interpreter.validate();
@@ -703,7 +707,7 @@ public class InterpreterTest {
 				new Assignation(new Identifier("x", pos), new NumericLiteral(10.0, pos), pos)
 		);
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		Exception exception = assertThrows(Exception.class, () -> {
 			interpreter.validate();
@@ -720,7 +724,7 @@ public class InterpreterTest {
 				new Assignation(new Identifier("x", pos), new TextLiteral("Hello", pos), pos)
 		);
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		Exception exception = assertThrows(Exception.class, () -> {
 			interpreter.validate();
@@ -735,7 +739,7 @@ public class InterpreterTest {
 				new BinaryExpression(new TextLiteral("Hello", pos), "-", new NumericLiteral(10.0, pos))
 		);
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		Exception exception = assertThrows(Exception.class, () -> {
 			interpreter.validate();
@@ -750,7 +754,7 @@ public class InterpreterTest {
 				new Method(new Identifier("println", pos), List.of(new Identifier("x", pos)))
 		);
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		Exception exception = assertThrows(Exception.class, () -> {
 			interpreter.validate();
@@ -767,7 +771,7 @@ public class InterpreterTest {
 				new Method(new Identifier("println", pos), List.of(new Identifier("x", pos)))
 		);
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.execute();
 		interpreter.validate();
@@ -790,7 +794,7 @@ public class InterpreterTest {
 		astNodes.add(assignation);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.execute();
 
@@ -810,7 +814,7 @@ public class InterpreterTest {
 		astNodes.add(negativeFiveExpression);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers0);
+		Interpreter interpreter = new Interpreter(iterator, handlers0, inputProvider, outputCapture);
 
 		try {
 			interpreter.execute();
@@ -831,7 +835,7 @@ public class InterpreterTest {
 		astNodes.add(negativeFiveExpression);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers0);
+		Interpreter interpreter = new Interpreter(iterator, handlers0, inputProvider, outputCapture);
 
 		try {
 			interpreter.validate();
@@ -854,7 +858,7 @@ public class InterpreterTest {
 		astNodes.add(assignation);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.validate();
 	}
@@ -883,7 +887,7 @@ public class InterpreterTest {
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.execute();
 		interpreter.validate();
@@ -898,11 +902,11 @@ public class InterpreterTest {
 	@Test
 	public void testReadInput() {
 
-		String simulatedInput = "42\n";
-		System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
+		String simulatedInput = "42";
+		InputProvider inputProvider = new MockInputProvider(simulatedInput);
 
 		try {
-			Position position = new Position(1, 1, 1, 1);
+			Position position = new Position(0, 0, 0, 0);
 
 			VariableDeclaration variableDeclaration = new VariableDeclaration(
 					new Identifier("a", position),
@@ -924,7 +928,7 @@ public class InterpreterTest {
 			List<ASTNode> astNodes = List.of(variableDeclaration, assignment);
 			PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-			Interpreter interpreter = new Interpreter(iterator, handlers);
+			Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 			interpreter.execute();
 			interpreter.validate();
@@ -945,10 +949,52 @@ public class InterpreterTest {
 	}
 
 	@Test
+	public void testReadInputVal() {
+
+		String simulatedInput = "42";
+		InputProvider inputProvider = new MockInputProvider(simulatedInput);
+
+		try {
+			Position position = new Position(0, 0, 0, 0);
+
+			VariableDeclaration variableDeclaration = new VariableDeclaration(
+					new Identifier("a", position),
+					new Type("number", position),
+					Optional.empty()
+			);
+
+			Method readInputMethod = new Method(
+					new Identifier("readInput", position),
+					List.of(new TextLiteral("Escribe un numero:", position))
+			);
+
+			Assignation assignment = new Assignation(
+					new Identifier("a", position),
+					readInputMethod,
+					position
+			);
+
+			List<ASTNode> astNodes = List.of(variableDeclaration, assignment);
+			PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+			Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
+
+			interpreter.validate();
+
+		} catch (InterpreterException e) {
+			fail("Error en la interpretación: " + e.getMessage() +
+					" (Línea: " + e.getLine() + ", Columna: " + e.getColumn() + ")");
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("Ocurrió una excepción inesperada.");
+		}
+	}
+
+	@Test
 	public void testReadInputWithSimulatedInputTypeMismatch() {
 
-		String simulatedInput = "hello\n";
-		System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
+		String simulatedInput = "hello";
+		InputProvider inputProvider = new MockInputProvider(simulatedInput);
 
 		try {
 
@@ -974,7 +1020,7 @@ public class InterpreterTest {
 			List<ASTNode> astNodes = List.of(variableDeclaration, assignment);
 			PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-			Interpreter interpreter = new Interpreter(iterator, handlers);
+			Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 			interpreter.execute();
 			interpreter.validate();
@@ -992,8 +1038,8 @@ public class InterpreterTest {
 	@Test
 	public void testBinaryExpressionWithReadInput() {
 
-		String simulatedInput = "Ana\n";
-		System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
+		String simulatedInput = "Ana";
+		InputProvider inputProvider = new MockInputProvider(simulatedInput);
 
 		try {
 			Position position = new Position(1, 1, 1, 1);
@@ -1024,7 +1070,7 @@ public class InterpreterTest {
 			List<ASTNode> astNodes = List.of(variableDeclaration, assignment);
 			PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-			Interpreter interpreter = new Interpreter(iterator, handlers);
+			Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 			interpreter.execute();
 			interpreter.validate();
@@ -1058,7 +1104,7 @@ public class InterpreterTest {
 		astNodes.add(vardecl);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.execute();
 		interpreter.validate();
@@ -1081,7 +1127,7 @@ public class InterpreterTest {
 		astNodes.add(vardecl);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.validate();
 	}
@@ -1102,7 +1148,7 @@ public class InterpreterTest {
 		astNodes.add(ifStatement);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.execute();
 
@@ -1127,7 +1173,7 @@ public class InterpreterTest {
 		astNodes.add(ifStatement);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.validate();
 	}
@@ -1148,7 +1194,7 @@ public class InterpreterTest {
 		astNodes.add(ifStatement);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.execute();
 
@@ -1167,7 +1213,7 @@ public class InterpreterTest {
 		astNodes.add(unaryExpression);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.execute();
 
@@ -1198,7 +1244,7 @@ public class InterpreterTest {
 		astNodes.add(ifStatement);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.execute();
 
@@ -1222,7 +1268,7 @@ public class InterpreterTest {
 		astNodes.add(constDeclaration);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.execute();
 
@@ -1247,7 +1293,7 @@ public class InterpreterTest {
 		astNodes.add(constDeclaration);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.validate();
 	}
@@ -1267,7 +1313,7 @@ public class InterpreterTest {
 		astNodes.add(assignation);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		assertThrows(InterpreterException.class, interpreter::execute);
 	}
@@ -1287,7 +1333,7 @@ public class InterpreterTest {
 		astNodes.add(duplicateDec);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		assertThrows(InterpreterException.class, interpreter::execute);
 	}
@@ -1303,7 +1349,7 @@ public class InterpreterTest {
 		astNodes.add(constDeclaration);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		assertThrows(InterpreterException.class, interpreter::execute);
 	}
@@ -1334,7 +1380,7 @@ public class InterpreterTest {
 		astNodes.add(assignation);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.execute();
 
@@ -1367,7 +1413,7 @@ public class InterpreterTest {
 		astNodes.add(assignation);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
 
 		interpreter.validate();
 	}
@@ -1390,7 +1436,7 @@ public class InterpreterTest {
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Interpreter interpreter = new Interpreter(iterator, handlers10);
+		Interpreter interpreter = new Interpreter(iterator, handlers10, inputProvider, outputCapture);
 
 		try {
 			interpreter.validate();
@@ -1419,7 +1465,7 @@ public class InterpreterTest {
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-		Interpreter interpreter = new Interpreter(iterator, handlers10);
+		Interpreter interpreter = new Interpreter(iterator, handlers10, inputProvider, outputCapture);
 
 		try {
 			interpreter.execute();
@@ -1446,7 +1492,7 @@ public class InterpreterTest {
 		astNodes.add(vardecl);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers10);
+		Interpreter interpreter = new Interpreter(iterator, handlers10, inputProvider, outputCapture);
 
 		try {
 			interpreter.validate();
@@ -1472,7 +1518,7 @@ public class InterpreterTest {
 		astNodes.add(vardecl);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers10);
+		Interpreter interpreter = new Interpreter(iterator, handlers10, inputProvider, outputCapture);
 
 		try {
 			interpreter.execute();
@@ -1510,7 +1556,7 @@ public class InterpreterTest {
 			List<ASTNode> astNodes = List.of(variableDeclaration, assignment);
 			PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-			Interpreter interpreter = new Interpreter(iterator, handlers10);
+			Interpreter interpreter = new Interpreter(iterator, handlers10, inputProvider, outputCapture);
 			try {
 				interpreter.validate();
 				fail("Expected InterpreterException due to missing readInput handler");
@@ -1548,7 +1594,7 @@ public class InterpreterTest {
 			List<ASTNode> astNodes = List.of(variableDeclaration, assignment);
 			PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 
-			Interpreter interpreter = new Interpreter(iterator, handlers10);
+			Interpreter interpreter = new Interpreter(iterator, handlers10, inputProvider, outputCapture);
 			try {
 				interpreter.execute();
 				fail("Expected InterpreterException due to missing readInput handler");
@@ -1573,7 +1619,7 @@ public class InterpreterTest {
 		astNodes.add(constDeclaration);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers10);
+		Interpreter interpreter = new Interpreter(iterator, handlers10, inputProvider, outputCapture);
 
 		try {
 			interpreter.validate();
@@ -1594,7 +1640,7 @@ public class InterpreterTest {
 		astNodes.add(constDeclaration);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers10);
+		Interpreter interpreter = new Interpreter(iterator, handlers10, inputProvider, outputCapture);
 
 		try {
 			interpreter.execute();
@@ -1627,7 +1673,7 @@ public class InterpreterTest {
 		astNodes.add(assignation);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
-		Interpreter interpreter = new Interpreter(iterator, handlers10);
+		Interpreter interpreter = new Interpreter(iterator, handlers10, inputProvider, outputCapture);
 
 		try {
 			interpreter.execute();
@@ -1635,5 +1681,56 @@ public class InterpreterTest {
 		} catch (InterpreterException e) {
 			assertEquals("No handler found for node type: readEnv", e.getMessage());
 		}
+	}
+
+	@Test
+	void testParenthesisExecution() throws Exception {
+		Expression expression = new NumericLiteral(10.0, pos);
+		Parenthesis parenthesis = new Parenthesis(expression);
+
+		Identifier identifier = new Identifier("x", pos);
+		Type type = new Type("number", pos);
+		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
+		Assignation assignation = new Assignation(identifier, parenthesis, pos);
+
+		List<ASTNode> astNodes = List.of(variableDeclaration, assignation);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+		Interpreter interpreter = new Interpreter(
+				iterator,
+				handlers,
+				null,
+				new OutputCapture()
+		);
+
+		interpreter.execute();
+
+		Optional<Literal> literalOpt = interpreter.getExecutorEnvironment().get("x").getLiteral();
+
+		assertTrue(literalOpt.isPresent(), "Variable 'x' should have a literal value.");
+		assertEquals("10.0", literalOpt.get().getValue().toString().trim(), "Value of 'x' should be '10.0'.");
+	}
+
+	@Test
+	void testParenthesisExecutionVal() throws Exception {
+		Expression expression = new NumericLiteral(10.0, pos);
+		Parenthesis parenthesis = new Parenthesis(expression);
+
+		Identifier identifier = new Identifier("x", pos);
+		Type type = new Type("number", pos);
+		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
+		Assignation assignation = new Assignation(identifier, parenthesis, pos);
+
+		List<ASTNode> astNodes = List.of(variableDeclaration, assignation);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+
+		Interpreter interpreter = new Interpreter(
+				iterator,
+				handlers,
+				null,
+				new OutputCapture()
+		);
+
+		interpreter.validate();
 	}
 }

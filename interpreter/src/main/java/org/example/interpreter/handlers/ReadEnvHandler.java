@@ -15,21 +15,28 @@ public class ReadEnvHandler implements ASTNodeHandler{
 		List<Expression> arguments = method.getArguments();
 		Position position = method.getVariable().getPosition();
 
-		if (arguments.size() != 1 || !(arguments.get(0) instanceof TextLiteral)) {
+		if (arguments.size() != 1) {
 			String message = "readEnv expects exactly one TextLiteral argument";
 			int line = position.getLine();
 			int column = position.getColumn();
 			throw new InterpreterException(message, line, column);
 		}
 
-		String envVariableName = ((TextLiteral) arguments.get(0)).getValue();
-		String envValue = System.getenv(envVariableName);
+		Literal evaluatedArgument = executor.evaluateExpression(arguments.getFirst());
+
+		if (!(evaluatedArgument instanceof TextLiteral)) {
+			String message = "readEnv expects exactly one TextLiteral argument";
+			throw new InterpreterException(message, position.getLine(), position.getColumn());
+		}
+
+		String variableName = ((TextLiteral) evaluatedArgument).getValue();
+		String envValue = System.getenv(variableName);
 
 		if (envValue == null) {
 			String s = "Environment variable ";
 			int line = position.getLine();
 			int column = position.getColumn();
-			throw new InterpreterException(s + envVariableName + " not found", line, column);
+			throw new InterpreterException(s + evaluatedArgument + " not found", line, column);
 		}
 
 		Literal literalValue = executor.convertStringToLiteral(envValue, position);
@@ -42,21 +49,28 @@ public class ReadEnvHandler implements ASTNodeHandler{
 		List<Expression> arguments = method.getArguments();
 		Position position = method.getVariable().getPosition();
 
-		if (arguments.size() != 1 || !(arguments.get(0) instanceof TextLiteral)) {
+		if (arguments.size() != 1) {
 			String message = "readEnv expects exactly one TextLiteral argument";
 			int line = position.getLine();
 			int column = position.getColumn();
 			throw new InterpreterException(message, line, column);
 		}
 
-		String envVariableName = ((TextLiteral) arguments.get(0)).getValue();
-		String envValue = System.getenv(envVariableName);
+		Literal evaluatedArgument = validator.evaluateExpression(arguments.getFirst());
+
+		if (!(evaluatedArgument instanceof TextLiteral)) {
+			String message = "readEnv expects exactly one TextLiteral argument";
+			throw new InterpreterException(message, position.getLine(), position.getColumn());
+		}
+
+		String variableName = ((TextLiteral) evaluatedArgument).getValue();
+		String envValue = System.getenv(variableName);
 
 		if (envValue == null) {
 			String s = "Environment variable ";
 			int line = position.getLine();
 			int column = position.getColumn();
-			throw new InterpreterException(s + envVariableName + " not found", line, column);
+			throw new InterpreterException(s + evaluatedArgument + " not found", line, column);
 		}
 
 		Literal literalValue = validator.convertStringToLiteral(envValue, position);

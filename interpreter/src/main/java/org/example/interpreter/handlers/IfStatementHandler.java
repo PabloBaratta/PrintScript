@@ -18,18 +18,19 @@ public class IfStatementHandler implements ASTNodeHandler{
 		List<ASTNode> thenBlock = ifStatement.getThenBlock();
 		List<ASTNode> elseBlock = ifStatement.getElseBlock();
 
-		if (!(condition instanceof BooleanLiteral)) {
+		Literal conditionResult = executor.evaluateExpression(condition);
+
+		if (!(conditionResult instanceof BooleanLiteral)) {
 			Position position = condition.getPosition();
 			throw new InterpreterException("Condition in if statement must be a boolean expression",
 					position.getLine(), position.getColumn());
 		}
-		executor.evaluate(condition);
 
-		BooleanLiteral conditionResult = (BooleanLiteral) executor.getStack().pop();
+		BooleanLiteral booleanLiteral = (BooleanLiteral) conditionResult;
 
 		Map<String, Variable> originalEnvironment = executor.getEnvironments().peek();
 
-		if (conditionResult.getValue()) {
+		if (booleanLiteral.getValue()) {
 			Map<String, Variable> thenEnvironment = new HashMap<>(originalEnvironment);
 			executor.getEnvironments().push(thenEnvironment);
 			try {
@@ -59,13 +60,13 @@ public class IfStatementHandler implements ASTNodeHandler{
 		List<ASTNode> thenBlock = ifStatement.getThenBlock();
 		List<ASTNode> elseBlock = ifStatement.getElseBlock();
 
-		if (!(condition instanceof BooleanLiteral)) {
+		Literal conditionResult = validator.evaluateExpression(condition);
+
+		if (!(conditionResult instanceof BooleanLiteral)) {
 			Position position = condition.getPosition();
 			throw new InterpreterException("Condition in if statement must be a boolean expression",
 					position.getLine(), position.getColumn());
 		}
-
-		validator.evaluate(condition);
 
 		for (ASTNode nodeInThenBlock : thenBlock) {
 			nodeInThenBlock.accept(validator);
