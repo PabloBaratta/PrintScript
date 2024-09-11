@@ -1,6 +1,9 @@
 package org.example.interpreter;
 
 import org.example.*;
+import org.example.interpreter.handlers.ASTNodeHandler;
+import org.token.Position;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -8,172 +11,224 @@ import java.util.Stack;
 
 public class Validator implements ASTVisitor {
 
-	private final Map<String, Variable> environment = new HashMap<>();
+	private final Stack<Map<String, Variable>> environments = new Stack<>();
 	private final Stack<Literal> stack = new Stack<>();
+
+	private final Map<String, ASTNodeHandler> handlers;
+
+
+	public Validator(Map<String, ASTNodeHandler> handlers) {
+		environments.push(new HashMap<>());
+		this.handlers = handlers;
+	}
+
 
 	@Override
 	public void visit(Assignation assignation) throws Exception {
-		Identifier identifier = assignation.getIdentifier();
-		Expression expression = assignation.getExpression();
-
-		if (!environment.containsKey(identifier.toString())) {
-			throw new Exception("Variable not declared");
-		}
-
-		Literal astNodeResult = evaluateExpression(expression);
-		Variable variable = environment.get(identifier.toString());
-
-		if (typesMatch(astNodeResult, variable)) {
-			variable.setLiteral(astNodeResult);
-			environment.put(identifier.toString(), variable);
+		ASTNodeHandler handler = handlers.get("Assignation");
+		if (handler != null) {
+			handler.handleValidation(assignation, this);
 		} else {
-			throw new Exception("Type mismatch");
+			String s = "No handler found for node type: ";
+			int line = assignation.getPosition().getLine();
+			int column = assignation.getPosition().getColumn();
+			throw new InterpreterException(s + "Assignation", line, column);
 		}
 	}
 
 	@Override
 	public void visit(VariableDeclaration variableDeclaration) throws Exception {
-		Identifier identifier = variableDeclaration.getIdentifier();
-		Type type = variableDeclaration.getType();
-
-		if (environment.containsKey(identifier.toString())) {
-			throw new Exception("Variable already declared");
-		}
-
-		if (variableDeclaration.getExpression().isPresent()) {
-			Literal astNodeResult = evaluateExpression(variableDeclaration.getExpression().get());
-			if (typesMatch(astNodeResult, new Variable(type, Optional.empty(), false))) {
-				Variable value = new Variable(type, Optional.of(astNodeResult), false);
-				environment.put(identifier.toString(), value);
-			} else {
-				throw new Exception("Type mismatch");
-			}
+		ASTNodeHandler handler = handlers.get("VariableDeclaration");
+		if (handler != null) {
+			handler.handleValidation(variableDeclaration, this);
 		} else {
-			environment.put(identifier.toString(), new Variable(type, Optional.empty(), false));
+			String s = "No handler found for node type: ";
+			int line = variableDeclaration.getPosition().getLine();
+			int column = variableDeclaration.getPosition().getColumn();
+			throw new InterpreterException(s + "Variable declaration", line, column);
 		}
 	}
 
-	private static boolean typesMatch(Expression expression, Variable variable) {
+	public boolean typesMatch(Expression expression, Variable variable) {
 		String variableTypeName = variable.getType().getTypeName();
 
 		if (expression instanceof NumericLiteral && variableTypeName.equals("number")) {
 			return true;
 		} else if (expression instanceof TextLiteral && variableTypeName.equals("string")) {
 			return true;
+		} else if (expression instanceof BooleanLiteral && variableTypeName.equals("boolean")) {
+			return true;
 		}
 		return false;
 	}
 
-	private Literal evaluateExpression(Expression expression) throws Exception {
+	public Literal evaluateExpression(Expression expression) throws Exception {
 		evaluate(expression);
 		return stack.pop();
 	}
 
 	@Override
 	public void visit(Identifier identifier) throws Exception {
-		String identifierName = identifier.getName();
-
-		if (!environment.containsKey(identifierName)) {
-			throw new Exception("Undeclared variable");
+		ASTNodeHandler handler = handlers.get("Identifier");
+		if (handler != null) {
+			handler.handleValidation(identifier, this);
+		} else {
+			String s = "No handler found for node type: ";
+			int line = identifier.getPosition().getLine();
+			int column = identifier.getPosition().getColumn();
+			throw new InterpreterException(s + "Identifier", line, column);
 		}
-
-		Variable variable = environment.get(identifierName);
-		Optional<Literal> optionalExpression = variable.getLiteral();
-
-		if (optionalExpression.isEmpty()) {
-			throw new Exception("Variable declared but not assigned");
-		}
-		stack.push(optionalExpression.get());
 	}
 
 	@Override
-	public void visit(TextLiteral textLiteral) {
-		stack.push(textLiteral);
+	public void visit(TextLiteral textLiteral) throws Exception {
+		ASTNodeHandler handler = handlers.get("TextLiteral");
+		if (handler != null) {
+			handler.handleValidation(textLiteral, this);
+		} else {
+			String s = "No handler found for node type: ";
+			int line = textLiteral.getPosition().getLine();
+			int column = textLiteral.getPosition().getColumn();
+			throw new InterpreterException(s + "Text literal", line, column);
+		}
 	}
 
 	@Override
-	public void visit(NumericLiteral numericLiteral) {
-		stack.push(numericLiteral);
+	public void visit(NumericLiteral numericLiteral) throws Exception {
+		ASTNodeHandler handler = handlers.get("NumericLiteral");
+		if (handler != null) {
+			handler.handleValidation(numericLiteral, this);
+		} else {
+			String s = "No handler found for node type: ";
+			int line = numericLiteral.getPosition().getLine();
+			int column = numericLiteral.getPosition().getColumn();
+			throw new InterpreterException(s + "Numeric literal", line, column);
+		}
 	}
 
 	@Override
 	public void visit(Method method) throws Exception {
+		String methodName = method.getVariable().getName();
+		Position position = method.getVariable().getPosition();
 
-		Expression arg = method.getArguments().getFirst();
-		if (arg instanceof Identifier && !environment.containsKey(arg.toString())) {
-			throw new Exception("undeclared variable");
+		ASTNodeHandler handler = handlers.get(methodName);
+
+		if (handler != null) {
+			handler.handleValidation(method, this);
+		} else {
+			int line = position.getLine();
+			int column = position.getColumn();
+			throw new InterpreterException("No handler found for node type: " + methodName, line, column);
 		}
 	}
 
 	@Override
 	public void visit(UnaryExpression unaryExpression) throws Exception {
-		// Validate unary expression if needed
+		ASTNodeHandler handler = handlers.get("UnaryExpression");
+		if (handler != null) {
+			handler.handleValidation(unaryExpression, this);
+		} else {
+			String s = "No handler found for node type: ";
+			int line = unaryExpression.getPosition().getLine();
+			int column = unaryExpression.getPosition().getColumn();
+			throw new InterpreterException(s + "Unary expression", line, column);
+		}
 	}
 
 	@Override
 	public void visit(BinaryExpression binaryExpression) throws Exception {
-		evaluate(binaryExpression.getLeft());
-		evaluate(binaryExpression.getRight());
-		Literal right = stack.pop();
-		Literal left = stack.pop();
-
-		Literal result = evaluateBinaryOperation(left, right, binaryExpression.getOperator());
-		stack.push(result);
-	}
-
-	private Literal evaluateBinaryOperation(Expression left, Expression right, String operator)
-			throws Exception {
-		if (operator.equals("+")) {
-			if (left instanceof NumericLiteral && right instanceof NumericLiteral) {
-				return new NumericLiteral(0.0, left.getPosition());
-			} else {
-				return new TextLiteral("", left.getPosition());
-			}
-		} else if (left instanceof NumericLiteral && right instanceof NumericLiteral) {
-			return switch (operator) {
-				case "-" -> new NumericLiteral(0.0, left.getPosition());
-				case "/" -> new NumericLiteral(0.0, left.getPosition());
-				case "*" -> new NumericLiteral(0.0, left.getPosition());
-				default -> throw new Exception("Invalid operator");
-			};
+		ASTNodeHandler handler = handlers.get("BinaryExpression");
+		if (handler != null) {
+			handler.handleValidation(binaryExpression, this);
 		} else {
-			throw new Exception("Type mismatch for operator");
+			String s = "No handler found for node type: ";
+			int line = binaryExpression.getPosition().getLine();
+			int column = binaryExpression.getPosition().getColumn();
+			throw new InterpreterException(s + "Binary expression", line, column);
 		}
 	}
 
 	@Override
 	public void visit(Program program) throws Exception {
-		for (ASTNode child : program.getChildren()) {
-			child.accept(this);
-		}
+//		for (ASTNode child : program.getChildren()) {
+//			child.accept(this);
+//		}
 	}
 
 	@Override
 	public void visit(Parenthesis parenthesis) throws Exception {
-		parenthesis.getExpression().accept(this);
+		ASTNodeHandler handler = handlers.get("Parenthesis");
+		if (handler != null) {
+			handler.handleValidation(parenthesis, this);
+		} else {
+			String s = "No handler found for node type: ";
+			int line = parenthesis.getPosition().getLine();
+			int column = parenthesis.getPosition().getColumn();
+			throw new InterpreterException(s + "Parenthesis", line, column);
+		}
 	}
 
 	@Override
 	public void visit(BooleanLiteral booleanLiteral) throws Exception {
-
+		ASTNodeHandler handler = handlers.get("BooleanLiteral");
+		if (handler != null) {
+			handler.handleValidation(booleanLiteral, this);
+		} else {
+			String s = "No handler found for node type: ";
+			int line = booleanLiteral.getPosition().getLine();
+			int column = booleanLiteral.getPosition().getColumn();
+			throw new InterpreterException(s + "BooleanLiteral", line, column);
+		}
 	}
 
 	@Override
 	public void visit(IfStatement ifStatement) throws Exception {
-
+		ASTNodeHandler handler = handlers.get("IfStatement");
+		if (handler != null) {
+			handler.handleValidation(ifStatement, this);
+		} else {
+			String s = "No handler found for node type: ";
+			int line = ifStatement.getPosition().getLine();
+			int column = ifStatement.getPosition().getColumn();
+			throw new InterpreterException(s + "If Statement", line, column);
+		}
 	}
 
 	@Override
 	public void visit(ConstDeclaration constDeclaration) throws Exception {
-
+		ASTNodeHandler handler = handlers.get("ConstDeclaration");
+		if (handler != null) {
+			handler.handleValidation(constDeclaration, this);
+		} else {
+			String s = "No handler found for node type: ";
+			int line = constDeclaration.getPosition().getLine();
+			int column = constDeclaration.getPosition().getColumn();
+			throw new InterpreterException(s + "Const declaration", line, column);
+		}
 	}
 
-	private void evaluate(ASTNode node) throws Exception {
+	public Literal convertStringToLiteral(String input, Position position) {
+		if (input.equalsIgnoreCase("\"true\"") || input.equalsIgnoreCase("\"false\"")) {
+			boolean boolValue = Boolean.parseBoolean(input);
+			return new BooleanLiteral(boolValue, position);
+		} else if (input.matches("\"-?\\d+(\\.\\d+)?\"")) {
+			double numberValue = Double.parseDouble(input);
+			return new NumericLiteral(numberValue, position);
+		} else {
+			return new TextLiteral(input, position);
+		}
+	}
+
+	public Stack<Map<String, Variable>> getEnvironments() {
+		return environments;
+	}
+
+	public void evaluate(ASTNode node) throws Exception {
 		node.accept(this);
 	}
 
 	public Map<String, Variable> getEnvironment() {
-		return environment;
+		return environments.peek();
 	}
 
 	public Stack<Literal> getStack() {
