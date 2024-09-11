@@ -1,0 +1,34 @@
+@startuml
+class Runner {
+    +run()
+    +validate()
+    +lint()
+    +format()
+    -lnp()
+    -parseConfig()
+    -lint()
+    -format()
+}
+
+class Lexer
+class Parser
+class Interpreter
+class Formatter
+class Linter
+class Ast
+class Utils
+class Token
+class Cli {
+    +run()
+}
+
+Runner ..> Lexer : uses
+Runner ..> Parser : uses
+Runner ..> Interpreter : uses
+Runner ..> Linter : uses
+Runner ..> Formatter : uses
+Runner ..> Ast : uses
+Runner ..> Utils : uses
+Runner ..> Token : uses
+Cli ..> Runner : uses
+@enduml
