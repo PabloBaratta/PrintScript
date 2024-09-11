@@ -27,7 +27,7 @@ public class FormattingBuilder implements CommandBuilder{
         StreamReader reader = new StreamReader(inputStream);
         Lexer lexer = provideV10(reader);
         Parser parser = ParserProvider.provide10(lexer);
-        Formatter formatter = FormatterProvider.provideV10(parser);
+        Formatter formatter = FormatterProvider.provideV10(parser, rulesV10);
         System.out.println(formatter.format());
         return formatter.format();
     }
@@ -37,5 +37,16 @@ public class FormattingBuilder implements CommandBuilder{
                 .collect(Collectors.joining("\n"));
         return Ruler.readRulesFromJson(config);
     }
+
+    private static final String rulesV10 = """
+	{
+		"spaceBeforeColon": { "rule": true },
+		"spaceAfterColon": { "rule": true },
+		"spaceBeforeAssignation": { "rule": true },
+		"spaceAfterAssignation": { "rule": true },
+		"newLineBeforePrintln": { "rule": true, "qty": 2 }
+	}
+	""";
+
 }
 */
