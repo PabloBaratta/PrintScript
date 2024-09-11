@@ -2,7 +2,7 @@ package org.example;
 
 import org.token.Position;
 
-public class Literal<T extends Comparable<T>> implements Expression{
+public abstract class Literal<T> implements Expression{
 
 	private final T value;
 	private final Position position;
@@ -16,16 +16,6 @@ public class Literal<T extends Comparable<T>> implements Expression{
 		return this.value;
 	}
 
-	@Override
-	public void accept(ASTVisitor visitor) throws Exception {
-		switch (this) {
-			case TextLiteral textLiteral -> visitor.visit(textLiteral);
-			case NumericLiteral numericLiteral -> visitor.visit(numericLiteral);
-			case BooleanLiteral booleanLiteral -> visitor.visit(booleanLiteral);
-			default -> {
-			}
-		}
-	}
 
 	@Override
 	public String toString() {

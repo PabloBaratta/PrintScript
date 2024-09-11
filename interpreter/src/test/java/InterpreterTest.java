@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 import org.token.Position;
@@ -136,7 +138,7 @@ public class InterpreterTest {
 		// let a: string = 42;
 		Identifier identifier = new Identifier("a", new Position(0, 0,0, 0));
 		Type type = new Type("string", new Position(0, 0,0, 0));
-		Expression expression = new NumericLiteral(42.0, new Position(0, 0,0, 0));
+		Expression expression = new NumericLiteral(BigDecimal.valueOf(42), new Position(0, 0,0, 0));
 		VariableDeclaration variableDecl = new VariableDeclaration(identifier, type, Optional.of(expression));
 
 		List<ASTNode> astNodes = new ArrayList<>();
@@ -281,7 +283,7 @@ public class InterpreterTest {
 		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
 		astNodes.add(variableDeclaration);
 
-		Expression expression = new NumericLiteral(42.0, pos);
+		Expression expression = new NumericLiteral(BigDecimal.valueOf(42), pos);
 		Assignation assignation = new Assignation(identifier, expression, pos);
 		astNodes.add(assignation);
 
@@ -306,8 +308,8 @@ public class InterpreterTest {
 		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
 		astNodes.add(variableDeclaration);
 
-		Expression left = new NumericLiteral(2.0, pos);
-		Expression right = new NumericLiteral(3.0, pos);
+		Expression left = new NumericLiteral(BigDecimal.valueOf(2), pos);
+		Expression right = new NumericLiteral(BigDecimal.valueOf(3), pos);
 		BinaryExpression expression = new BinaryExpression(left, "+", right);
 		Assignation assignation = new Assignation(identifier, expression, pos);
 		astNodes.add(assignation);
@@ -321,7 +323,7 @@ public class InterpreterTest {
 
 		Optional<Literal> optionalExpression = interpreter.getExecutorEnvironment().get("result").getLiteral();
 		assertTrue(optionalExpression.isPresent());
-		assertEquals(5.0, optionalExpression.get().getValue());
+		assertEquals(BigDecimal.valueOf(5), optionalExpression.get().getValue());
 	}
 
 	@Test
@@ -329,8 +331,8 @@ public class InterpreterTest {
 		List<ASTNode> astNodes = new ArrayList<>();
 		Identifier identifier = new Identifier("result", pos);
 
-		Expression left = new NumericLiteral(2.0, pos);
-		Expression right = new NumericLiteral(3.0, pos);
+		Expression left = new NumericLiteral(BigDecimal.valueOf(2), pos);
+		Expression right = new NumericLiteral(BigDecimal.valueOf(3), pos);
 		BinaryExpression expression = new BinaryExpression(left, "+", right);
 		astNodes.add(expression);
 
@@ -351,8 +353,8 @@ public class InterpreterTest {
 		List<ASTNode> astNodes = new ArrayList<>();
 		Identifier identifier = new Identifier("result", pos);
 
-		Expression left = new NumericLiteral(2.0, pos);
-		Expression right = new NumericLiteral(3.0, pos);
+		Expression left = new NumericLiteral(BigDecimal.valueOf(2), pos);
+		Expression right = new NumericLiteral(BigDecimal.valueOf(3), pos);
 		BinaryExpression expression = new BinaryExpression(left, "+", right);
 		astNodes.add(expression);
 
@@ -386,7 +388,8 @@ public class InterpreterTest {
 		VariableDeclaration res = new VariableDeclaration(resId, stringType, Optional.empty());
 		astNodes.add(res);
 
-		BinaryExpression ex = new BinaryExpression(new Identifier("a", pos), "+", new NumericLiteral(2.0, pos));
+		BinaryExpression ex = new BinaryExpression(new Identifier("a", pos), "+",
+                new NumericLiteral(BigDecimal.valueOf(2), pos));
 		Assignation assignation = new Assignation(resId, ex, pos);
 		astNodes.add(assignation);
 
@@ -400,7 +403,7 @@ public class InterpreterTest {
 
 		Optional<Literal> optionalExpression = interpreter.getExecutorEnvironment().get("result").getLiteral();
 		assertTrue(optionalExpression.isPresent());
-		assertEquals("Hello 2.0", optionalExpression.get().getValue());
+		assertEquals("Hello 2", optionalExpression.get().getValue());
 	}
 
 	@Test
@@ -409,8 +412,8 @@ public class InterpreterTest {
 
 		Identifier resId = new Identifier("result", pos);
 		Type numType = new Type("number", pos);
-		NumericLiteral num = new NumericLiteral(3.0, pos);
-		Expression exp = new BinaryExpression(new NumericLiteral(2.0, pos), "/", num);
+		NumericLiteral num = new NumericLiteral(BigDecimal.valueOf(3), pos);
+		Expression exp = new BinaryExpression(new NumericLiteral(BigDecimal.valueOf(2), pos), "/", num);
 		VariableDeclaration varDecl = new VariableDeclaration(resId, numType, Optional.of(exp));
 		astNodes.add(varDecl);
 
@@ -424,7 +427,8 @@ public class InterpreterTest {
 		Optional<Literal> optionalExpression = interpreter.getExecutorEnvironment().get("result").getLiteral();
 		assertTrue(optionalExpression.isPresent());
 
-		assertEquals(2.0 / 3.0, optionalExpression.get().getValue());
+		assertEquals(BigDecimal.valueOf(2).divide(BigDecimal.valueOf(3), 10, RoundingMode.HALF_UP),
+                optionalExpression.get().getValue());
 	}
 
 	@Test
@@ -436,9 +440,9 @@ public class InterpreterTest {
 		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
 		astNodes.add(variableDeclaration);
 
-		NumericLiteral num = new NumericLiteral(2.0, pos);
+		NumericLiteral num = new NumericLiteral(BigDecimal.valueOf(2), pos);
 		BinaryExpression firstPart = new BinaryExpression(num, "*", num);
-		NumericLiteral num2 = new NumericLiteral(3.0, pos);
+		NumericLiteral num2 = new NumericLiteral(BigDecimal.valueOf(3.0), pos);
 		BinaryExpression secondPart = new BinaryExpression(num2, "*", num2);
 		BinaryExpression expression = new BinaryExpression(firstPart, "+", secondPart);
 		Assignation assignation = new Assignation(identifier, expression, pos);
@@ -454,7 +458,7 @@ public class InterpreterTest {
 
 		Optional<Literal> optionalExpression = interpreter.getExecutorEnvironment().get("result").getLiteral();
 		assertTrue(optionalExpression.isPresent());
-		assertEquals(13.0, optionalExpression.get().getValue());
+		assertEquals(BigDecimal.valueOf(13.0).toString(), optionalExpression.get().toString());
 	}
 
 	// PRINT LN ------------------------------------------------------------------------------------
@@ -492,7 +496,8 @@ public class InterpreterTest {
 //	public void testPrintBinaryExpression() throws Exception {
 //        List<ASTNode> astNodes = Arrays.asList(
 //                new Method(new Identifier("println", pos), Collections.singletonList(
-//                        new BinaryExpression(new NumericLiteral(2.0, pos), "+", new NumericLiteral(2.0, pos))
+//                        new BinaryExpression(new NumericLiteral(BigDecimal.valueOf(2.0, pos), "+",
+//                        new NumericLiteral(BigDecimal.valueOf(2.0, pos))
 //                ))
 //        );
 //        PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
@@ -506,7 +511,7 @@ public class InterpreterTest {
 
 	@Test
 	public void testPrintIdentifier() throws Exception {
-		Optional<Expression> ex = Optional.of(new NumericLiteral(10.0, pos));
+		Optional<Expression> ex = Optional.of(new NumericLiteral(BigDecimal.valueOf(10), pos));
 		Type type = new Type("number", pos);
 		List<Expression> arguments = Collections.singletonList(new Identifier("a", pos));
 		List<ASTNode> astNodes = Arrays.asList(
@@ -520,7 +525,7 @@ public class InterpreterTest {
 
 
 		List<String> printList = outputCapture.getPrintList();
-		assertEquals(Collections.singletonList("10.0"), printList);
+		assertEquals(Collections.singletonList("10"), printList);
 	}
 
 	@Test
@@ -575,7 +580,7 @@ public class InterpreterTest {
 //	public void testPrintlnWithInvalidArgumentType() {
 //
 //		List<Expression> arguments = Collections.singletonList(
-//				new NumericLiteral(42.0, pos)
+//				new NumericLiteral(BigDecimal.valueOf(42.0, pos)
 //		);
 //
 //		Method printlnMethod = new Method(new Identifier("println", pos), arguments);
@@ -597,8 +602,9 @@ public class InterpreterTest {
 
 	@Test
 	public void testProgramExecution() throws Exception {
-		Optional<Expression> ex = Optional.of(new NumericLiteral(10.0, pos));
-		BinaryExpression a = new BinaryExpression(new Identifier("a", pos), "+", new NumericLiteral(5.0, pos));
+		Optional<Expression> ex = Optional.of(new NumericLiteral(BigDecimal.valueOf(10), pos));
+		BinaryExpression a = new BinaryExpression(new Identifier("a", pos), "+",
+                new NumericLiteral(BigDecimal.valueOf(5), pos));
 		Type type = new Type("string", pos);
 		List<Expression> arguments = Collections.singletonList(new Identifier("b", pos));
 		List<ASTNode> astNodes = Arrays.asList(
@@ -620,7 +626,7 @@ public class InterpreterTest {
 
 	@Test
 	void testVariableDeclarationWithAssignmentAndTypeMismatchValidation() {
-		Optional<Expression> ex = Optional.of(new NumericLiteral(42.0, pos));
+		Optional<Expression> ex = Optional.of(new NumericLiteral(BigDecimal.valueOf(42.0), pos));
 		Type type = new Type("string", pos);
 		List<ASTNode> astNodes = Collections.singletonList(
 				new VariableDeclaration(new Identifier("a", pos), type, ex)
@@ -673,7 +679,7 @@ public class InterpreterTest {
 		Identifier a = new Identifier("a", pos);
 		List<ASTNode> astNodes = Arrays.asList(
 				new VariableDeclaration(a, new Type("string", pos), Optional.empty()),
-				new Assignation(a, new NumericLiteral(42.0, pos), pos)
+				new Assignation(a, new NumericLiteral(BigDecimal.valueOf(42.0), pos), pos)
 		);
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
@@ -687,10 +693,10 @@ public class InterpreterTest {
 
 	@Test
 	void testVisitAssignationValid() throws Exception {
-		Optional<Expression> ex = Optional.of(new NumericLiteral(5.0, pos));
+		Optional<Expression> ex = Optional.of(new NumericLiteral(BigDecimal.valueOf(5.0), pos));
 		Type type = new Type("number", pos);
 		VariableDeclaration var = new VariableDeclaration(new Identifier("x", pos), type, ex);
-		NumericLiteral expression = new NumericLiteral(10.0, pos);
+		NumericLiteral expression = new NumericLiteral(BigDecimal.valueOf(10.0), pos);
 		List<ASTNode> astNodes = Arrays.asList(var, new Assignation(new Identifier("x", pos), expression, pos));
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
@@ -698,13 +704,15 @@ public class InterpreterTest {
 		interpreter.execute();
 		interpreter.validate();
 
-		assertEquals(10.0, interpreter.getExecutorEnvironment().get("x").getLiteral().get().getValue());
+		assertEquals(BigDecimal.valueOf(10.0),
+                interpreter.getExecutorEnvironment().get("x").getLiteral().get().getValue());
 	}
 
 	@Test
 	void testVisitAssignationUndeclaredVariable() {
 		List<ASTNode> astNodes = Collections.singletonList(
-				new Assignation(new Identifier("x", pos), new NumericLiteral(10.0, pos), pos)
+				new Assignation(new Identifier("x", pos),
+                        new NumericLiteral(BigDecimal.valueOf(10.0), pos), pos)
 		);
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
@@ -718,7 +726,7 @@ public class InterpreterTest {
 
 	@Test
 	void testVisitAssignationTypeMismatch() throws Exception {
-		Optional<Expression> ex = Optional.of(new NumericLiteral(5.0, pos));
+		Optional<Expression> ex = Optional.of(new NumericLiteral(BigDecimal.valueOf(5.0), pos));
 		List<ASTNode> astNodes = Arrays.asList(
 				new VariableDeclaration(new Identifier("x", pos), new Type("number", pos), ex),
 				new Assignation(new Identifier("x", pos), new TextLiteral("Hello", pos), pos)
@@ -736,7 +744,8 @@ public class InterpreterTest {
 	@Test
 	void testVisitBinaryExpressionTypeMismatch() {
 		List<ASTNode> astNodes = Collections.singletonList(
-				new BinaryExpression(new TextLiteral("Hello", pos), "-", new NumericLiteral(10.0, pos))
+				new BinaryExpression(new TextLiteral("Hello", pos), "-",
+                        new NumericLiteral(BigDecimal.valueOf(10.0), pos))
 		);
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
@@ -765,7 +774,7 @@ public class InterpreterTest {
 
 	@Test
 	void testVisitIdentifierDeclaredAndAssignedVariable() throws Exception {
-		Optional<Expression> ex = Optional.of(new NumericLiteral(5.0, pos));
+		Optional<Expression> ex = Optional.of(new NumericLiteral(BigDecimal.valueOf(5), pos));
 		List<ASTNode> astNodes = Arrays.asList(
 				new VariableDeclaration(new Identifier("x", pos), new Type("number", pos), ex),
 				new Method(new Identifier("println", pos), List.of(new Identifier("x", pos)))
@@ -776,7 +785,8 @@ public class InterpreterTest {
 		interpreter.execute();
 		interpreter.validate();
 
-		assertEquals(5.0, interpreter.getExecutorEnvironment().get("x").getLiteral().get().getValue());
+		assertEquals(BigDecimal.valueOf(5),
+                interpreter.getExecutorEnvironment().get("x").getLiteral().get().getValue());
 	}
 
 	// UNARY EXPRESSIONS ------------------------------------------
@@ -788,7 +798,8 @@ public class InterpreterTest {
 		Type type = new Type("number", pos);
 		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
 
-		UnaryExpression negativeFiveExpression = new UnaryExpression(new NumericLiteral(5.0, pos), "-", pos);
+		UnaryExpression negativeFiveExpression = new UnaryExpression(
+                new NumericLiteral(BigDecimal.valueOf(5.0), pos), "-", pos);
 		Assignation assignation = new Assignation(identifier, negativeFiveExpression, pos);
 		astNodes.add(variableDeclaration);
 		astNodes.add(assignation);
@@ -800,7 +811,7 @@ public class InterpreterTest {
 
 		Optional<Literal> resultExpression = interpreter.getExecutorEnvironment().get("i").getLiteral();
 		assertTrue(resultExpression.isPresent());
-		assertEquals(-5.0, resultExpression.get().getValue());
+		assertEquals(BigDecimal.valueOf(-5.0), resultExpression.get().getValue());
 	}
 
 	@Test
@@ -810,7 +821,8 @@ public class InterpreterTest {
 		Type type = new Type("number", pos);
 		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
 
-		UnaryExpression negativeFiveExpression = new UnaryExpression(new NumericLiteral(5.0, pos), "-", pos);
+		UnaryExpression negativeFiveExpression = new UnaryExpression(
+                new NumericLiteral(BigDecimal.valueOf(5), pos), "-", pos);
 		astNodes.add(negativeFiveExpression);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
@@ -831,7 +843,8 @@ public class InterpreterTest {
 		Type type = new Type("number", pos);
 		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
 
-		UnaryExpression negativeFiveExpression = new UnaryExpression(new NumericLiteral(5.0, pos), "-", pos);
+		UnaryExpression negativeFiveExpression = new UnaryExpression(
+                new NumericLiteral(BigDecimal.valueOf(5.0), pos), "-", pos);
 		astNodes.add(negativeFiveExpression);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
@@ -852,7 +865,8 @@ public class InterpreterTest {
 		Type type = new Type("number", pos);
 		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
 
-		UnaryExpression negativeFiveExpression = new UnaryExpression(new NumericLiteral(5.0, pos), "-", pos);
+		UnaryExpression negativeFiveExpression = new UnaryExpression(
+                new NumericLiteral(BigDecimal.valueOf(5.0), pos), "-", pos);
 		Assignation assignation = new Assignation(identifier, negativeFiveExpression, pos);
 		astNodes.add(variableDeclaration);
 		astNodes.add(assignation);
@@ -875,8 +889,8 @@ public class InterpreterTest {
 		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
 		astNodes.add(variableDeclaration);
 
-		NumericLiteral positiveTwo = new NumericLiteral(2.0, new Position(0,0, 0, 0));
-		NumericLiteral positiveFive = new NumericLiteral(5.0, new Position(0,0, 0, 0));
+		NumericLiteral positiveTwo = new NumericLiteral(BigDecimal.valueOf(2.0), new Position(0,0, 0, 0));
+		NumericLiteral positiveFive = new NumericLiteral(BigDecimal.valueOf(5.0), new Position(0,0, 0, 0));
 
 		UnaryExpression negativeFive = new UnaryExpression(positiveFive, "-", new Position(0,0, 0, 0));
 
@@ -894,7 +908,7 @@ public class InterpreterTest {
 
 		Optional<Literal> resultExpression = interpreter.getExecutorEnvironment().get("result").getLiteral();
 		assertTrue(resultExpression.isPresent());
-		assertEquals(-3.0, resultExpression.get().getValue());
+		assertEquals(BigDecimal.valueOf(-3.0), resultExpression.get().getValue());
 	}
 
 	// READ INPUT ---------------------------------------------------------------------------
@@ -937,7 +951,7 @@ public class InterpreterTest {
 
 			Literal aValue = interpreter.getExecutorEnvironment().get("a").getLiteral().get();
 			assertInstanceOf(NumericLiteral.class, aValue, "El valor de 'a' debe ser un NumericLiteral.");
-			assertEquals(42, ((NumericLiteral) aValue).getValue());
+			assertEquals(BigDecimal.valueOf(42), ((NumericLiteral) aValue).getValue());
 
 		} catch (InterpreterException e) {
 			fail("Error en la interpretación: " + e.getMessage() +
@@ -1207,7 +1221,7 @@ public class InterpreterTest {
 	public void testStackAfterUnaryExpression() throws Exception {
 		List<ASTNode> astNodes = new ArrayList<>();
 
-		NumericLiteral numericLiteral = new NumericLiteral(5.0, new Position(1, 2, 0, 0));
+		NumericLiteral numericLiteral = new NumericLiteral(BigDecimal.valueOf(5.0), new Position(1, 2, 0, 0));
 		Position pos = new Position(1, 1, 0, 0);
 		UnaryExpression unaryExpression = new UnaryExpression(numericLiteral, "-", pos);
 		astNodes.add(unaryExpression);
@@ -1219,7 +1233,7 @@ public class InterpreterTest {
 
 		Stack<Literal> stack = interpreter.getStack();
 		assertEquals(1, stack.size());
-		assertEquals(-5.0, ((NumericLiteral) stack.pop()).getValue());
+		assertEquals(BigDecimal.valueOf(-5.0), ((NumericLiteral) stack.pop()).getValue());
 
 		interpreter.validate();
 	}
@@ -1263,7 +1277,7 @@ public class InterpreterTest {
 
 		Identifier identifier = new Identifier("constVar", new Position(1, 1, 0, 0));
 		Type type = new Type("number", new Position(0, 0, 0, 0));
-		Expression expression = new NumericLiteral(10.0, new Position(1, 10, 0, 0));
+		Expression expression = new NumericLiteral(BigDecimal.valueOf(10.0), new Position(1, 10, 0, 0));
 		ConstDeclaration constDeclaration = new ConstDeclaration(identifier, type, expression);
 		astNodes.add(constDeclaration);
 
@@ -1277,7 +1291,7 @@ public class InterpreterTest {
 		assertNotNull(variable);
 		assertTrue(variable.isConst());
 		assertEquals("number", variable.getType().getTypeName());
-		assertEquals(10.0, ((NumericLiteral) variable.getLiteral().get()).getValue());
+		assertEquals(BigDecimal.valueOf(10.0), ((NumericLiteral) variable.getLiteral().get()).getValue());
 
 		interpreter.validate();
 	}
@@ -1288,7 +1302,7 @@ public class InterpreterTest {
 
 		Identifier identifier = new Identifier("constVar", new Position(1, 1, 0, 0));
 		Type type = new Type("number", new Position(0, 0, 0, 0));
-		Expression expression = new NumericLiteral(10.0, new Position(1, 10, 0, 0));
+		Expression expression = new NumericLiteral(BigDecimal.valueOf(10.0), new Position(1, 10, 0, 0));
 		ConstDeclaration constDeclaration = new ConstDeclaration(identifier, type, expression);
 		astNodes.add(constDeclaration);
 
@@ -1304,11 +1318,11 @@ public class InterpreterTest {
 
 		Identifier identifier = new Identifier("constVar", new Position(1, 1, 0, 0));
 		Type type = new Type("number", new Position(0, 0, 0, 0));
-		Expression expression = new NumericLiteral(10.0, new Position(1, 10, 0, 0));
+		Expression expression = new NumericLiteral(BigDecimal.valueOf(10.0), new Position(1, 10, 0, 0));
 		ConstDeclaration constDeclaration = new ConstDeclaration(identifier, type, expression);
 		astNodes.add(constDeclaration);
 
-		Expression newExpression = new NumericLiteral(20.0, new Position(2, 10, 0, 0));
+		Expression newExpression = new NumericLiteral(BigDecimal.valueOf(20.0), new Position(2, 10, 0, 0));
 		Assignation assignation = new Assignation(identifier, newExpression, new Position(0, 0, 0, 0));
 		astNodes.add(assignation);
 
@@ -1324,11 +1338,11 @@ public class InterpreterTest {
 
 		Identifier identifier = new Identifier("constVar", new Position(1, 1, 0, 0));
 		Type type = new Type("number", new Position(0, 0, 0, 0));
-		Expression expression = new NumericLiteral(10.0, new Position(1, 10, 0, 0));
+		Expression expression = new NumericLiteral(BigDecimal.valueOf(10.0), new Position(1, 10, 0, 0));
 		ConstDeclaration constDeclaration = new ConstDeclaration(identifier, type, expression);
 		astNodes.add(constDeclaration);
 
-		Expression anotherExpression = new NumericLiteral(20.0, new Position(2, 10, 0, 0));
+		Expression anotherExpression = new NumericLiteral(BigDecimal.valueOf(20.0), new Position(2, 10, 0, 0));
 		ConstDeclaration duplicateDec = new ConstDeclaration(identifier, type, anotherExpression);
 		astNodes.add(duplicateDec);
 
@@ -1614,7 +1628,7 @@ public class InterpreterTest {
 
 		Identifier identifier = new Identifier("constVar", new Position(1, 1, 0, 0));
 		Type type = new Type("number", new Position(0, 0, 0, 0));
-		Expression expression = new NumericLiteral(10.0, new Position(1, 10, 0, 0));
+		Expression expression = new NumericLiteral(BigDecimal.valueOf(10.0), new Position(1, 10, 0, 0));
 		ConstDeclaration constDeclaration = new ConstDeclaration(identifier, type, expression);
 		astNodes.add(constDeclaration);
 
@@ -1635,7 +1649,7 @@ public class InterpreterTest {
 
 		Identifier identifier = new Identifier("constVar", new Position(1, 1, 0, 0));
 		Type type = new Type("number", new Position(0, 0, 0, 0));
-		Expression expression = new NumericLiteral(10.0, new Position(1, 10, 0, 0));
+		Expression expression = new NumericLiteral(BigDecimal.valueOf(10.0), new Position(1, 10, 0, 0));
 		ConstDeclaration constDeclaration = new ConstDeclaration(identifier, type, expression);
 		astNodes.add(constDeclaration);
 
@@ -1685,7 +1699,7 @@ public class InterpreterTest {
 
 	@Test
 	void testParenthesisExecution() throws Exception {
-		Expression expression = new NumericLiteral(10.0, pos);
+		Expression expression = new NumericLiteral(BigDecimal.valueOf(10), pos);
 		Parenthesis parenthesis = new Parenthesis(expression);
 
 		Identifier identifier = new Identifier("x", pos);
@@ -1708,12 +1722,12 @@ public class InterpreterTest {
 		Optional<Literal> literalOpt = interpreter.getExecutorEnvironment().get("x").getLiteral();
 
 		assertTrue(literalOpt.isPresent(), "Variable 'x' should have a literal value.");
-		assertEquals("10.0", literalOpt.get().getValue().toString().trim(), "Value of 'x' should be '10.0'.");
+		assertEquals("10", literalOpt.get().getValue().toString().trim(), "Value of 'x' should be '10'.");
 	}
 
 	@Test
 	void testParenthesisExecutionVal() throws Exception {
-		Expression expression = new NumericLiteral(10.0, pos);
+		Expression expression = new NumericLiteral(BigDecimal.valueOf(10), pos);
 		Parenthesis parenthesis = new Parenthesis(expression);
 
 		Identifier identifier = new Identifier("x", pos);

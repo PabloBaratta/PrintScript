@@ -32,7 +32,7 @@ public class ParserTest {
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
 		Try<ASTNode> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
-		assertEquals("1.0 + 2.0", node.toString());
+		assertEquals("1 + 2", node.toString());
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class ParserTest {
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
 		Try<ASTNode> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
-		assertEquals("1.0 + 2.0 * hola", node.toString());
+		assertEquals("1 + 2 * hola", node.toString());
 	}
 
 	@Test
@@ -72,7 +72,7 @@ public class ParserTest {
 		Parser parser = new Parser(list, new ArrayList<>(), tokenBuffer);
 		Try<ASTNode> res = parser.parseExpression();
 		ASTNode node = res.getSuccess().get();
-		assertEquals("1.0", node.toString());
+		assertEquals("1", node.toString());
 	}
 
 	@Test
@@ -152,7 +152,7 @@ public class ParserTest {
 		ASTNode node = res.getSuccess().get();
 
 		// Verifica que la expresión se haya parseado correctamente
-		assertEquals("((1.0) + 2.0)", node.toString());
+		assertEquals("((1) + 2)", node.toString());
 
 	}
 
@@ -174,7 +174,7 @@ public class ParserTest {
 		assertInstanceOf(Method.class, node);
 		Method method = (Method) node;
 		assertEquals(method.getVariable().toString(), "readInput");
-		assertEquals(method.getArguments().get(0).toString(), "1.0 + 2.0");
+		assertEquals(method.getArguments().get(0).toString(), "1 + 2");
 
 	}
 

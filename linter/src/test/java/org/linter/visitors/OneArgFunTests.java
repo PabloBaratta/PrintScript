@@ -5,6 +5,7 @@ import org.token.Position;
 import org.junit.jupiter.api.Test;
 import org.linter.Report;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,7 +70,7 @@ public class OneArgFunTests {
 
 		assertSuccessfulScenario(arguments, methodName);
 
-		arguments = new NumericLiteral(5.0, new Position(8, 1, 1, 8));
+		arguments = new NumericLiteral(BigDecimal.valueOf(5.0), new Position(8, 1, 1, 8));
 
 		assertSuccessfulScenario(arguments, methodName);
 

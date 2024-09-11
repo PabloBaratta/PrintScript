@@ -7,6 +7,7 @@ import org.token.TokenType;
 import static org.token.NativeTokenTypes.*;
 import functional.Try;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -168,7 +169,8 @@ public class ExpressionNodeConstructor implements NodeConstructor {
 	private NodeResponse primary(TokenBuffer tokenBuffer)  {
 		if (tokenBuffer.peekTokenType(NUMBER)) {
 			return parseLiteral(tokenBuffer, (s, position) -> {
-				NumericLiteral numericLiteral = new NumericLiteral(Double.parseDouble(s), position);
+
+				NumericLiteral numericLiteral = new NumericLiteral(new BigDecimal(s), position);
 				return numericLiteral;
 			});
 		} else if (tokenBuffer.peekTokenType(STRING)) {

@@ -2,6 +2,7 @@ import org.example.*;
 import org.token.Position;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,7 +19,7 @@ public class NewFormatterTest {
 		VariableDeclaration variableDeclaration = new VariableDeclaration(
 				new Identifier("x", position),
 				new Type("number", position),
-				Optional.of(new NumericLiteral(10.0, position))
+				Optional.of(new NumericLiteral(BigDecimal.valueOf(10.0), position))
 		);
 		Program program = new Program(List.of(variableDeclaration));
 		PrintScriptIterator<ASTNode> nodes = new PrintScriptIteratorTest<>(program.getChildren());
@@ -33,7 +34,7 @@ public class NewFormatterTest {
 		Map<String, Rule> rules = Ruler.rulesV10();
 		Assignation assignation = new Assignation(
 				new Identifier("x", position),
-				new NumericLiteral(20.0, position), position
+				new NumericLiteral(BigDecimal.valueOf(20.0), position), position
 		);
 		Program program = new Program(List.of(assignation));
 		PrintScriptIterator<ASTNode> nodes = new PrintScriptIteratorTest<>(program.getChildren());
@@ -64,7 +65,7 @@ public class NewFormatterTest {
 		Expression condition = new BinaryExpression(
 				new Identifier("x", position),
 				">",
-				new NumericLiteral(10.0, position)
+				new NumericLiteral(BigDecimal.valueOf(10.0), position)
 		);
 		Identifier hola = new Identifier("hola", position);
 		Type string = new Type("string", position);
@@ -91,12 +92,12 @@ public class NewFormatterTest {
 		Expression condition1 = new BinaryExpression(
 				new Identifier("x", position),
 				">",
-				new NumericLiteral(10.0, position)
+				new NumericLiteral(BigDecimal.valueOf(10.0), position)
 		);
 		Expression condition2 = new BinaryExpression(
 				new Identifier("y", position),
 				"<",
-				new NumericLiteral(5.0, position)
+				new NumericLiteral(BigDecimal.valueOf(5.0), position)
 		);
 		Identifier hola = new Identifier("hola", position);
 		Type string = new Type("string", position);
@@ -122,7 +123,7 @@ public class NewFormatterTest {
 		ConstDeclaration constDeclaration = new ConstDeclaration(
 				new Identifier("MAX_SIZE", position),
 				new Type("number", position),
-				new NumericLiteral(10.0, position)
+				new NumericLiteral(BigDecimal.valueOf(10.0), position)
 		);
 		Program program = new Program(List.of(constDeclaration));
 		PrintScriptIterator<ASTNode> nodes = new PrintScriptIteratorTest<>(program.getChildren());

@@ -5,6 +5,9 @@ import org.example.interpreter.Executor;
 import org.example.interpreter.InterpreterException;
 import org.example.interpreter.Validator;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public class BinaryExpressionHandler implements ASTNodeHandler {
 	@Override
 	public void handleExecution(ASTNode node, Executor executor) throws Exception {
@@ -24,21 +27,25 @@ public class BinaryExpressionHandler implements ASTNodeHandler {
 
 		if (operator.equals("+")) {
 			if (leftLiteral instanceof NumericLiteral && rightLiteral instanceof NumericLiteral) {
-				Double leftVal = (Double) leftLiteral.getValue();
-				Double rightVal = (Double) rightLiteral.getValue();
-				result = new NumericLiteral(leftVal + rightVal, leftLiteral.getPosition());
+				BigDecimal leftVal = ((NumericLiteral) leftLiteral).getValue();
+				BigDecimal rightVal = ((NumericLiteral) rightLiteral).getValue();
+				result = new NumericLiteral(leftVal.add(rightVal), leftLiteral.getPosition());
 			} else {
 				String value = leftLiteral.getValue().toString() + rightLiteral.getValue().toString();
 				result = new TextLiteral(value, leftLiteral.getPosition());
 			}
 		} else {
 			if (leftLiteral instanceof NumericLiteral && rightLiteral instanceof NumericLiteral) {
-				Double leftVal = (Double) leftLiteral.getValue();
-				Double rightVal = (Double) rightLiteral.getValue();
+				BigDecimal leftVal = ((NumericLiteral) leftLiteral).getValue();
+				BigDecimal rightVal = ((NumericLiteral) rightLiteral).getValue();
 				result = switch (operator) {
-					case "-" -> new NumericLiteral(leftVal - rightVal, leftLiteral.getPosition());
-					case "/" -> new NumericLiteral(leftVal / rightVal, leftLiteral.getPosition());
-					case "*" -> new NumericLiteral(leftVal * rightVal, leftLiteral.getPosition());
+					case "-" -> new NumericLiteral(leftVal.subtract(rightVal),
+							leftLiteral.getPosition());
+					case "/" -> new NumericLiteral(leftVal.divide(rightVal,
+							10, RoundingMode.HALF_UP),
+							leftLiteral.getPosition());
+					case "*" -> new NumericLiteral(leftVal.multiply(rightVal),
+							leftLiteral.getPosition());
 					default -> throw new InterpreterException("Invalid operator", line, column);
 				};
 			} else {
@@ -67,9 +74,7 @@ public class BinaryExpressionHandler implements ASTNodeHandler {
 
 		if (operator.equals("+")) {
 			if (leftLiteral instanceof NumericLiteral && rightLiteral instanceof NumericLiteral) {
-				Double leftVal = (Double) leftLiteral.getValue();
-				Double rightVal = (Double) rightLiteral.getValue();
-				result = new NumericLiteral(leftVal + rightVal, leftLiteral.getPosition());
+				result = new NumericLiteral(BigDecimal.valueOf(0), leftLiteral.getPosition());
 			} else {
 				String value = leftLiteral.getValue().toString() + rightLiteral.getValue().toString();
 				result = new TextLiteral(value, leftLiteral.getPosition());
@@ -77,9 +82,8 @@ public class BinaryExpressionHandler implements ASTNodeHandler {
 		} else {
 			if (leftLiteral instanceof NumericLiteral && rightLiteral instanceof NumericLiteral) {
 				result = switch (operator) {
-					case "-" -> new NumericLiteral(0.0, left.getPosition());
-					case "/" -> new NumericLiteral(0.0, left.getPosition());
-					case "*" -> new NumericLiteral(0.0, left.getPosition());
+					case "-", "/", "*" -> new NumericLiteral(BigDecimal.valueOf(0.0),
+							left.getPosition());
 					default -> throw new InterpreterException("Invalid operator", line, column);
 				};
 			} else {
@@ -89,4 +93,5 @@ public class BinaryExpressionHandler implements ASTNodeHandler {
 
 		validator.getStack().push(result);
 	}
+
 }

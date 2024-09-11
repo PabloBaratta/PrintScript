@@ -3,6 +3,8 @@ package org.example.interpreter;
 import org.example.*;
 import org.example.interpreter.handlers.ASTNodeHandler;
 import org.token.Position;
+
+import java.math.BigDecimal;
 import java.util.*;
 
 public class Executor implements ASTVisitor {
@@ -252,8 +254,7 @@ public class Executor implements ASTVisitor {
 			boolean boolValue = Boolean.parseBoolean(input);
 			return new BooleanLiteral(boolValue, position);
 		} else if (input.matches("\"-?\\d+(\\.\\d+)?\"")) {
-			double numberValue = Double.parseDouble(input);
-			return new NumericLiteral(numberValue, position);
+			return new NumericLiteral(new BigDecimal(input), position);
 		} else {
 			return new TextLiteral(input, position);
 		}
@@ -264,8 +265,7 @@ public class Executor implements ASTVisitor {
 			boolean boolValue = Boolean.parseBoolean(input);
 			return new BooleanLiteral(boolValue, position);
 		} else if (input.matches("-?\\d+(\\.\\d+)?")) {
-			double numberValue = Double.parseDouble(input);
-			return new NumericLiteral(numberValue, position);
+			return new NumericLiteral(new BigDecimal(input), position);
 		} else {
 			return new TextLiteral(input, position);
 		}

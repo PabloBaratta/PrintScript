@@ -5,6 +5,7 @@ import org.token.Position;
 import org.junit.jupiter.api.Test;
 import org.linter.Report;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -106,7 +107,7 @@ class IdentifierRulesTest {
 		Assignation assignation = new Assignation(identifier, identifier, position);
 		Method method = new Method(identifier, List.of(identifier));
 		TextLiteral lit = new TextLiteral("a", position);
-		NumericLiteral num = new NumericLiteral(1.0, position);
+		NumericLiteral num = new NumericLiteral(BigDecimal.valueOf(1.0), position);
 		BinaryExpression bin = new BinaryExpression(identifier, "+", identifier);
 		Parenthesis parenthesis = new Parenthesis(bin);
 		UnaryExpression un = new UnaryExpression(bin, "+", position);

@@ -97,7 +97,7 @@ public class TokenBuffer {
 
 	public Try<Token> consumeToken(TokenType type) {
 		if (!hasAnyTokensLeft()) {
-			String error = "Expected in sentence :" + type.name();
+			String error = "Expected after in statement: " + type.name();
 			if (lastToken == null) {
 				return new Try<>(new NoMoreTokensException());
 			}

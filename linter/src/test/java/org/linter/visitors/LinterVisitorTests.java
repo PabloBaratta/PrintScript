@@ -5,6 +5,7 @@ import org.token.Position;
 import org.junit.jupiter.api.Test;
 import org.linter.Report;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,7 +44,7 @@ class LinterVisitorTests {
 		Position position = new Position(0, 0, 0,0 );
 		Identifier identifier = new Identifier("hi", position);
 		TextLiteral lit = new TextLiteral("a", position);
-		NumericLiteral num = new NumericLiteral(1.0, position);
+		NumericLiteral num = new NumericLiteral(BigDecimal.valueOf(1.0), position);
 		BinaryExpression bin = new BinaryExpression(identifier, "+", identifier);
 		Parenthesis parenthesis = new Parenthesis(bin);
 		UnaryExpression un = new UnaryExpression(bin, "+", position);

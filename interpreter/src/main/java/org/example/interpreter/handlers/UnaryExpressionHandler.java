@@ -5,6 +5,8 @@ import org.example.interpreter.Executor;
 import org.example.interpreter.InterpreterException;
 import org.example.interpreter.Validator;
 
+import java.math.BigDecimal;
+
 public class UnaryExpressionHandler implements ASTNodeHandler{
 	@Override
 	public void handleExecution(ASTNode node, Executor executor) throws Exception {
@@ -20,9 +22,10 @@ public class UnaryExpressionHandler implements ASTNodeHandler{
 
 		Literal result;
 		if (argumentLiteral instanceof NumericLiteral) {
-			Double value = (Double) argumentLiteral.getValue();
+			BigDecimal value = ((NumericLiteral) argumentLiteral).getValue();
 			if (operator.equals("-")) {
-				result = new NumericLiteral(-value, argumentLiteral.getPosition());
+				BigDecimal subtract = BigDecimal.valueOf(0).subtract(value);
+				result = new NumericLiteral(subtract, argumentLiteral.getPosition());
 			} else {
 				String error = "Invalid operator for numeric literal";
 				throw new InterpreterException(error, line, column);
@@ -56,7 +59,7 @@ public class UnaryExpressionHandler implements ASTNodeHandler{
 			throw new InterpreterException(s + operator, line, column);
 		}
 
-		Literal result = new NumericLiteral(0.0, argument.getPosition());
+		Literal result = new NumericLiteral(BigDecimal.valueOf(0.0), argument.getPosition());
 		validator.getStack().push(result);
 	}
 }
