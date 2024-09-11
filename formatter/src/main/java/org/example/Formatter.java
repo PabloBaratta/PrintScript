@@ -41,7 +41,7 @@ public class Formatter {
 				result.append(formatAssignation(assignation));
 				break;
 			case Method method:
-				result.append(formatMethod(method));
+				result.append(formatMethod(method, nestingLevel));
 				break;
 			case IfStatement ifStatement:
 				result.append(formatIfStatement(ifStatement, nestingLevel));
@@ -97,13 +97,14 @@ public class Formatter {
 		return result;
 	}
 
-	private StringBuilder formatMethod(Method method) {
+	private StringBuilder formatMethod(Method method, int nestingLevel) {
 		Identifier identifier = method.getVariable();
 		List<Expression> arguments = method.getArguments();
 		StringBuilder result = new StringBuilder();
 		if (identifier.toString().equals("println")) {
 			checkNewLines(result);
 		}
+		checkSpaces(result, nestingLevel);
 		result.append(identifier.toString()).append("(");
 		formatArguments(arguments, result);
 		result.append(");\n");
@@ -127,6 +128,9 @@ public class Formatter {
 	}
 
 	private void checkSpaces(StringBuilder result, int nestingLevel) {
+		if (!rules.containsKey("indentation")) {
+			return;
+		}
 		if (rules.get("indentation").getRule()) {
 			int qty = rules.get("indentation").getQty().get() * nestingLevel;
 			result.append(" ".repeat(Math.max(0, qty)));

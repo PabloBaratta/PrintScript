@@ -30,7 +30,18 @@ public class Method implements Expression{
 	// terminar de ver como printear
 	@Override
 	public String toString() {
-		return identifier.toString() + "(" + arguments.toString() + ")";
+		return identifier.toString() + "(" + printArgs(arguments) + ")";
+	}
+
+	private String printArgs(List<Expression> arguments) {
+		StringBuilder result = new StringBuilder();
+		for (int i = 0; i < arguments.size(); i++) {
+			result.append(arguments.get(i).toString());
+			if (i < arguments.size() - 1) {
+				result.append(", ");
+			}
+		}
+		return result.toString();
 	}
 
 	@Override

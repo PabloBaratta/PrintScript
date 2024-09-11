@@ -69,8 +69,7 @@ public class Runner {
 	}
 
 	private static String format(PrintScriptIterator<ASTNode> parser, String config) throws Exception {
-		//Map<String, Rule> rules = JsonReader.readRulesFromJson(config);
-		Formatter formatter = FormatterProvider.provideV10(parser);
+		Formatter formatter = FormatterProvider.provideV10(parser, config);
 		return formatter.format();
 	}
 

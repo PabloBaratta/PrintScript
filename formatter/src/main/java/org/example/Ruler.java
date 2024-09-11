@@ -10,7 +10,6 @@ import java.util.Optional;
 
 public class Ruler {
 
-
 	private static final String rulesV10 = """
 	{
 		"spaceBeforeColon": { "rule": true },
