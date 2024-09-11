@@ -389,7 +389,7 @@ public class InterpreterTest {
 		astNodes.add(res);
 
 		BinaryExpression ex = new BinaryExpression(new Identifier("a", pos), "+",
-                new NumericLiteral(BigDecimal.valueOf(2), pos));
+				new NumericLiteral(BigDecimal.valueOf(2), pos));
 		Assignation assignation = new Assignation(resId, ex, pos);
 		astNodes.add(assignation);
 
@@ -428,7 +428,7 @@ public class InterpreterTest {
 		assertTrue(optionalExpression.isPresent());
 
 		assertEquals(BigDecimal.valueOf(2).divide(BigDecimal.valueOf(3), 10, RoundingMode.HALF_UP),
-                optionalExpression.get().getValue());
+				optionalExpression.get().getValue());
 	}
 
 	@Test
@@ -604,7 +604,7 @@ public class InterpreterTest {
 	public void testProgramExecution() throws Exception {
 		Optional<Expression> ex = Optional.of(new NumericLiteral(BigDecimal.valueOf(10), pos));
 		BinaryExpression a = new BinaryExpression(new Identifier("a", pos), "+",
-                new NumericLiteral(BigDecimal.valueOf(5), pos));
+				new NumericLiteral(BigDecimal.valueOf(5), pos));
 		Type type = new Type("string", pos);
 		List<Expression> arguments = Collections.singletonList(new Identifier("b", pos));
 		List<ASTNode> astNodes = Arrays.asList(
@@ -705,14 +705,14 @@ public class InterpreterTest {
 		interpreter.validate();
 
 		assertEquals(BigDecimal.valueOf(10.0),
-                interpreter.getExecutorEnvironment().get("x").getLiteral().get().getValue());
+				interpreter.getExecutorEnvironment().get("x").getLiteral().get().getValue());
 	}
 
 	@Test
 	void testVisitAssignationUndeclaredVariable() {
 		List<ASTNode> astNodes = Collections.singletonList(
 				new Assignation(new Identifier("x", pos),
-                        new NumericLiteral(BigDecimal.valueOf(10.0), pos), pos)
+						new NumericLiteral(BigDecimal.valueOf(10.0), pos), pos)
 		);
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
@@ -745,7 +745,7 @@ public class InterpreterTest {
 	void testVisitBinaryExpressionTypeMismatch() {
 		List<ASTNode> astNodes = Collections.singletonList(
 				new BinaryExpression(new TextLiteral("Hello", pos), "-",
-                        new NumericLiteral(BigDecimal.valueOf(10.0), pos))
+						new NumericLiteral(BigDecimal.valueOf(10.0), pos))
 		);
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
 		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
@@ -786,7 +786,7 @@ public class InterpreterTest {
 		interpreter.validate();
 
 		assertEquals(BigDecimal.valueOf(5),
-                interpreter.getExecutorEnvironment().get("x").getLiteral().get().getValue());
+				interpreter.getExecutorEnvironment().get("x").getLiteral().get().getValue());
 	}
 
 	// UNARY EXPRESSIONS ------------------------------------------
@@ -799,7 +799,7 @@ public class InterpreterTest {
 		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
 
 		UnaryExpression negativeFiveExpression = new UnaryExpression(
-                new NumericLiteral(BigDecimal.valueOf(5.0), pos), "-", pos);
+				new NumericLiteral(BigDecimal.valueOf(5.0), pos), "-", pos);
 		Assignation assignation = new Assignation(identifier, negativeFiveExpression, pos);
 		astNodes.add(variableDeclaration);
 		astNodes.add(assignation);
@@ -822,7 +822,7 @@ public class InterpreterTest {
 		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
 
 		UnaryExpression negativeFiveExpression = new UnaryExpression(
-                new NumericLiteral(BigDecimal.valueOf(5), pos), "-", pos);
+				new NumericLiteral(BigDecimal.valueOf(5), pos), "-", pos);
 		astNodes.add(negativeFiveExpression);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
@@ -844,7 +844,7 @@ public class InterpreterTest {
 		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
 
 		UnaryExpression negativeFiveExpression = new UnaryExpression(
-                new NumericLiteral(BigDecimal.valueOf(5.0), pos), "-", pos);
+				new NumericLiteral(BigDecimal.valueOf(5.0), pos), "-", pos);
 		astNodes.add(negativeFiveExpression);
 
 		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
@@ -866,7 +866,7 @@ public class InterpreterTest {
 		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
 
 		UnaryExpression negativeFiveExpression = new UnaryExpression(
-                new NumericLiteral(BigDecimal.valueOf(5.0), pos), "-", pos);
+				new NumericLiteral(BigDecimal.valueOf(5.0), pos), "-", pos);
 		Assignation assignation = new Assignation(identifier, negativeFiveExpression, pos);
 		astNodes.add(variableDeclaration);
 		astNodes.add(assignation);
