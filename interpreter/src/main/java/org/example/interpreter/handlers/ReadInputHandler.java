@@ -16,15 +16,20 @@ public class ReadInputHandler implements ASTNodeHandler{
 		List<Expression> arguments = method.getArguments();
 		Position position = method.getVariable().getPosition();
 
-		if (arguments.size() != 1 || !(arguments.get(0) instanceof TextLiteral)) {
+		if (arguments.size() != 1) {
+			String message = "readInput expects exactly one argument";
+			throw new InterpreterException(message, position.getLine(), position.getColumn());
+		}
+
+		Literal evaluatedArgument = executor.evaluateExpression(arguments.getFirst());
+
+		if (!(evaluatedArgument instanceof TextLiteral)) {
 			String message = "readInput expects exactly one TextLiteral argument";
 			throw new InterpreterException(message, position.getLine(), position.getColumn());
 		}
 
 		String message = ((TextLiteral) arguments.get(0)).getValue();
-		System.out.print(message + ": ");
-		Scanner scanner = new Scanner(System.in);
-		String userInput = scanner.nextLine();
+		String userInput = executor.getInputProvider().readInput(message);
 
 		Literal inputLiteral = executor.convertInputToLiteral(userInput, position);
 		executor.getStack().push(inputLiteral);
@@ -32,6 +37,26 @@ public class ReadInputHandler implements ASTNodeHandler{
 
 	@Override
 	public void handleValidation(ASTNode node, Validator validator) throws Exception {
+		Method method = (Method) node;
+		List<Expression> arguments = method.getArguments();
+		Position position = method.getVariable().getPosition();
 
+		if (arguments.size() != 1) {
+			String message = "readInput expects exactly one argument";
+			throw new InterpreterException(message, position.getLine(), position.getColumn());
+		}
+
+		Literal evaluatedArgument = validator.evaluateExpression(arguments.get(0));
+
+		if (!(evaluatedArgument instanceof TextLiteral)) {
+			String message = "readInput expects exactly one TextLiteral argument";
+			throw new InterpreterException(message, position.getLine(), position.getColumn());
+		}
+
+		String message = ((TextLiteral) evaluatedArgument).getValue();
+		String userInput = validator.getInputProvider().readInput(message);
+
+		Literal inputLiteral = validator.convertInputToLiteral(userInput, position);
+		validator.getStack().push(inputLiteral);
 	}
 }
