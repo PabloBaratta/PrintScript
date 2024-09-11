@@ -24,7 +24,7 @@ import static org.example.lexer.LexerProvider.provideV11;
 
 public class Runner {
 
-	public static void run(InputStream inputStream, String version) throws Exception {
+	public static List<String> run(InputStream inputStream, String version) throws Exception {
 		PrintScriptIterator<ASTNode> parser = lnp(inputStream, version);
 		Interpreter interpreter = switch (version) {
 			case "1.0" -> InterpreterProvider.provideV10(parser, new ConsoleInputProvider());
@@ -32,6 +32,7 @@ public class Runner {
 			default -> throw new Exception("Invalid version");
 		};
 		interpreter.execute();
+		return interpreter.getOutputCapture().getPrintList();
 	}
 
 	public static void validate(InputStream inputStream, String version) throws Exception {
