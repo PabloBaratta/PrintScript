@@ -2,6 +2,7 @@ package org.example;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.interpreter.Interpreter;
+import org.example.interpreter.handlers.HandlerFactory;
 import org.example.lexer.StreamReader;
 import org.linter.Linter;
 import org.linter.LinterProvider;
@@ -20,13 +21,14 @@ public class Runner {
 
 	public static void run(InputStream inputStream, String version) throws Exception {
 		PrintScriptIterator<ASTNode> parser = lnp(inputStream, version);
-		Interpreter interpreter = new Interpreter();
-
+		Interpreter interpreter = new Interpreter(parser, HandlerFactory.createHandlers(version));
+		interpreter.execute();
 	}
 
 	public static void validate(InputStream inputStream, String version) throws Exception {
 		PrintScriptIterator<ASTNode> parser = lnp(inputStream, version);
-		Interpreter interpreter = new Interpreter();
+		Interpreter interpreter = new Interpreter(parser, HandlerFactory.createHandlers(version));
+		interpreter.validate();
 	}
 
 	public static void lint(InputStream inputStream, String version, String config) throws Exception {
@@ -52,28 +54,12 @@ public class Runner {
 		throw new Exception("Invalid version");
 	}
 
-	private static void interpret(ASTNode ast) throws Exception {
-		Interpreter interpreter = new Interpreter();
-		interpreter.visit(ast);
-	}
-
-	private static void validate(ASTNode ast) throws Exception {
-		Interpreter interpreter = new Interpreter();
-		interpreter.validate(ast);
-	}
-
 	private static Report lint(PrintScriptIterator<ASTNode> ast, String version, String config) throws Exception {
-		Linter linter;
-		switch (version){
-			case "1.0":
-				linter = LinterProvider.getLinterV10();
-				break;
-			case "1.1":
-				linter = LinterProvider.getLinterV11();
-				break;
-			default:
-				throw new Exception("Invalid version");
-		}
+		Linter linter = switch (version) {
+			case "1.0" -> LinterProvider.getLinterV10();
+			case "1.1" -> LinterProvider.getLinterV11();
+			default -> throw new Exception("Invalid version");
+		};
 		Map<String, String> configuration = parseConfig(config);
 		Report report = linter.analyze(ast, configuration);
 		for (ReportLine reportLine : report.getReportLines()) {
