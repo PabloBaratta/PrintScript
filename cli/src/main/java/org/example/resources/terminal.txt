@@ -1,1 +1,4 @@
 execute /cli/src/main/java/org/example/resources/file.txt 1.1
+validate /cli/src/main/java/org/example/resources/file2.txt 1.1
+analyze /cli/src/main/java/org/example/resources/file2.txt /cli/src/main/java/org/example/resources/configurationRules.json 1.1
+format /cli/src/main/java/org/example/resources/file2.txt /cli/src/test/resources/formattingRules1.json 1.1

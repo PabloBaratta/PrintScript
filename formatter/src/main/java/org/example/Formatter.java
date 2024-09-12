@@ -11,7 +11,7 @@ public class Formatter {
 
 	public Formatter(Map<String, Rule> rules, PrintScriptIterator<ASTNode> nodes) {
 		this.rules = rules;
-		this.nodes = nodes;
+			this.nodes = nodes;
 	}
 
 	public String format() throws Exception {
@@ -19,8 +19,8 @@ public class Formatter {
 		while (nodes.hasNext()) {
 			ASTNode child = nodes.getNext();
 			formatNode(child, result, 0);
+
 		}
-		return result.toString();
 	}
 
 	private void formatNode(ASTNode child, StringBuilder result, int nestingLevel) {
@@ -78,6 +78,7 @@ public class Formatter {
 			checkSpaces(result, nestingLevel);
 			formatNode(node, result, nestingLevel);
 		}
+		System.out.println("");
 	}
 
 	private StringBuilder formatConstDec(ConstDeclaration constDeclaration, int nestingLevel) {
