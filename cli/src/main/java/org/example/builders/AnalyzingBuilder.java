@@ -1,6 +1,9 @@
 package org.example.builders;
 
+import org.example.Util;
+
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -17,16 +20,15 @@ public class AnalyzingBuilder implements CommandBuilder{
         String pathFile = Paths.get("").toAbsolutePath() + parts[1];
 
         String pathConfig = Paths.get("").toAbsolutePath() + parts[2];
-        String code = Files.lines(Paths.get(pathFile))
-                .collect(Collectors.joining("\n"));
-        InputStream inputStream = new ByteArrayInputStream(code.getBytes());
+
+        InputStream stream = new FileInputStream(pathFile);
 
         String version = parts[3];
 
         String config = Files.lines(Paths.get(pathConfig))
                 .collect(Collectors.joining("\n"));
 
-        lint(inputStream, version, config);
+        lint(Util.getObservableInputStream(stream), version, config);
         return "linting completed";
     }
 

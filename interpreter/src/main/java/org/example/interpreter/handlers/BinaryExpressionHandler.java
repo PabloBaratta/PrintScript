@@ -4,6 +4,9 @@ import org.example.*;
 import org.example.interpreter.Executor;
 import org.example.interpreter.InterpreterException;
 import org.example.interpreter.Validator;
+import org.example.util.Wildcard;
+import org.example.util.WildcardLiteral;
+import org.token.Position;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -26,7 +29,10 @@ public class BinaryExpressionHandler implements ASTNodeHandler {
 		int column = leftLiteral.getPosition().getColumn();
 
 		if (operator.equals("+")) {
-			if (leftLiteral instanceof NumericLiteral && rightLiteral instanceof NumericLiteral) {
+			if (leftLiteral instanceof BooleanLiteral && rightLiteral instanceof BooleanLiteral) {
+				throw new InterpreterException("Invalid operator", line, column);
+			}
+			else if (leftLiteral instanceof NumericLiteral && rightLiteral instanceof NumericLiteral) {
 				BigDecimal leftVal = ((NumericLiteral) leftLiteral).getValue();
 				BigDecimal rightVal = ((NumericLiteral) rightLiteral).getValue();
 				result = new NumericLiteral(leftVal.add(rightVal), leftLiteral.getPosition());
@@ -73,21 +79,47 @@ public class BinaryExpressionHandler implements ASTNodeHandler {
 		int column = leftLiteral.getPosition().getColumn();
 
 		if (operator.equals("+")) {
-			if (leftLiteral instanceof NumericLiteral && rightLiteral instanceof NumericLiteral) {
+
+			if (leftLiteral instanceof BooleanLiteral && rightLiteral instanceof BooleanLiteral) {
+				throw new InterpreterException("Invalid operator", line, column);
+			}
+			else if (leftLiteral instanceof WildcardLiteral && rightLiteral instanceof WildcardLiteral){
+				result = leftLiteral;
+			} else if (leftLiteral instanceof WildcardLiteral && rightLiteral instanceof NumericLiteral) {
+				result = leftLiteral;
+			} else if (rightLiteral instanceof WildcardLiteral && leftLiteral instanceof NumericLiteral){
+				result = rightLiteral;
+			} else if (leftLiteral instanceof NumericLiteral && rightLiteral instanceof NumericLiteral) {
 				result = new NumericLiteral(BigDecimal.valueOf(0), leftLiteral.getPosition());
 			} else {
 				String value = leftLiteral.getValue().toString() + rightLiteral.getValue().toString();
 				result = new TextLiteral(value, leftLiteral.getPosition());
 			}
 		} else {
-			if (leftLiteral instanceof NumericLiteral && rightLiteral instanceof NumericLiteral) {
-				result = switch (operator) {
-					case "-", "/", "*" -> new NumericLiteral(BigDecimal.valueOf(0.0),
-							left.getPosition());
-					default -> throw new InterpreterException("Invalid operator", line, column);
-				};
-			} else {
-				throw new InterpreterException("Type mismatch for operator", line, column);
+
+			if (operator.equals("-") || operator.equals("/") || operator.equals("*")) {
+
+				if (leftLiteral instanceof WildcardLiteral
+						&& rightLiteral instanceof WildcardLiteral){
+					result = leftLiteral;
+				} else if (leftLiteral instanceof WildcardLiteral
+						&& rightLiteral instanceof NumericLiteral) {
+					result = rightLiteral;
+				} else if (leftLiteral instanceof NumericLiteral
+						&& rightLiteral instanceof WildcardLiteral) {
+					result = leftLiteral;
+				} else if (leftLiteral instanceof NumericLiteral
+						&& rightLiteral instanceof NumericLiteral) {
+					result = leftLiteral;
+				}
+				else {
+					throw new InterpreterException("Type mismatch for operator", line, column);
+				}
+
+			}
+
+			else {
+				throw new InterpreterException("Invalid operator", line, column);
 			}
 		}
 

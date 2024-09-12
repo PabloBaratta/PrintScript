@@ -2,6 +2,8 @@ import org.example.*;
 import org.example.interpreter.*;
 import org.example.interpreter.handlers.ASTNodeHandler;
 import org.example.interpreter.handlers.HandlerFactory;
+import org.example.util.Wildcard;
+import org.example.util.WildcardLiteral;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -756,6 +758,71 @@ public class InterpreterTest {
 
 		assertEquals("Type mismatch for operator", exception.getMessage());
 	}
+
+	@Test
+	void testVisitSumExpressionMatch() {
+		List<ASTNode> astNodes = Collections.singletonList(
+				new BinaryExpression(new TextLiteral("Hello", pos), "+",
+						new NumericLiteral(BigDecimal.valueOf(10.0), pos))
+		);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
+
+		assertDoesNotThrow(interpreter::validate);
+	}
+
+
+	@Test
+	void testVisitSumExpressionBooleanShouldThrow() {
+		List<ASTNode> astNodes = Collections.singletonList(
+				new BinaryExpression(
+						new BooleanLiteral(true, pos), "+",
+						new BooleanLiteral(false, pos)
+				)
+		);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
+
+		// Debería lanzar una excepción al intentar validar la suma de booleanos
+		assertThrows(InterpreterException.class, interpreter::validate);
+	}
+
+
+	@Test
+	void testVisitSubtractionWithNumericAndWildcard() {
+		List<ASTNode> astNodes = Collections.singletonList(
+				new BinaryExpression(
+						new NumericLiteral(BigDecimal.valueOf(5), pos), "-",
+						new Method(new Identifier("readInput", pos),
+								List.of(new TextLiteral("message", pos)))
+				)
+		);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
+
+		// No debería lanzar excepciones al validar
+		assertDoesNotThrow(interpreter::validate);
+	}
+
+
+	@Test
+	void testVisitMultiplicationWithWildcards() {
+		List<ASTNode> astNodes = Collections.singletonList(
+				new BinaryExpression(
+						new Method(new Identifier("readInput", pos),
+								List.of(new TextLiteral("message", pos))),
+						"-",
+						new Method(new Identifier("readInput", pos),
+								List.of(new TextLiteral("message", pos)))
+				)
+		);
+		PrintScriptIterator<ASTNode> iterator = new PrintScriptIteratorTest<>(astNodes);
+		Interpreter interpreter = new Interpreter(iterator, handlers, inputProvider, outputCapture);
+
+		// No debería lanzar excepciones al validar
+		assertDoesNotThrow(interpreter::validate);
+	}
+
 
 	@Test
 	void testVisitMethodUndeclaredVariable() throws Exception {

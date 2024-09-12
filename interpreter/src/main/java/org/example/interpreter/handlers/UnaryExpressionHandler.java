@@ -4,6 +4,7 @@ import org.example.*;
 import org.example.interpreter.Executor;
 import org.example.interpreter.InterpreterException;
 import org.example.interpreter.Validator;
+import org.example.util.WildcardLiteral;
 
 import java.math.BigDecimal;
 
@@ -50,7 +51,7 @@ public class UnaryExpressionHandler implements ASTNodeHandler{
 		int column = argument.getPosition().getColumn();
 
 		if (operator.equals("-")) {
-			if (!(argument instanceof NumericLiteral)) {
+			if (!(argument instanceof NumericLiteral || argument instanceof WildcardLiteral)) {
 				String s = "Type mismatch for unary operator: ";
 				throw new InterpreterException(s + operator, line, column);
 			}

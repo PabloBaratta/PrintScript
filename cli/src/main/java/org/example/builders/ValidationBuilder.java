@@ -1,14 +1,15 @@
 package org.example.builders;
 
+import org.apache.commons.io.input.ObservableInputStream;
 import org.example.CliOutputEmitter;
 import org.example.ConsoleInputProvider;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
 import static org.example.Runner.*;
+import static org.example.Util.getObservableInputStream;
 
 public class ValidationBuilder implements CommandBuilder{
     @Override
@@ -19,9 +20,13 @@ public class ValidationBuilder implements CommandBuilder{
         String pathFile = Paths.get("").toAbsolutePath() + parts[1];
         String code = Files.lines(Paths.get(pathFile))
                 .collect(Collectors.joining("\n"));
-        InputStream inputStream = new ByteArrayInputStream(code.getBytes());
+
+        InputStream stream = new FileInputStream(pathFile);
+
         String version = parts[2];
-        validate(inputStream, version, new ConsoleInputProvider(), new CliOutputEmitter());
+        validate(getObservableInputStream(stream), version, new ConsoleInputProvider(), new CliOutputEmitter());
         return "Validation completed";
     }
+
+
 }

@@ -29,6 +29,7 @@ public class Cli {
 	}
 
 	public void run() throws Exception {
+
 		List<String> lines = getLines();
 		for (String line : lines) {
 			String[] parts = line.split(" ");
@@ -40,6 +41,8 @@ public class Cli {
 			builder.buildAndRun(parts);
 		}
 	}
+
+
 
 	private List<String> getLines() throws IOException {
 		String content = Files.lines(Paths.get(path))
