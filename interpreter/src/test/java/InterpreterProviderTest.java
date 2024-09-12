@@ -17,8 +17,8 @@ public class InterpreterProviderTest {
 
 		PrintScriptIterator<ASTNode> nodeIterator = new PrintScriptIteratorTest<>(Collections.emptyList());
 		InputProvider inputProvider = new ConsoleInputProvider();
-
-		Interpreter interpreter = InterpreterProvider.provideV10(nodeIterator, inputProvider);
+		OutputCapture outputCapture = new OutputCapture();
+		Interpreter interpreter = InterpreterProvider.provideV10(nodeIterator, inputProvider, outputCapture);
 
 		Map<String, ASTNodeHandler> handlers = interpreter.getHandlers();
 		assertNotNull(handlers, "Handlers should not be null.");
@@ -31,7 +31,8 @@ public class InterpreterProviderTest {
 		PrintScriptIterator<ASTNode> nodeIterator = new PrintScriptIteratorTest<>(Collections.emptyList());
 		InputProvider inputProvider = new ConsoleInputProvider();
 
-		Interpreter interpreter = InterpreterProvider.provideV11(nodeIterator, inputProvider);
+		OutputCapture outputCapture = new OutputCapture();
+		Interpreter interpreter = InterpreterProvider.provideV11(nodeIterator, inputProvider, outputCapture);
 		Map<String, ASTNodeHandler> handlers = interpreter.getHandlers();
 		assertNotNull(handlers, "Handlers should not be null.");
 

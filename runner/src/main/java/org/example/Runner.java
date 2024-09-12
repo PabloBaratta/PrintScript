@@ -1,9 +1,7 @@
 package org.example;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.interpreter.ConsoleInputProvider;
-import org.example.interpreter.Interpreter;
-import org.example.interpreter.InterpreterProvider;
+import org.example.interpreter.*;
 import org.example.lexer.StreamReader;
 import org.linter.Linter;
 import org.linter.LinterProvider;
@@ -22,21 +20,26 @@ import static org.example.lexer.LexerProvider.provideV11;
 
 public class Runner {
 
-	public static void run(InputStream inputStream, String version) throws Exception {
+	public static void run(InputStream inputStream, String version,
+						InputProvider inputProvider,
+						OutputEmitter outputEmitter) throws Exception {
 		PrintScriptIterator<ASTNode> parser = lnp(inputStream, version);
 		Interpreter interpreter = switch (version) {
-			case "1.0" -> InterpreterProvider.provideV10(parser, new ConsoleInputProvider());
-			case "1.1" -> InterpreterProvider.provideV11(parser, new ConsoleInputProvider());
+			case "1.0" -> InterpreterProvider.provideV10(parser, inputProvider, outputEmitter);
+			case "1.1" -> InterpreterProvider.provideV11(parser, inputProvider, outputEmitter);
 			default -> throw new Exception("Invalid version");
 		};
 		interpreter.execute();
 	}
 
-	public static void validate(InputStream inputStream, String version) throws Exception {
+	public static void validate(InputStream inputStream,
+								String version,
+								InputProvider inputProvider,
+								OutputEmitter outputEmitter) throws Exception {
 		PrintScriptIterator<ASTNode> parser = lnp(inputStream, version);
 		Interpreter interpreter = switch (version) {
-			case "1.0" -> InterpreterProvider.provideV10(parser, new ConsoleInputProvider());
-			case "1.1" -> InterpreterProvider.provideV11(parser, new ConsoleInputProvider());
+			case "1.0" -> InterpreterProvider.provideV10(parser, inputProvider, outputEmitter);
+			case "1.1" -> InterpreterProvider.provideV11(parser, inputProvider, outputEmitter);
 			default -> throw new Exception("Invalid version");
 		};
 		interpreter.validate();

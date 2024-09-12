@@ -1,6 +1,8 @@
 package org.example.builders;
 
 import org.example.Runner;
+import org.example.interpreter.ConsoleInputProvider;
+import org.example.interpreter.OutputCapture;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -19,7 +21,7 @@ public class ExecutionBuilder implements CommandBuilder{
                 .collect(Collectors.joining("\n"));
         InputStream inputStream = new ByteArrayInputStream(code.getBytes());
         String version = parts[2];
-        Runner.run(inputStream, version);
+        Runner.run(inputStream, version, new ConsoleInputProvider(), new OutputCapture());
         return "Execution completed";
     }
 }

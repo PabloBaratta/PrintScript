@@ -19,7 +19,7 @@ public class Interpreter {
 	public Interpreter(PrintScriptIterator<ASTNode> n,
 					Map<String, ASTNodeHandler> h,
 					InputProvider i,
-					OutputCapture o) {
+					OutputEmitter o) {
 		this.nodeIterator = n;
 		this.handlers = h;
 		this.inputProvider = i;

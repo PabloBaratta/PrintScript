@@ -11,15 +11,17 @@ import java.util.Map;
 
 public class InterpreterProvider {
 
-	public static Interpreter provideV10(PrintScriptIterator<ASTNode> nodeIterator, InputProvider inputProvider){
+	public static Interpreter provideV10(PrintScriptIterator<ASTNode> nodeIterator,
+										InputProvider inputProvider,
+										OutputEmitter outputEmitter){
 		Map<String, ASTNodeHandler> handlersmap = HandlerFactory.createHandlers("1.0");
-		OutputCapture outputCapture = new OutputCapture();
-		return new Interpreter(nodeIterator, handlersmap, inputProvider, outputCapture);
+		return new Interpreter(nodeIterator, handlersmap, inputProvider, outputEmitter);
 	}
 
-	public static Interpreter provideV11(PrintScriptIterator<ASTNode> nodeIterator, InputProvider inputProvider){
+	public static Interpreter provideV11(PrintScriptIterator<ASTNode> nodeIterator,
+										InputProvider inputProvider,
+										OutputEmitter outputEmitter){
 		Map<String, ASTNodeHandler> handlersmap = HandlerFactory.createHandlers("1.1");
-		OutputCapture outputCapture = new OutputCapture();
-		return new Interpreter(nodeIterator, handlersmap, inputProvider, outputCapture);
+		return new Interpreter(nodeIterator, handlersmap, inputProvider, outputEmitter);
 	}
 }
