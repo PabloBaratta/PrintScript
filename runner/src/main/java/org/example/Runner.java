@@ -85,7 +85,7 @@ public class Runner {
 		Report report = linter.analyze(ast, configuration);
 		for (ReportLine reportLine : report.getReportLines()) {
 			System.out.println("\n" + reportLine.errorMessage()
-                    + " on " + reportLine.position().toString());
+					+ " on " + reportLine.position().toString());
 		}
 		return report;
 	}

@@ -32,6 +32,7 @@ public class PrintlnHandler implements ASTNodeHandler{
 			throw new InterpreterException(message, line, column);
 		}
 
+
 		executor.getOutputCapture().capture(evaluatedArgument.toString());
 	}
 

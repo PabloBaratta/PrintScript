@@ -57,7 +57,7 @@ public class Formatter {
 		List<ASTNode> thenBlock = ifStatement.getThenBlock();
 		List<ASTNode> elseBlock = ifStatement.getElseBlock();
 		StringBuilder result = new StringBuilder();
-		result.append("if (").append(condition.toString()).append(") {\n");
+		result.append("if (").append(condition.toFormat()).append(") {\n");
 		formatChildren(thenBlock, result, nestingLevel + 1);
 		checkSpaces(result, nestingLevel);
 		result.append("}");
@@ -92,7 +92,7 @@ public class Formatter {
 		checkRule("spaceBeforeAssignation", " ", result);
 		result.append("=");
 		checkRule("spaceAfterAssignation", " ", result);
-		result.append(expression.toString());
+		result.append(expression.toFormat());
 		result.append(";\n");
 		return result;
 	}
@@ -113,7 +113,7 @@ public class Formatter {
 
 	private static void formatArguments(List<Expression> arguments, StringBuilder result) {
 		for (int i = 0; i < arguments.size(); i++) {
-			result.append(arguments.get(i).toString());
+			result.append(arguments.get(i).toFormat());
 			if (i < arguments.size() - 1) {
 				result.append(", ");
 			}
@@ -151,7 +151,7 @@ public class Formatter {
 		checkRule("spaceBeforeAssignation", " ", result);
 		result.append("=");
 		checkRule("spaceAfterAssignation", " ", result);
-		result.append(expression.toString());
+		result.append(expression.toFormat());
 		result.append(";\n");
 		return result;
 	}
@@ -170,7 +170,7 @@ public class Formatter {
 			checkRule("spaceBeforeAssignation", " ", result);
 			result.append("=");
 			checkRule("spaceAfterAssignation", " ", result);
-			result.append(expression.get().toString());
+			result.append(expression.get().toFormat());
 		}
 		result.append(";\n");
 		return result;

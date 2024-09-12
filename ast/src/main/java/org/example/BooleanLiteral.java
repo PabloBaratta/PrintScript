@@ -12,4 +12,9 @@ public class BooleanLiteral extends Literal<Boolean> {
 	public void accept(ASTVisitor visitor) throws Exception {
 		visitor.visit(this);
 	}
+
+	@Override
+	public String toFormat() {
+		return getValue().toString();
+	}
 }

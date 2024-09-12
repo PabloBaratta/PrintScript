@@ -36,4 +36,9 @@ public class NumericLiteral extends Literal<BigDecimal> {
 
 		return plainString;
 	}
+
+	@Override
+	public String toFormat() {
+		return toString();
+	}
 }

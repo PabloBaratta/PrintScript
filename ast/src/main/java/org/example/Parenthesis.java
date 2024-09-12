@@ -30,4 +30,8 @@ public class Parenthesis implements Expression{
 	}
 
 
+	@Override
+	public String toFormat() {
+		return "(" + expression.toFormat() + ")";
+	}
 }

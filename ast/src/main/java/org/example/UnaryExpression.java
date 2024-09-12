@@ -38,4 +38,8 @@ public class UnaryExpression implements Expression{
 		return position;
 	}
 
+	@Override
+	public String toFormat() {
+		return operator + argument.toFormat();
+	}
 }

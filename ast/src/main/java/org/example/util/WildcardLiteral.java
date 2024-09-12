@@ -13,4 +13,9 @@ public class WildcardLiteral extends Literal<Wildcard> {
 	public void accept(ASTVisitor visitor) throws Exception {
 
 	}
+
+	@Override
+	public String toFormat() {
+		return null;
+	}
 }
