@@ -79,9 +79,9 @@ public class NewFormatterTest {
 		String result = formatter.format();
 		String expected =
 				"if (x > 10.0) {\n" +
-						"  let hola : string;\n" +
+						"    let hola : string;\n" +
 						"} else {\n" +
-						"  let adios : string;\n" +
+						"    let adios : string;\n" +
 						"}\n";
 		assertEquals(expected, result);
 	}
@@ -110,8 +110,8 @@ public class NewFormatterTest {
 		String result = formatter.format();
 		String expected =
 				"if (x > 10.0) {\n" +
-						"  if (y < 5.0) {\n" +
-						"    let hola : string;\n" +
+						"    if (y < 5.0) {\n" +
+						"        let hola : string;\n" +
 						"  }\n" +
 						"}\n";
 		assertEquals(expected, result);

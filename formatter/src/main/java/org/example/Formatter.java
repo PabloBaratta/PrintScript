@@ -32,13 +32,13 @@ public class Formatter {
 				}
 				break;
 			case VariableDeclaration variableDeclaration:
-				result.append(formatVarDec(variableDeclaration));
+				result.append(formatVarDec(variableDeclaration, nestingLevel));
 				break;
 			case ConstDeclaration constDeclaration:
-				result.append(formatConstDec(constDeclaration));
+				result.append(formatConstDec(constDeclaration, nestingLevel));
 				break;
 			case Assignation assignation:
-				result.append(formatAssignation(assignation));
+				result.append(formatAssignation(assignation, nestingLevel));
 				break;
 			case Method method:
 				result.append(formatMethod(method, nestingLevel));
@@ -57,6 +57,7 @@ public class Formatter {
 		List<ASTNode> thenBlock = ifStatement.getThenBlock();
 		List<ASTNode> elseBlock = ifStatement.getElseBlock();
 		StringBuilder result = new StringBuilder();
+		checkSpaces(result, nestingLevel);
 		result.append("if (").append(condition.toFormat()).append(") {\n");
 		formatChildren(thenBlock, result, nestingLevel + 1);
 		checkSpaces(result, nestingLevel);
@@ -79,11 +80,12 @@ public class Formatter {
 		}
 	}
 
-	private StringBuilder formatConstDec(ConstDeclaration constDeclaration) {
+	private StringBuilder formatConstDec(ConstDeclaration constDeclaration, int nestingLevel) {
 		Identifier identifier = constDeclaration.getIdentifier();
 		Type type = constDeclaration.getType();
 		Expression expression = constDeclaration.getExpression();
 		StringBuilder result = new StringBuilder();
+		checkSpaces(result, nestingLevel);
 		result.append("const ").append(identifier.toString());
 		checkRule("spaceBeforeColon", " ", result);
 		result.append(":");
@@ -143,10 +145,11 @@ public class Formatter {
 		}
 	}
 
-	private StringBuilder formatAssignation(Assignation assignation) {
+	private StringBuilder formatAssignation(Assignation assignation, int nestingLevel) {
 		Identifier identifier = assignation.getIdentifier();
 		Expression expression = assignation.getExpression();
 		StringBuilder result = new StringBuilder();
+		checkSpaces(result, nestingLevel);
 		result.append(identifier.toString());
 		checkRule("spaceBeforeAssignation", " ", result);
 		result.append("=");
@@ -156,11 +159,12 @@ public class Formatter {
 		return result;
 	}
 
-	private StringBuilder formatVarDec(VariableDeclaration varDec) {
+	private StringBuilder formatVarDec(VariableDeclaration varDec, int nestingLevel) {
 		Identifier identifier = varDec.getIdentifier();
 		Type type = varDec.getType();
 		Optional<Expression> expression = varDec.getExpression();
 		StringBuilder result = new StringBuilder();
+		checkSpaces(result, nestingLevel);
 		result.append("let ").append(identifier.toString());
 		checkRule("spaceBeforeColon", " ", result);
 		result.append(":");
