@@ -19,22 +19,22 @@ public class NumericLiteral extends Literal<BigDecimal> {
 	@Override
 	public String toString() {
 
-        BigDecimal bigDecimalValue = getValue();
-        String plainString = bigDecimalValue.toPlainString();
+		BigDecimal bigDecimalValue = getValue();
+		String plainString = bigDecimalValue.toPlainString();
 
-        if (plainString.contains(".")) {
-            BigDecimal strippedValue = bigDecimalValue.stripTrailingZeros();
-            String result = strippedValue.toPlainString();
+		if (plainString.contains(".")) {
+			BigDecimal strippedValue = bigDecimalValue.stripTrailingZeros();
+			String result = strippedValue.toPlainString();
 
-            if (plainString.matches(".*\\d+\\.\\d+")) {
-                if (!result.contains(".")) {
-                    return result + ".0";
-                }
-            }
+			if (plainString.matches(".*\\d+\\.\\d+")) {
+				if (!result.contains(".")) {
+					return result + ".0";
+				}
+			}
 
-            return result;
-        }
+			return result;
+		}
 
-        return plainString;
-    }
+		return plainString;
+	}
 }
