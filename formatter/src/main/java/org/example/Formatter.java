@@ -79,7 +79,7 @@ public class Formatter {
 			checkSpaces(result, nestingLevel);
 			formatNode(node, result, nestingLevel);
 		}
-        System.out.println("");
+		System.out.println("");
 	}
 
 	private StringBuilder formatConstDec(ConstDeclaration constDeclaration, int nestingLevel) {
