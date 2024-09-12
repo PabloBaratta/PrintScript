@@ -17,7 +17,7 @@ public class Util {
 		final String CLEAR_LINE = ESC + "2K";            // Borra la línea actual
 
 		ObservableInputStream observableInputStream =
-                new ObservableInputStream(inputStream, new ObservableInputStream.Observer() {
+				new ObservableInputStream(inputStream, new ObservableInputStream.Observer() {
 			long bytesRead = 0;
 			final int BAR_LENGTH = 50;
 
