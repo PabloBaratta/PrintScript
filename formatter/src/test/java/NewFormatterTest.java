@@ -49,7 +49,7 @@ public class NewFormatterTest {
 		Map<String, Rule> rules = Ruler.rulesV10();
 		Method method = new Method(
 				new Identifier("println", position),
-				List.of(new TextLiteral("\"Hello, World!\"", position))
+				List.of(new TextLiteral("Hello, World!", position))
 		);
 		Program program = new Program(List.of(method));
 		PrintScriptIterator<ASTNode> nodes = new PrintScriptIteratorTest<>(program.getChildren());
