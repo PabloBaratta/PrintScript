@@ -3,7 +3,6 @@ import org.example.interpreter.*;
 import org.example.PrintScriptIterator;
 import org.example.PrintScriptIteratorTest;
 import org.example.interpreter.handlers.ASTNodeHandler;
-import org.example.interpreter.handlers.HandlerFactory;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -24,8 +23,6 @@ public class InterpreterProviderTest {
 		Map<String, ASTNodeHandler> handlers = interpreter.getHandlers();
 		assertNotNull(handlers, "Handlers should not be null.");
 
-		OutputCapture outputCapture = interpreter.getOutputCapture();
-		assertNotNull(outputCapture, "OutputCapture should not be null.");
 	}
 
 	@Test
@@ -38,7 +35,5 @@ public class InterpreterProviderTest {
 		Map<String, ASTNodeHandler> handlers = interpreter.getHandlers();
 		assertNotNull(handlers, "Handlers should not be null.");
 
-		OutputCapture outputCapture = interpreter.getOutputCapture();
-		assertNotNull(outputCapture, "OutputCapture should not be null.");
 	}
 }

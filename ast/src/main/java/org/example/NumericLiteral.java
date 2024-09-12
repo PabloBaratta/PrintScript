@@ -18,6 +18,7 @@ public class NumericLiteral extends Literal<BigDecimal> {
 
 	@Override
 	public String toString() {
+
 		BigDecimal bigDecimalValue = getValue();
 
 		if (bigDecimalValue.scale() > 1) {

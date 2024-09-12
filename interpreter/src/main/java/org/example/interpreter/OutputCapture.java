@@ -3,9 +3,10 @@ package org.example.interpreter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OutputCapture {
+public class OutputCapture implements OutputEmitter {
 	private final List<String> printList = new ArrayList<>();
 
+	@Override
 	public void capture(String output) {
 		printList.add(output);
 	}

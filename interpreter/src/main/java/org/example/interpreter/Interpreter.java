@@ -12,7 +12,7 @@ public class Interpreter {
 	private final Executor executionVisitor;
 	private final Map<String, ASTNodeHandler> handlers;
 	private final InputProvider inputProvider;
-	private final OutputCapture outputCapture;
+	private final OutputEmitter outputEmitter;
 	private final PrintScriptIterator<ASTNode> nodeIterator;
 
 
@@ -23,9 +23,9 @@ public class Interpreter {
 		this.nodeIterator = n;
 		this.handlers = h;
 		this.inputProvider = i;
-		this.outputCapture = o;
+		this.outputEmitter = o;
 		this.validationVisitor = new Validator(handlers, inputProvider);
-		this.executionVisitor = new Executor(handlers, inputProvider, outputCapture);
+		this.executionVisitor = new Executor(handlers, inputProvider, outputEmitter);
 	}
 
 	public void validate() throws Exception {
@@ -70,8 +70,8 @@ public class Interpreter {
 		return inputProvider;
 	}
 
-	public OutputCapture getOutputCapture() {
-		return outputCapture;
+	public OutputEmitter getOutputEmitter() {
+		return outputEmitter;
 	}
 
 	public PrintScriptIterator<ASTNode> getNodeIterator() {

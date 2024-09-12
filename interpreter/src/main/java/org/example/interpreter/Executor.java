@@ -12,16 +12,16 @@ public class Executor implements ASTVisitor {
 	private final Stack<Map<String, Variable>> environments = new Stack<>();
 	private final Stack<Literal> stack = new Stack<>();
 	private final InputProvider inputProvider;
-	private final OutputCapture outputCapture;
+	private final OutputEmitter outputEmitter;
 
 	private final Map<String, ASTNodeHandler> handlers;
 
 
-	public Executor(Map<String, ASTNodeHandler> handlers, InputProvider inputProvider, OutputCapture output) {
+	public Executor(Map<String, ASTNodeHandler> handlers, InputProvider inputProvider, OutputEmitter output) {
 		environments.push(new HashMap<>());
 		this.handlers = handlers;
 		this.inputProvider = inputProvider;
-		this.outputCapture = output;
+		this.outputEmitter = output;
 	}
 
 	@Override
@@ -230,8 +230,8 @@ public class Executor implements ASTVisitor {
 		return inputProvider;
 	}
 
-	public OutputCapture getOutputCapture() {
-		return outputCapture;
+	public OutputEmitter getOutputCapture() {
+		return outputEmitter;
 	}
 
 	public boolean typesMatch(Expression expression, Variable variable) {

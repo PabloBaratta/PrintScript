@@ -2,10 +2,8 @@ package org.example;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.interpreter.ConsoleInputProvider;
-import org.example.interpreter.InputProvider;
 import org.example.interpreter.Interpreter;
 import org.example.interpreter.InterpreterProvider;
-import org.example.interpreter.handlers.HandlerFactory;
 import org.example.lexer.StreamReader;
 import org.linter.Linter;
 import org.linter.LinterProvider;
@@ -24,7 +22,7 @@ import static org.example.lexer.LexerProvider.provideV11;
 
 public class Runner {
 
-	public static List<String> run(InputStream inputStream, String version) throws Exception {
+	public static void run(InputStream inputStream, String version) throws Exception {
 		PrintScriptIterator<ASTNode> parser = lnp(inputStream, version);
 		Interpreter interpreter = switch (version) {
 			case "1.0" -> InterpreterProvider.provideV10(parser, new ConsoleInputProvider());
@@ -32,7 +30,6 @@ public class Runner {
 			default -> throw new Exception("Invalid version");
 		};
 		interpreter.execute();
-		return interpreter.getOutputCapture().getPrintList();
 	}
 
 	public static void validate(InputStream inputStream, String version) throws Exception {
