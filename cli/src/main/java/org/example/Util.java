@@ -11,7 +11,7 @@ public class Util {
 
 		// Crear un ObservableInputStream para monitorear el progreso de la lectura
 		ObservableInputStream observableInputStream =
-                new ObservableInputStream(inputStream, new ObservableInputStream.Observer() {
+				new ObservableInputStream(inputStream, new ObservableInputStream.Observer() {
 			long bytesRead = 0;
 			final int BAR_LENGTH = 50; // Longitud de la barra de progreso
 
