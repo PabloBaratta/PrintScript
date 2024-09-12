@@ -40,11 +40,16 @@ public class IdentifierHandler implements ASTNodeHandler{
 		Identifier identifier = (Identifier) node;
 		String identifierName = identifier.getName();
 
-		if (!validator.getEnvironment().containsKey(identifierName)) {
-			throw new Exception("Undeclared variable");
+		Optional<Variable> variableOpt = validator.findVariable(identifierName);
+
+		int line = identifier.getPosition().getLine();
+		int column = identifier.getPosition().getColumn();
+
+		if (variableOpt.isEmpty()) {
+			throw new InterpreterException("Undeclared variable", line, column);
 		}
 
-		Variable variable = validator.getEnvironment().get(identifierName);
+		Variable variable = variableOpt.get();
 		Optional<Literal> optionalExpression = variable.getLiteral();
 
 		if (optionalExpression.isEmpty()) {

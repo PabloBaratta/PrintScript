@@ -4,6 +4,7 @@ import org.example.*;
 import org.example.interpreter.Executor;
 import org.example.interpreter.InterpreterException;
 import org.example.interpreter.Validator;
+import org.example.util.WildcardLiteral;
 import org.token.Position;
 
 import java.util.List;
@@ -51,7 +52,8 @@ public class PrintlnHandler implements ASTNodeHandler{
 
 		if (!(evaluatedArgument instanceof TextLiteral)
 				&& !(evaluatedArgument instanceof NumericLiteral)
-				&& !(evaluatedArgument instanceof BooleanLiteral)){
+				&& !(evaluatedArgument instanceof BooleanLiteral)
+				&& !(evaluatedArgument instanceof WildcardLiteral)){
 			int line = position.getLine();
 			String message = "println expects a Literal";
 			throw new InterpreterException(message, line, position.getColumn());

@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.example.Runner.*;
@@ -28,8 +29,9 @@ public class AnalyzingBuilder implements CommandBuilder{
         String config = Files.lines(Paths.get(pathConfig))
                 .collect(Collectors.joining("\n"));
 
-        lint(Util.getObservableInputStream(stream), version, config);
-        return "linting completed";
+        List<String> lint = lint(Util.getObservableInputStream(stream), version, config);
+
+        return "linted";
     }
 
 }

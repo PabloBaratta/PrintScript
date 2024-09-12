@@ -23,7 +23,7 @@ public class FormattingBuilder implements CommandBuilder{
         String config = Files.lines(Paths.get(pathConfig))
                 .collect(Collectors.joining("\n"));
         String version = parts[3];
-        format(Util.getObservableInputStream(stream), version, config);
+        System.out.println("\n" + format(Util.getObservableInputStream(stream), version, config));
         return "formatted";
     }
 }
