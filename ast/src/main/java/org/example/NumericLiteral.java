@@ -3,7 +3,6 @@ package org.example;
 import org.token.Position;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 public class NumericLiteral extends Literal<BigDecimal> {
 

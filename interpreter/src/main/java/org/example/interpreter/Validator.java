@@ -2,6 +2,7 @@ package org.example.interpreter;
 
 import org.example.*;
 import org.example.interpreter.handlers.ASTNodeHandler;
+import org.example.util.WildcardLiteral;
 import org.token.Position;
 
 import java.math.BigDecimal;
@@ -58,7 +59,7 @@ public class Validator implements ASTVisitor {
 		} else if (expression instanceof BooleanLiteral && variableTypeName.equals("boolean")) {
 			return true;
 		}
-		return false;
+		else return expression instanceof WildcardLiteral;
 	}
 
 	public Literal evaluateExpression(Expression expression) throws Exception {

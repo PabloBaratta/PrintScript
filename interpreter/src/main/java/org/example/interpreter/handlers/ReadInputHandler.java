@@ -4,6 +4,8 @@ import org.example.*;
 import org.example.interpreter.Executor;
 import org.example.interpreter.InterpreterException;
 import org.example.interpreter.Validator;
+import org.example.util.Wildcard;
+import org.example.util.WildcardLiteral;
 import org.token.Position;
 
 import java.util.List;
@@ -54,10 +56,9 @@ public class ReadInputHandler implements ASTNodeHandler{
 			throw new InterpreterException(message, position.getLine(), position.getColumn());
 		}
 
-		String message = ((TextLiteral) evaluatedArgument).getValue();
-		String userInput = validator.getInputProvider().readInput(message);
 
-		Literal inputLiteral = validator.convertInputToLiteral(userInput, position);
-		validator.getStack().push(inputLiteral);
+		WildcardLiteral inputAny = new WildcardLiteral(new Wildcard(), method.getPosition());
+
+		validator.getStack().push(inputAny);
 	}
 }
