@@ -308,9 +308,9 @@ public class InterpreterTest {
 		VariableDeclaration variableDeclaration = new VariableDeclaration(identifier, type, Optional.empty());
 		astNodes.add(variableDeclaration);
 
-		Expression left = new NumericLiteral(BigDecimal.valueOf(2), pos);
-		Expression right = new NumericLiteral(BigDecimal.valueOf(3), pos);
-		BinaryExpression expression = new BinaryExpression(left, "+", right);
+		Expression left = new NumericLiteral(BigDecimal.valueOf(3.14), pos);
+		Expression right = new NumericLiteral(BigDecimal.valueOf(2), pos);
+		BinaryExpression expression = new BinaryExpression(left, "/", right);
 		Assignation assignation = new Assignation(identifier, expression, pos);
 		astNodes.add(assignation);
 
@@ -323,7 +323,7 @@ public class InterpreterTest {
 
 		Optional<Literal> optionalExpression = interpreter.getExecutorEnvironment().get("result").getLiteral();
 		assertTrue(optionalExpression.isPresent());
-		assertEquals(BigDecimal.valueOf(5), optionalExpression.get().getValue());
+		assertEquals(BigDecimal.valueOf(1.57).toString(), optionalExpression.get().toString());
 	}
 
 	@Test

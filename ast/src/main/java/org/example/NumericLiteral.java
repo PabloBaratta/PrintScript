@@ -19,14 +19,22 @@ public class NumericLiteral extends Literal<BigDecimal> {
 	@Override
 	public String toString() {
 
-		BigDecimal bigDecimalValue = getValue();
+        BigDecimal bigDecimalValue = getValue();
+        String plainString = bigDecimalValue.toPlainString();
 
-		if (bigDecimalValue.scale() > 1) {
-			// Forzamos a que tenga exactamente 1 decimal, si tiene más los reducimos
-			return bigDecimalValue.setScale(1, RoundingMode.DOWN).toPlainString();
-		}
+        if (plainString.contains(".")) {
+            BigDecimal strippedValue = bigDecimalValue.stripTrailingZeros();
+            String result = strippedValue.toPlainString();
 
-		// Si no tiene decimales, mostramos el número sin punto decimal
-		return bigDecimalValue.toPlainString();
-	}
+            if (plainString.matches(".*\\d+\\.\\d+")) {
+                if (!result.contains(".")) {
+                    return result + ".0";
+                }
+            }
+
+            return result;
+        }
+
+        return plainString;
+    }
 }
