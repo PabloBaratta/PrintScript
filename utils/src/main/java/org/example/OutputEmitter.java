@@ -1,4 +1,4 @@
-package org.example.interpreter;
+package org.example;
 
 public interface OutputEmitter {
 	void capture(String output);

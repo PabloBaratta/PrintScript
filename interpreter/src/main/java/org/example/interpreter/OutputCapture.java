@@ -1,5 +1,7 @@
 package org.example.interpreter;
 
+import org.example.OutputEmitter;
+
 import java.util.ArrayList;
 import java.util.List;
 

@@ -28,8 +28,9 @@ public class ReadInputHandler implements ASTNodeHandler{
 			throw new InterpreterException(message, position.getLine(), position.getColumn());
 		}
 
-		String message = ((TextLiteral) arguments.get(0)).getValue();
-		String userInput = executor.getInputProvider().readInput(message);
+		TextLiteral message = ((TextLiteral) evaluatedArgument);
+		executor.getOutputCapture().capture(message.toString());
+		String userInput = executor.getInputProvider().readInput(message.toString());
 
 		Literal inputLiteral = executor.convertInputToLiteral(userInput, position);
 		executor.getStack().push(inputLiteral);

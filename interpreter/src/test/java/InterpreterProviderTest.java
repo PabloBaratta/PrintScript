@@ -1,4 +1,5 @@
 import org.example.ASTNode;
+import org.example.InputProvider;
 import org.example.interpreter.*;
 import org.example.PrintScriptIterator;
 import org.example.PrintScriptIteratorTest;
@@ -16,7 +17,7 @@ public class InterpreterProviderTest {
 	void testProvideV10() {
 
 		PrintScriptIterator<ASTNode> nodeIterator = new PrintScriptIteratorTest<>(Collections.emptyList());
-		InputProvider inputProvider = new ConsoleInputProvider();
+		InputProvider inputProvider = new MockInputProvider("hola");
 		OutputCapture outputCapture = new OutputCapture();
 		Interpreter interpreter = InterpreterProvider.provideV10(nodeIterator, inputProvider, outputCapture);
 
@@ -29,7 +30,7 @@ public class InterpreterProviderTest {
 	void testProvideV11() {
 
 		PrintScriptIterator<ASTNode> nodeIterator = new PrintScriptIteratorTest<>(Collections.emptyList());
-		InputProvider inputProvider = new ConsoleInputProvider();
+		InputProvider inputProvider = new MockInputProvider("chau");
 
 		OutputCapture outputCapture = new OutputCapture();
 		Interpreter interpreter = InterpreterProvider.provideV11(nodeIterator, inputProvider, outputCapture);

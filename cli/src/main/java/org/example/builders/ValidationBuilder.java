@@ -1,7 +1,7 @@
 package org.example.builders;
 
-import org.example.interpreter.ConsoleInputProvider;
-import org.example.interpreter.OutputCapture;
+import org.example.CliOutputEmitter;
+import org.example.ConsoleInputProvider;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -21,7 +21,7 @@ public class ValidationBuilder implements CommandBuilder{
                 .collect(Collectors.joining("\n"));
         InputStream inputStream = new ByteArrayInputStream(code.getBytes());
         String version = parts[2];
-        validate(inputStream, version, new ConsoleInputProvider(), new OutputCapture());
+        validate(inputStream, version, new ConsoleInputProvider(), new CliOutputEmitter());
         return "Validation completed";
     }
 }

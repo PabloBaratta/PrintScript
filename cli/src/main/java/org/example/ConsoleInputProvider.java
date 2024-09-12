@@ -1,8 +1,10 @@
-package org.example.interpreter;
+package org.example;
+
+import org.example.InputProvider;
 
 import java.util.Scanner;
 
-public class ConsoleInputProvider implements InputProvider{
+public class ConsoleInputProvider implements InputProvider {
 	private final Scanner scanner;
 
 	public ConsoleInputProvider() {
@@ -11,7 +13,6 @@ public class ConsoleInputProvider implements InputProvider{
 
 	@Override
 	public String readInput(String name) {
-		System.out.print(name + ": ");
 		return scanner.nextLine();
 	}
 }

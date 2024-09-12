@@ -1,4 +1,4 @@
-package org.example.interpreter;
+package org.example;
 
 public interface InputProvider {
 	String readInput(String name);

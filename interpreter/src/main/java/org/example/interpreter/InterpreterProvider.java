@@ -1,12 +1,12 @@
 package org.example.interpreter;
 
 import org.example.ASTNode;
+import org.example.InputProvider;
+import org.example.OutputEmitter;
 import org.example.PrintScriptIterator;
-import org.example.PrintScriptIteratorTest;
 import org.example.interpreter.handlers.ASTNodeHandler;
 import org.example.interpreter.handlers.HandlerFactory;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 public class InterpreterProvider {

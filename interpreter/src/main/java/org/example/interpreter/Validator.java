@@ -7,7 +7,6 @@ import org.token.Position;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Stack;
 
 public class Validator implements ASTVisitor {
