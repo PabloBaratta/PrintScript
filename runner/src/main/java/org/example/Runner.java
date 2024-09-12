@@ -84,7 +84,8 @@ public class Runner {
 		Map<String, String> configuration = parseConfig(config);
 		Report report = linter.analyze(ast, configuration);
 		for (ReportLine reportLine : report.getReportLines()) {
-			System.out.println(reportLine.errorMessage() + " on " + reportLine.position().toString());
+			System.out.println("\n" + reportLine.errorMessage()
+					+ " on " + reportLine.position().toString());
 		}
 		return report;
 	}

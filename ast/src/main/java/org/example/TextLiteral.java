@@ -12,4 +12,9 @@ public class TextLiteral extends Literal<String> {
 	public void accept(ASTVisitor visitor) throws Exception {
 		visitor.visit(this);
 	}
+
+	@Override
+	public String toFormat() {
+		return "\"" + getValue() + "\"";
+	}
 }

@@ -48,4 +48,21 @@ public class Method implements Expression{
 	public Position getPosition() {
 		return identifier.getPosition();
 	}
+
+	@Override
+	public String toFormat() {
+		return identifier.toString() + "(" + formatArgs(arguments) + ")";
+	}
+
+
+	private String formatArgs(List<Expression> arguments) {
+		StringBuilder result = new StringBuilder();
+		for (int i = 0; i < arguments.size(); i++) {
+			result.append(arguments.get(i).toFormat());
+			if (i < arguments.size() - 1) {
+				result.append(", ");
+			}
+		}
+		return result.toString();
+	}
 }

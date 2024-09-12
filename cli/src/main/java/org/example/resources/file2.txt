@@ -1,0 +1,22 @@
+let m: number = readInput("coeficiente lineal");
+let b: number = readInput("ordenada al origen");
+
+println("tu recta es: " + m + "*x+" + b);
+
+let con: boolean = readInput("querés evaluarla con algo?");
+
+if (con) {
+    let x: number = readInput("dame el número");
+    println (m*x+b);
+    con = readInput("querés evaluarla con otra cosa?");
+    if (con) {
+        println("yo no");
+        x = 9;
+        println(x);
+    }
+
+    println("esto se printea" +x);
+}
+else {
+    println("Tené un buen día master");
+}

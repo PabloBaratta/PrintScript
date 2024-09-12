@@ -39,5 +39,8 @@ public class BinaryExpression implements Expression {
 		return left.getPosition();
 	}
 
+	@Override
+	public String toFormat() { return left.toFormat() + " " + operator + " " + right.toFormat();}
+
 
 }

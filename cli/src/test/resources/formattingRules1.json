@@ -3,5 +3,6 @@
   "spaceAfterColon": { "rule": true },
   "spaceBeforeAssignation": { "rule": true },
   "spaceAfterAssignation": { "rule": true },
-  "newLineBeforePrintln": { "rule": true, "qty": 0 }
+  "newLineBeforePrintln": { "rule": true, "qty": 0},
+  "indentation": { "rule": true, "qty": 2 }
 }

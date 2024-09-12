@@ -8,6 +8,7 @@ import org.token.Position;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Stack;
 
 public class Validator implements ASTVisitor {
@@ -237,6 +238,15 @@ public class Validator implements ASTVisitor {
 		node.accept(this);
 	}
 
+	public Optional<Variable> findVariable(String name) {
+		for (int i = environments.size() - 1; i >= 0; i--) {
+			Variable variable = environments.get(i).get(name);
+			if (variable != null) {
+				return Optional.of(variable);
+			}
+		}
+		return Optional.empty();
+	}
 	public Map<String, Variable> getEnvironment() {
 		return environments.peek();
 	}

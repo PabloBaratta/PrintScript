@@ -4,6 +4,7 @@ import org.example.*;
 import org.example.interpreter.Executor;
 import org.example.interpreter.InterpreterException;
 import org.example.interpreter.Validator;
+import org.example.util.WildcardLiteral;
 import org.token.Position;
 
 import java.util.HashMap;
@@ -62,7 +63,7 @@ public class IfStatementHandler implements ASTNodeHandler{
 
 		Literal conditionResult = validator.evaluateExpression(condition);
 
-		if (!(conditionResult instanceof BooleanLiteral)) {
+		if (!(conditionResult instanceof BooleanLiteral || conditionResult instanceof WildcardLiteral)) {
 			Position position = condition.getPosition();
 			throw new InterpreterException("Condition in if statement must be a boolean expression",
 					position.getLine(), position.getColumn());

@@ -1,0 +1,9 @@
+let con: boolean = readInput("querés evaluarla con algo?");
+
+if (con) {
+    let x: number = readInput("dame el número");
+    println (m*x+b);
+    }
+else {
+    println("Tené un buen día master");
+}
