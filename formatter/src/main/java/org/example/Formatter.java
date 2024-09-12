@@ -21,6 +21,7 @@ public class Formatter {
 			formatNode(child, result, 0);
 
 		}
+		return result.toString();
 	}
 
 	private void formatNode(ASTNode child, StringBuilder result, int nestingLevel) {
@@ -78,7 +79,7 @@ public class Formatter {
 			checkSpaces(result, nestingLevel);
 			formatNode(node, result, nestingLevel);
 		}
-		System.out.println("");
+        System.out.println("");
 	}
 
 	private StringBuilder formatConstDec(ConstDeclaration constDeclaration, int nestingLevel) {
