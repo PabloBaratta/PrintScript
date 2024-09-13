@@ -1,0 +1,53 @@
+@startuml
+class CLI {
+    +run()
+}
+
+class Runner {
+    +run()
+    +validate()
+    +lint()
+    +format()
+}
+
+class Lexer {
+    +getNext():Token
+}
+
+class Parser {
+    +getNext(): ASTNode
+}
+
+class Interpreter {
+    +validate()
+    +execute()
+}
+
+class Formatter {
+    +format(): String
+}
+
+class Linter {
+    +analyze(): Report
+}
+
+class Token {
+}
+
+class ASTNode {
+}
+
+CLI --> Runner : uses
+Runner --> Lexer : uses
+Runner --> Parser : uses
+Runner --> Interpreter : uses
+Runner --> Formatter : uses
+Runner --> Linter : uses
+Lexer --> Token : returns
+Parser --> ASTNode : returns
+Parser --> Token : uses
+Interpreter --> ASTNode : uses
+Formatter --> ASTNode : uses
+Linter --> ASTNode : uses
+
+@enduml
